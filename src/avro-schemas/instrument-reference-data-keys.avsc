@@ -1,0 +1,8 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "instrument_reference_data",
+    "fields": [
+        {"name": "ric", "type": "string"}
+    ]
+}

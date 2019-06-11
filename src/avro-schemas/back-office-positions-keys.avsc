@@ -1,0 +1,13 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "back_office_position_data",
+    "fields": [
+        {"name": "knowledge_date", "type": "string"},
+        {"name": "effective_date", "type": "string"},
+        {"name": "type", "type": "string"},
+        {"name": "account", "type": "string"},
+        {"name": "cusip", "type": "int"},
+        {"name": "purpose", "type": "string"}
+    ]
+}

@@ -1,0 +1,17 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "stock_loan_position_data",
+    "fields": [
+        {"name": "sd_qty", "type": "int"},
+        {"name": "td_qty", "type": "int"},
+        {"name": "haircut", "type": "string"},
+        {"name": "collateral_margin", "type": "string"},
+        {"name": "rebate_rate", "type": "string"},
+        {"name": "borrow_fee", "type": "string"},
+        {"name": "termination_date", "type": "string"},
+        {"name": "is_callable", "type": "string"},
+        {"name": "return_type", "type": "string"},
+        {"name": "time_stamp", "type": "int"}
+    ]
+}

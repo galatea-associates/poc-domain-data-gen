@@ -1,0 +1,14 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "instrument_reference_data",
+    "fields": [
+        {"name": "asset_class", "type": "string"},
+        {"name": "coi", "type": "string"},
+        {"name": "isin", "type": "string"},
+        {"name": "sedol", "type": "int"},
+        {"name": "ticker", "type": "string"},
+        {"name": "cusip", "type": "int"},
+        {"name": "time_stamp", "type": "int"}
+    ]
+}

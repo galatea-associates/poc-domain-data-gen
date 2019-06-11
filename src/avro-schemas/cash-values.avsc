@@ -1,0 +1,9 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "cash_data",
+    "fields": [
+        {"name": "amount", "type": "int"},
+        {"name": "time_stamp", "type": "int"}
+    ]
+}

@@ -1,0 +1,9 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "prices_data",
+    "fields": [
+        {"name": "price", "type": "double"},
+        {"name": "curr", "type": "string"}
+    ]
+}

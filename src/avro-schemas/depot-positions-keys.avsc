@@ -1,0 +1,14 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "depot_position_data",
+    "fields": [
+        {"name": "knowledge_date", "type": "string"},
+        {"name": "effective_date", "type": "string"},
+        {"name": "position_type", "type": "string"},
+        {"name": "account", "type": "string"},
+        {"name": "isin", "type": "string"},
+        {"name": "purpose", "type": "string"},
+        {"name": "depot_id", "type": "int"}
+    ]
+}

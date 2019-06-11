@@ -1,0 +1,8 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "swap_contract_data",
+    "fields": [
+        {"name": "swap_contract_id", "type": "int"}
+    ]
+}
