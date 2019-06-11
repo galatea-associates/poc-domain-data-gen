@@ -1,4 +1,4 @@
-from src.Runnable import Runnable
+from Runnable import Runnable
 
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
