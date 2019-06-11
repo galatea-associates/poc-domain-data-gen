@@ -1,6 +1,4 @@
 output*
-Consumer.py
-Producer.py
 .vscode
 .sonarlint
 __pycache__
@@ -10,8 +8,6 @@ venv
 *.pyc
 *.so
 *.o
-SimpleProducer
-SimpleConsumer
 out/*
 credentials.json
 token.json
@@ -23,7 +19,8 @@ src/data/*
 report/*
 docs/*
 *.prof
-data_gen/creds.txt
-data_gen/client_secrets.json
-data_gen/out
+creds.txt
+client_secrets.json
+out
 .pytest_cache
+*.code-workspace

@@ -6,7 +6,7 @@ import sys
 
 sys.path.insert(0, 'Kafka_Python/')
 
-from data_gen.src.DataGenerator import DataGenerator
+from src.DataGenerator import DataGenerator
 
 
 @pytest.fixture
@@ -537,7 +537,7 @@ def test_generate_rebate_rate_collateral_type_is_cash(data_generator):
     assert rebate_rate == '5.75%'
 
 
-def test_generate_rebate_rate_collateral_type_is_cash(data_generator):
+def test_generate_rebate_rate_collateral_type_is_stock(data_generator):
     rebate_rate = data_generator.generate_rebate_rate(collateral_type='Stock')
     assert rebate_rate == ''
 

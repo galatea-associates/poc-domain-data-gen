@@ -1,4 +1,4 @@
-from Kafka_Python.Runnable import Runnable
+from src.Runnable import Runnable
 
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
@@ -51,7 +51,7 @@ class GoogleDriveAccessor(Runnable):
         if not creds or creds.invalid:
             flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
             creds = tools.run_flow(flow, store)
-        self.__service = build('drive', 'v3', http=creds.authorize(Http()))
+        self.__service = build('drive', 'v3', http=creds.authorize(Http()))                        
 
     def __get_files_in_folder(self, folder):
         results = self.__service.files().list(
