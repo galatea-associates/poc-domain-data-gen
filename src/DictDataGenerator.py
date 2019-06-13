@@ -321,7 +321,7 @@ class DictRunnable(Runnable):
             if not self.__field_already_generated(field, data):
                 if self.__is_key(field, data):
                     suffix = '*'
-                    field = self.__remove_asterix_from_field_name(field)
+                    field = self.__remove_asterisk_from_field_name(field)
                 else:
                     suffix = ''
 
@@ -336,9 +336,8 @@ class DictRunnable(Runnable):
         data_generator.clear_state()
         return data
 
-    def __remove_aterix_field_name(self, field):
+    def __remove_asterisk_from_field_name(self, field):
         return field.replace('*', '')
-
 
     def __is_key(self, field, data):
         return field + '*' in data

@@ -497,7 +497,7 @@ class DataGenerator:
         if not does_exist:
             return None
         else:
-            return self.generate_knowledge_date(from_year=2019, to_year=2020)
+            return self.generate_knowledge_date()
 
     # TODO: generate percentages, not just hard code
     def generate_rebate_rate(self, collateral_type=None):
