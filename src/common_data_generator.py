@@ -3,20 +3,19 @@ import string
 from functools import partial
 from datetime import datetime, timezone, timedelta
 import time
-# from pandas import Timestamp
 import pandas as pd
 # TODO: merge sedol and cusip dictionaries
 # TODO: check inst_id is unique
 
 
-class DataGenerator:
+class CommonDataGenerator:
 
     def __init__(self):
         self.__update_timestamp = 0
         self.__possible_ex_codes = ['L', 'N', 'OQ', 'SI', 'AL', 'VI', 'BB', 'BM', 'BR', 'BG', 'TC', 'TO', 'HK', 'SS',
                                     'FR', 'BE', 'DE', 'JA', 'DE', 'IL', 'VX', 'MFM', 'PA', 'ME', 'NZ']
         self.__possible_cois = ['US', 'GB', 'CA', 'FR', 'DE', 'CH', 'SG', 'JP']
-        self.__tickers = self.__read_tickers_from_csv('data_gen/src/tickers.csv')
+        self.__tickers = self.__read_tickers_from_csv('tickers.csv')
         self.__date = None
         self.__curr_in_inst = []
         self.__stock_loan_contract_ids = []
