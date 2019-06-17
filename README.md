@@ -11,7 +11,7 @@ This readme will contain an index to features and their location in code.
 
 A domain object is an entity that represents a real-world business object, such as a position or a trade.
 
-Each domain object is represented by a single Python module containing a single Python class, these modules reside in the "domainobjects" package.  Each class extends the abstract class "Generatable", which defines a single abstract method "get_template".  If you wish to add a new domain object, simply create a new python module containing a single class which extends the "Generatable" abstract class and implements the abstract method "get_template".  The "get_template" method should return a dictionary that represents the structure of the domain object.  Functions found inside the "shared_data_generator" module can be referenced here.
+Each domain object is represented by a single Python module containing a single Python class, these modules reside in the "domainobjects" package.  Each class extends the abstract class "Generatable", which defines a single abstract method "get_template".  If you wish to add a new domain object, simply create a new python module containing a single class which extends the "Generatable" abstract class and implements the abstract method "get_template".  The "get_template" method should return a dictionary that represents the structure of the domain object.  Functions found inside the "common_data_generator" module can be referenced here.
 
 ### Domain Objects Data Dictionary
 
@@ -21,7 +21,7 @@ A data dictionary for all currently supported domain objects will be created and
 
 A file builder is a self contained piece of functionality which, given a dataset, will build a file according to a specified data format and output that file to a specified location.  
 
-Each file builder is represented by a single Python module containing a single Python class, these modules reside in the "filebuilders" package.  Each class extends the abstract class "FileBuilder", which defines a single abstract method "build".  Initially, file builders will be created for JSON, CSV and XML.  If you wish to add a new file builder, simply create a new python module containing a single class which extends the "Generatable" abstract class and implements the abstract method "get_template".  The "get_template" method should return a dictionary that represents the structure of the domain object.  Functions found inside the "shared_data_generator" module can be referenced here.
+Each file builder is represented by a single Python module containing a single Python class, these modules reside in the "filebuilders" package.  Each class extends the abstract class "FileBuilder", which defines a single abstract method "build".  Initially, file builders will be created for JSON, CSV and XML.  If you wish to add a new file builder, simply create a new python module inside the "filebuilders" package containing a single class which extends the "FileBuilder" abstract class and implements the abstract method "build".  The "build" method should accept a list of dictionaries (one dictionary per domain object) and use that dataset to generate a file.
 
 ### Configuration
 
