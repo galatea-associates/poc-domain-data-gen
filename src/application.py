@@ -7,15 +7,15 @@ import os
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from functools import partial
-from shared_data_generator import SharedDataGenerator
+from common_data_generator import CommonDataGenerator
 
-data_generator = DataGenerator()
+common_data_generator = CommonDataGenerator()
 
 def process_domain_object(domain_obj_config):
     domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
     domain_obj = domain_obj_class()
     total_record_count = int(domain_obj_config['file_count']) * int(domain_obj_config['objects_per_file'])
-    return domain_obj.generate(data_generator, total_record_count)
+    return domain_obj.generate(common_data_generator, total_record_count)
 
 def get_file_builder_config(file_builders, file_builder_name):
     return list(filter(lambda file_builder: file_builder['name'] == file_builder_name, file_builders))[0]
@@ -77,12 +77,12 @@ def __get_all_files_in_folder(self, folder_id, drive):
 
 # file_name corresponds to the name of the CSV file the function will write
 # to n is the number of data entities to write to the CSV file
-# data_generator is the function reference that generates the data entity
+# common_data_generator is the function reference that generates the data entity
 # of interest
 def __create_data_file(self, file_name, n, data_type):
     # w+ means create file first if it does not already exist
     date = datetime.datetime.utcnow() - datetime.timedelta(days=4)
-    data_generator.set_date(date)
+    common_data_generator.set_date(date)
     with open(file_name, mode='w+', newline='') as file:
       
         # n - 1 because we already wrote to the file once with the entity
@@ -93,12 +93,12 @@ def __create_data_file(self, file_name, n, data_type):
         for i in range(1, n):
             if i == counter * new_date_at:
                 date += datetime.timedelta(days=1)
-                data_generator.set_date(date)
+                common_data_generator.set_date(date)
                 counter += 1
             entity = self.__generate_data(data_template[data_type])
 
             writer.writerow(entity)
-    data_generator.reset_update_timestamp()
+    common_data_generator.reset_update_timestamp()
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -110,7 +110,7 @@ def get_args():
 
 def main():
     date = datetime.datetime.utcnow() - datetime.timedelta(days=4)
-    data_generator.set_date(date)
+    common_data_generator.set_date(date)
     with open(r'src\config.json') as config_file:
         config = json.load(config_file)
 
