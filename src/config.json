@@ -45,7 +45,7 @@
         "file_count":"10",
         "objects_per_file":"10",
         "file_name":"instruments",
-        "file_builder_name":"CSV",
+        "file_builder_name":"JSON",
         "output_directory":"out",
         "upload_to_google_drive":"false"
     },
@@ -106,5 +106,11 @@
         "module_name":"csv_builder",
         "class_name":"CSVBuilder",
         "file_extension":".csv"        
+    },
+    {
+        "name" : "JSON",
+        "module_name":"json_builder",
+        "class_name":"JSONBuilder",
+        "file_extension":".json"        
     }
 ]}
