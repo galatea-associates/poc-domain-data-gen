@@ -98,6 +98,16 @@
         "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false"
+    },
+    {
+        "module_name":"swap_position",
+        "class_name":"SwapPosition",
+        "file_count":"1",
+        "objects_per_file":"10",
+        "file_name":"swap_positions",
+        "file_builder_name":"XML",
+        "output_directory":"out_xml",
+        "upload_to_google_drive":"false"
     }
 ],
 "file_builders" : [
@@ -112,5 +122,11 @@
         "module_name":"json_builder",
         "class_name":"JSONBuilder",
         "file_extension":".json"        
+    },
+    {
+        "name" : "XML",
+        "module_name":"xml_builder",
+        "class_name":"XMLBuilder",
+        "file_extension":".xml"        
     }
 ]}
