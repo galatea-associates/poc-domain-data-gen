@@ -53,5 +53,10 @@ Each file builder needs to contain the following config keys:
 }
 ```
 
+### Running the data generator
+- Clone the repo
+- Set up the python environment: ```pip install -r requirements.txt```
+- Run src/app.py: ```python src/app.py```
+
 ### Common Data Generator   
 The common data generator class contains functions to generate data that is shared across domain objects.  Templates for domain objects should reference functions within the common data generator class.
