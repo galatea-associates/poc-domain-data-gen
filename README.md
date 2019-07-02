@@ -55,3 +55,7 @@ Each file builder needs to contain the following config keys:
 
 ### Common Data Generator   
 The common data generator class contains functions to generate data that is shared across domain objects.  Templates for domain objects should reference functions within the common data generator class.
+
+### Uploading to Google Drive
+The uploading of files to Google is optional and controlled at the domain object level.  This is configured by the "upload_to_google_drive" value (true or false), shown in the domain object configuration JSON above.
+TODO : Add more detail on how the upload to Google drive works, including the use of credentials.json
