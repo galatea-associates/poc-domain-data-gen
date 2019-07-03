@@ -14,8 +14,9 @@ common_data_generator = CommonDataGenerator()
 def process_domain_object(domain_obj_config):
     domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
     domain_obj = domain_obj_class()
-    total_record_count = int(domain_obj_config['file_count']) * int(domain_obj_config['objects_per_file'])
-    return domain_obj.generate(common_data_generator, total_record_count)
+    total_record_count = int(domain_obj_config['file_count']) * int(domain_obj_config['max_objects_per_file'])
+    custom_args = domain_obj_config['custom_args']
+    return domain_obj.generate(common_data_generator, total_record_count, custom_args)
 
 def get_file_builder_config(file_builders, file_builder_name):
     return list(filter(lambda file_builder: file_builder['name'] == file_builder_name, file_builders))[0]
@@ -118,11 +119,11 @@ def main():
     file_builders = config['file_builders']
 
     for i in range(len(domain_objects)):
-        domain_obj_config = domain_objects[i]
+        domain_obj_config = domain_objects[i]        
         domain_obj_dict = process_domain_object(domain_obj_config)
         file_builder_config = get_file_builder_config(file_builders, domain_obj_config['file_builder_name'])      
         file_builder = get_file_builder(file_builder_config)      
-        file_builder.build(domain_obj_config['output_directory'], domain_obj_config['file_name'], file_builder_config['file_extension'], domain_obj_dict, domain_obj_config['objects_per_file'])    
+        file_builder.build(domain_obj_config['output_directory'], domain_obj_config['file_name'], file_builder_config['file_extension'], domain_obj_dict, domain_obj_config['max_objects_per_file'])    
 
 if __name__ == '__main__':   
     main()

@@ -1,113 +1,125 @@
 { "domain_objects" : [
     {
+        "module_name":"instrument",
+        "class_name":"Instrument",
+        "file_count":"1",
+        "max_objects_per_file":"100",
+        "file_name":"instruments",
+        "file_builder_name":"JSON",
+        "output_directory":"out",
+        "upload_to_google_drive":"false",
+        "custom_args":[]
+    },
+    {
+        "module_name":"counterparty",
+        "class_name":"Counterparty",
+        "file_count":"1",
+        "max_objects_per_file":"10",
+        "file_name":"counterparties",
+        "file_builder_name":"JSON",
+        "output_directory":"out",
+        "upload_to_google_drive":"false",        
+        "custom_args":[]
+    },
+    {
         "module_name":"back_office_position",
         "class_name":"BackOfficePosition",
         "file_count":"1",
-        "objects_per_file":"10",
+        "max_objects_per_file":"10",
         "file_name":"back_office_positions",
-        "file_builder_name":"CSV",
+        "file_builder_name":"JSON",
         "output_directory":"out",
-        "upload_to_google_drive":"false"
+        "upload_to_google_drive":"false",        
+        "custom_args":[]
     },
     {
-        "module_name":"cash",
-        "class_name":"Cash",
+        "module_name":"cash_balance",
+        "class_name":"CashBalance",
         "file_count":"1",
-        "objects_per_file":"10",
-        "file_name":"cash",
-        "file_builder_name":"CSV",
+        "max_objects_per_file":"10",
+        "file_name":"cash_balances",
+        "file_builder_name":"JSON",
         "output_directory":"out",
-        "upload_to_google_drive":"false"
+        "upload_to_google_drive":"false",        
+        "custom_args":[]
     },
     {
         "module_name":"depot_position",
         "class_name":"DepotPosition",
         "file_count":"1",
-        "objects_per_file":"10",
+        "max_objects_per_file":"10",
         "file_name":"depot_positions",
-        "file_builder_name":"CSV",
+        "file_builder_name":"JSON",
         "output_directory":"out",
-        "upload_to_google_drive":"false"
+        "upload_to_google_drive":"false",        
+        "custom_args":[]
     },
     {
         "module_name":"front_office_position",
         "class_name":"FrontOfficePosition",
         "file_count":"1",
-        "objects_per_file":"10",
+        "max_objects_per_file":"10",
         "file_name":"front_office_positions",
-        "file_builder_name":"CSV",
-        "output_directory":"out",
-        "upload_to_google_drive":"false"
-    },
-    {
-        "module_name":"instrument",
-        "class_name":"Instrument",
-        "file_count":"10",
-        "objects_per_file":"10",
-        "file_name":"instruments",
         "file_builder_name":"JSON",
         "output_directory":"out",
-        "upload_to_google_drive":"false"
-    },
+        "upload_to_google_drive":"false",        
+        "custom_args":[]
+    },  
     {
         "module_name":"order_execution",
         "class_name":"OrderExecution",
         "file_count":"1",
-        "objects_per_file":"10",
+        "max_objects_per_file":"10",
         "file_name":"order_executions",
-        "file_builder_name":"CSV",
+        "file_builder_name":"JSON",
         "output_directory":"out",
-        "upload_to_google_drive":"false"
+        "upload_to_google_drive":"false",        
+        "custom_args":[]
     },
     {
         "module_name":"price",
         "class_name":"Price",
         "file_count":"1",
-        "objects_per_file":"10",
+        "max_objects_per_file":"10",
         "file_name":"prices",
-        "file_builder_name":"CSV",
+        "file_builder_name":"JSON",
         "output_directory":"out",
-        "upload_to_google_drive":"false"
+        "upload_to_google_drive":"false",        
+        "custom_args":[]
     },
     {
         "module_name":"stock_loan_position",
         "class_name":"StockLoanPosition",
         "file_count":"1",
-        "objects_per_file":"10",
+        "max_objects_per_file":"10",
         "file_name":"stock_loan_positions",
-        "file_builder_name":"CSV",
+        "file_builder_name":"JSON",
         "output_directory":"out",
-        "upload_to_google_drive":"false"
+        "upload_to_google_drive":"false",        
+        "custom_args":[]
     },
     {
         "module_name":"swap_contract",
         "class_name":"SwapContract",
         "file_count":"1",
-        "objects_per_file":"10",
+        "max_objects_per_file":"1000",
         "file_name":"swap_contracts",
-        "file_builder_name":"CSV",
+        "file_builder_name":"JSON",
         "output_directory":"out",
-        "upload_to_google_drive":"false"
+        "upload_to_google_drive":"false",        
+        "custom_args":[{"name":"swap_per_counterparty", "min":"5", "max":"5"}],
+        "dependencies":["counterparty"]
     },
     {
         "module_name":"swap_position",
         "class_name":"SwapPosition",
         "file_count":"1",
-        "objects_per_file":"10",
+        "max_objects_per_file":"1000",
         "file_name":"swap_positions",
-        "file_builder_name":"CSV",
+        "file_builder_name":"JSON",
         "output_directory":"out",
-        "upload_to_google_drive":"false"
-    },
-    {
-        "module_name":"swap_position",
-        "class_name":"SwapPosition",
-        "file_count":"1",
-        "objects_per_file":"10",
-        "file_name":"swap_positions",
-        "file_builder_name":"XML",
-        "output_directory":"out_xml",
-        "upload_to_google_drive":"false"
+        "upload_to_google_drive":"false",        
+        "custom_args":[{"name":"ins_per_swap", "min":"5", "max":"5"}]
     }
 ],
 "file_builders" : [

@@ -16,7 +16,7 @@ class CSVBuilder(FileBuilder):
 
         for i in range(0, file_count):
             current_slice = data[start : start + objects_per_file]
-            with open(os.path.join(output_dir, file_name.format(f'{i+1:03}')), 'w', newline='') as output_file:
+            with open(os.path.join(output_dir, file_name.format(f'{i+1:03}')), 'w+', newline='') as output_file:
                 dict_writer = csv.DictWriter(output_file, restval="-", fieldnames=data[0].keys(), delimiter=',')
                 dict_writer.writeheader()
                 dict_writer.writerows(current_slice)

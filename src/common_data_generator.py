@@ -22,7 +22,8 @@ class CommonDataGenerator:
         self.__swap_contract_ids = []
         self.__per_ticker_info = {}
         self.__ticker_to_coi = {}
-        self.__state = {}
+        self.__current_record_state = {}
+        self.__global_state = {}
         self.__possible_currs = ['USD', 'CAD', 'EUR', 'GBP']
         self.__rics_to_use \
             = list(set([ticker + '.' + code for ticker in self.__tickers for code in self.__possible_ex_codes]))
@@ -32,25 +33,25 @@ class CommonDataGenerator:
         return pd.read_csv(csv_file)['Symbol'].drop_duplicates().values.tolist()
 
     def state_contains_field(self, field_to_generate):
-        return field_to_generate in self.__state
+        return field_to_generate in self.__current_record_state
 
     def get_state_value(self, field_to_generate):
-        return self.__state[field_to_generate]
+        return self.__current_record_state[field_to_generate]
 
-    def clear_state(self):
-        self.__state = {}
+    def clear_current_record_state(self):
+        self.__current_record_state = {}
 
     def set_date(self, date):
         self.__date = date
 
     # TODO: change this to function calls, don't pass actual value
     def __get_preemptive_generation(self, field_name, field_value_gen):
-        if field_name not in self.__state:
+        if field_name not in self.__current_record_state:
             field_value = field_value_gen()
-            self.__state[field_name] = field_value
+            self.__current_record_state[field_name] = field_value
             return field_value
         else:
-            return self.__state[field_name]
+            return self.__current_record_state[field_name]
 
     def generate_cusip(self, n_digits=9, ticker=None, asset_class=None,
                        no_cash=False):
@@ -157,7 +158,7 @@ class CommonDataGenerator:
         else:
             ric = random.choice(self.__rics_to_use)
 
-        self.__state['ticker'] = ric.partition('.')[0]
+        self.__current_record_state['ticker'] = ric.partition('.')[0]
         return ric
 
     def generate_new_ric(self, asset_class=None, no_cash=False):
@@ -175,7 +176,7 @@ class CommonDataGenerator:
         ric = random.choice(self.__rics_to_use)
         self.__rics_to_use.remove(ric)
         self.__rics_in_use.append(ric)
-        self.__state['ticker'] = ric.partition('.')[0]
+        self.__current_record_state['ticker'] = ric.partition('.')[0]
         return ric
 
     def generate_ticker(self, asset_class=None, ric=None, new_ric_generator=False, no_cash=False):
@@ -672,3 +673,22 @@ class CommonDataGenerator:
         epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)  # use POSIX epoch
         posix_timestamp_micros = (now - epoch) // timedelta(microseconds=1)
         return posix_timestamp_micros
+
+    def persist_to_global_state(self, field_name, field_value):        
+        if field_name not in self.__global_state:
+            self.__global_state[field_name] = []            
+        
+        self.__global_state[field_name].append(field_value) 
+
+    def retrieve_from_global_state(self, field_name):    
+        return self.__global_state[field_name]
+
+    def persist_to_current_record_state(self, field_name, field_value):        
+        self.__current_record_state[field_name] = field_value
+
+    def retrieve_from_current_record_state(self, field_name):    
+        return self.__current_record_state[field_name]
+        
+        
+
+
