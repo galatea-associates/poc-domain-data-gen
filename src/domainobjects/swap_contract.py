@@ -9,13 +9,15 @@ class SwapContract(Generatable):
         counterparties = data_generator.retrieve_from_global_state('counterparty_id')
         swap_per_counterparty_range = custom_args['swap_per_counterparty']
         records = []
+        i = 1
 
         # For each existing swap contract, put the SC ID in the cache and then generate a random number of positions for that SC ID
         for counterparty in counterparties:
             data_generator.persist_to_current_record_state('counterparty_id', counterparty)
             swap_count = random.randint(int(swap_per_counterparty_range['min']), int(swap_per_counterparty_range['max']))
-            for i in range(0, swap_count):
-                records.append(self.generate_record(data_generator, i + 1))
+            for j in range(0, swap_count):
+                records.append(self.generate_record(data_generator, i))
+                i += 1
             
             data_generator.clear_current_record_state()
         

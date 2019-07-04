@@ -14,9 +14,9 @@ common_data_generator = CommonDataGenerator()
 def process_domain_object(domain_obj_config):
     domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
     domain_obj = domain_obj_class()
-    total_record_count = int(domain_obj_config['file_count']) * int(domain_obj_config['max_objects_per_file'])
+    record_count = int(domain_obj_config['record_count'])
     custom_args = domain_obj_config['custom_args']
-    return domain_obj.generate(common_data_generator, total_record_count, custom_args)
+    return domain_obj.generate(common_data_generator, record_count, custom_args)
 
 def get_file_builder_config(file_builders, file_builder_name):
     return list(filter(lambda file_builder: file_builder['name'] == file_builder_name, file_builders))[0]
