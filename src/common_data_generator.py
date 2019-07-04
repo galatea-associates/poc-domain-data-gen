@@ -338,6 +338,9 @@ class CommonDataGenerator:
         """
         return random.choice(['Credit', 'Debit'])
 
+    def generate_long_short(self):
+        return random.choice(['Long', 'Short'])
+
     def generate_qty(self, min_qty=1, max_qty=21):
         return random.choice([n * 100 for n in range(min_qty, max_qty)])
 
