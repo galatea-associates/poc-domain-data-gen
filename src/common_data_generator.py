@@ -64,7 +64,7 @@ class CommonDataGenerator:
                     partial(self.generate_asset_class, generating_inst=True))
 
         if asset_class is 'Cash':
-            return 0
+            return ''
 
         if ticker is None:
             ticker = self.__get_preemptive_generation(
@@ -93,7 +93,7 @@ class CommonDataGenerator:
                 partial(self.generate_asset_class, generating_inst=True))
 
         if asset_class == 'Cash':
-            return 0
+            return ''
 
         if ticker is None:
             ticker = self.__get_preemptive_generation(
