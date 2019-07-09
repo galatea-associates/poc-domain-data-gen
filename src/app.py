@@ -45,13 +45,12 @@ def main():
     shared_domain_obj_args = config['shared_domain_object_args']
 
     for domain_object in domain_objects:     
-        logging.info("Generating %s object(s) of Domain Object %s",domain_object['record_count'],domain_object['module_name'])           
+        logging.info("Generating %s Object(s) of Domain Object %s in %s Format",domain_object['record_count'],domain_object['module_name'],domain_object['file_builder_name'])           
         domain_obj_result = process_domain_object(domain_object)
         file_builder_config = get_file_builder_config(file_builders, domain_object['file_builder_name'])      
         file_builder = get_file_builder(file_builder_config)      
         file_builder.build(domain_object['output_directory'], domain_object['file_name'], file_builder_config['file_extension'], 
             domain_obj_result, domain_object['max_objects_per_file']) 
-        logging.info("Generated %s object(s) of Domain Object %s",domain_object['record_count'],domain_object['module_name'])    
 
 if __name__ == '__main__':   
     main()
