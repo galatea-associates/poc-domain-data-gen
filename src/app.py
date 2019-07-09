@@ -4,6 +4,7 @@ import datetime
 import importlib
 import json
 import os
+import logging
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from functools import partial
@@ -34,6 +35,7 @@ def main():
     args = get_args()
     date = datetime.datetime.utcnow() - datetime.timedelta(days=4)
     common_data_generator.set_date(date)
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
     with open(args.config) as config_file:
         config = json.load(config_file)
@@ -42,12 +44,14 @@ def main():
     file_builders = config['file_builders']
     shared_domain_obj_args = config['shared_domain_object_args']
 
-    for domain_object in domain_objects:                
+    for domain_object in domain_objects:     
+        logging.info("Generating %s object(s) of Domain Object %s",domain_object['record_count'],domain_object['module_name'])           
         domain_obj_result = process_domain_object(domain_object)
         file_builder_config = get_file_builder_config(file_builders, domain_object['file_builder_name'])      
         file_builder = get_file_builder(file_builder_config)      
         file_builder.build(domain_object['output_directory'], domain_object['file_name'], file_builder_config['file_extension'], 
-            domain_obj_result, domain_object['max_objects_per_file'])    
+            domain_obj_result, domain_object['max_objects_per_file']) 
+        logging.info("Generated %s object(s) of Domain Object %s",domain_object['record_count'],domain_object['module_name'])    
 
 if __name__ == '__main__':   
     main()
