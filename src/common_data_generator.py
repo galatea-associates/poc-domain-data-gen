@@ -12,9 +12,23 @@ class CommonDataGenerator:
 
     def __init__(self):
         self.__update_timestamp = 0
-        self.__possible_ex_codes = ['L', 'N', 'OQ', 'SI', 'AL', 'VI', 'BB', 'BM', 'BR', 'BG', 'TC', 'TO', 'HK', 'SS',
-                                    'FR', 'BE', 'DE', 'JA', 'DE', 'IL', 'VX', 'MFM', 'PA', 'ME', 'NZ']
+        self.__possible_ex_codes = ['N','C','O','LN','L','T','R','FR','BE','DU','FF','VX','BN','FU','TO','NY']
         self.__possible_cois = ['US', 'GB', 'CA', 'FR', 'DE', 'CH', 'SG', 'JP']
+        # TODO: Alter lookup from Exchange to COI to COI to Exchange.
+        #self.__coi_to_exchange = {'US':['N','C','O'],
+        #                          'GB':['LN'],
+        #                          'CA':['L','T','R'],
+        #                          'FR':['FR'],
+        #                          'DE':['BE','DU','FF'],
+        #                          'CH':['VX','BN'],
+        #                          'JP':['FU','TO','NY']}
+        self.__exchange_to_coi = {'N':'US', 'C':'US', 'O':'US',
+                                  'LN':'GB',
+                                  'L':'CA', 'T':'CA', 'R':'CA',
+                                  'FR':'FR',
+                                  'BE':'DE','DU':'DE','FF':'DE',
+                                  'VX':'CH','BN':'CH',
+                                  'FU':'JP','TO':'JP','NY':'JP'}
         self.__tickers = self.__read_tickers_from_csv('tickers.csv')
         self.__date = None
         self.__curr_in_inst = []
@@ -174,10 +188,13 @@ class CommonDataGenerator:
             return None
 
         ric = random.choice(self.__rics_to_use)
+        ticker = ric.partition('.')[0]
+        exchange = ric.partition('.')[2]
         self.__rics_to_use.remove(ric)
         self.__rics_in_use.append(ric)
-        self.__current_record_state['ticker'] = ric.partition('.')[0]
-        self.__current_record_state['coi'] = ric.partition('.')[2]
+        self.__current_record_state['ticker'] = ticker
+        # TODO: Alter lookup from Exchange to COI to COI to Exchange.
+        self.__current_record_state['coi'] = self.__exchange_to_coi.get(exchange)
         return ric
 
     def generate_ticker(self, asset_class=None, ric=None, new_ric_generator=False, no_cash=False):
