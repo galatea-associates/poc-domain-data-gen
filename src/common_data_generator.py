@@ -177,6 +177,7 @@ class CommonDataGenerator:
         self.__rics_to_use.remove(ric)
         self.__rics_in_use.append(ric)
         self.__current_record_state['ticker'] = ric.partition('.')[0]
+        self.__current_record_state['coi'] = ric.partition('.')[2]
         return ric
 
     def generate_ticker(self, asset_class=None, ric=None, new_ric_generator=False, no_cash=False):
