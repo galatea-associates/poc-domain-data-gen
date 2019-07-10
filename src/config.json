@@ -5,7 +5,7 @@
         "record_count":"1000",
         "max_objects_per_file":"10000",
         "file_name":"instruments",
-        "file_builder_name":"JSON",
+        "file_builder_name":"JSONL",
         "output_directory":"out",
         "upload_to_google_drive":"false",
         "dummy_fields":[
@@ -20,7 +20,7 @@
         "record_count":"10",
         "max_objects_per_file":"10000",
         "file_name":"counterparties",
-        "file_builder_name":"JSON",
+        "file_builder_name":"JSONL",
         "output_directory":"out",
         "upload_to_google_drive":"false", 
         "dummy_fields":[
@@ -140,7 +140,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"swap_contracts",
-        "file_builder_name":"JSON",
+        "file_builder_name":"JSONL",
         "output_directory":"out",
         "upload_to_google_drive":"false",        
         "custom_args":{"swap_per_counterparty": {"min":"5", "max":"5"}},
@@ -156,7 +156,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"swap_positions",
-        "file_builder_name":"JSON",
+        "file_builder_name":"JSONL",
         "output_directory":"out",
         "upload_to_google_drive":"false",     
         "dummy_fields":[
@@ -174,7 +174,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"cashflows",
-        "file_builder_name":"JSON",
+        "file_builder_name":"JSONL",
         "output_directory":"out",
         "upload_to_google_drive":"false",    
         "dummy_fields":[
@@ -226,5 +226,11 @@
         "module_name":"xml_builder",
         "class_name":"XMLBuilder",
         "file_extension":".xml"        
+    },
+    {
+        "name" : "JSONL",
+        "module_name":"jsonl_builder",
+        "class_name":"JSONLBuilder",
+        "file_extension":".jsonl"        
     }
 ]}

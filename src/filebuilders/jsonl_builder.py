@@ -1,8 +1,9 @@
 from filebuilders.file_builder import FileBuilder
-import json
+from json.encoder import JSONEncoder
+import jsonlines
 import os
 
-class JSONBuilder(FileBuilder):
+class JSONLBuilder(FileBuilder):
 
     def build(self, output_dir, file_name, file_extension, data, max_objects_per_file):
         file_name = file_name + '_{0}' + file_extension
@@ -14,10 +15,11 @@ class JSONBuilder(FileBuilder):
         max_objects_per_file = int(max_objects_per_file)
         file_count = max(int(len(data) / max_objects_per_file), 1)
 
+        encoder = JSONEncoder(default=str)
         for i in range(0, file_count):
             current_slice = data[start : start + max_objects_per_file]
-            with open(os.path.join(output_dir, file_name.format(f'{i+1:03}')), 'w') as output_file:
-                json.dump(current_slice, output_file, default=str)
+            with jsonlines.open(os.path.join(output_dir, file_name.format(f'{i+1:03}')), mode='w', dumps=encoder.encode) as output_file:                
+                output_file.write_all(current_slice)
             
             start += max_objects_per_file
         
