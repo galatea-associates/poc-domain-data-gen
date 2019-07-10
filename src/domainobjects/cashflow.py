@@ -30,7 +30,7 @@ class Cashflow(Generatable):
                 
                 for date in date_range:  
                     if random.random() < (int(probability) / 100):
-                        data_generator.persist_to_current_record_state('effective_date', date)
+                        data_generator.persist_to_current_record_state('effective_date', date.date())
                         data_generator.persist_to_current_record_state('pay_date', pay_date_func(date))
                         records.append(self.generate_record(data_generator, i))     
                         i += 1 

@@ -29,7 +29,7 @@ class SwapPosition(Generatable):
                     data_generator.persist_to_current_record_state('position_type', position_type)
 
                     for date in (start_date + timedelta(n) for n in range(day_count)):
-                        data_generator.persist_to_current_record_state('effective_date', date)                                    
+                        data_generator.persist_to_current_record_state('effective_date', date.date())                                    
                         records.append(self.generate_record(data_generator, i))
                         i += 1
                 
@@ -43,8 +43,7 @@ class SwapPosition(Generatable):
                                 'field_type': 'id'},
             'ric': {'func': partial(data_generator.generate_ric, no_cash=True),
                     'args': ['asset_class']},
-            'swap_contract_id': {'func': partial(data_generator.retrieve_from_current_record_state, 'swap_contract_id')},
-            'instrument_id': {'func': partial(data_generator.retrieve_from_current_record_state, 'instrument_id')},
+            'swap_contract_id': {'func': partial(data_generator.retrieve_from_current_record_state, 'swap_contract_id')},           
             'position_type': {'func': partial(data_generator.retrieve_from_current_record_state, 'position_type')},
             'knowledge_date': {'func': data_generator.generate_knowledge_date},
             'effective_date': {'func': partial(data_generator.retrieve_from_current_record_state, 'effective_date')},
