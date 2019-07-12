@@ -31,7 +31,6 @@ pipeline {
                 sh """
                     #. venv/bin/activate
                     export PATH=${VIRTUAL_ENV}/bin:${PATH}
-                    clean
                     py.test --cov=$(NAME) --junitxml $(REPORT_DIR)/pytest.xml --cov-report html:$(REPORT_DIR)/coverage/index.html tests/unit/*
                 """
             }
