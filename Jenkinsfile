@@ -18,10 +18,10 @@ pipeline {
                 sh '''
                     echo ${SHELL}
                     [ -d venv ] && rm -rf venv
-                    virtualenv venv --python=python3.7
+                    virtualenv venv --python=python3.7.3
                     #. venv/bin/activate
                     export PATH=${VIRTUAL_ENV}/bin:${PATH}
-                    python3 -m pip install -r requirements.txt
+                    py -m pip install -r requirements.txt
                 '''
             }
         }
