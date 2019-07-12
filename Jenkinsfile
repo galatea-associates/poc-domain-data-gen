@@ -18,10 +18,10 @@ pipeline {
                 sh '''
                     echo ${SHELL}
                     [ -d venv ] && rm -rf venv
-                    virtualenv venv --python=python3.7.3
+                    virtualenv venv --python=python3.5
                     #. venv/bin/activate
                     export PATH=${VIRTUAL_ENV}/bin:${PATH}
-                    py -m pip install -r requirements.txt
+                    python3 -m pip install -r requirements.txt
                 '''
             }
         }
@@ -31,25 +31,8 @@ pipeline {
                 sh '''
                     #. venv/bin/activate
                     export PATH=${VIRTUAL_ENV}/bin:${PATH}
-                    py.test --cov=$(NAME) --junitxml $(REPORT_DIR)/pytest.xml --cov-report html:$(REPORT_DIR)/coverage/index.html tests/unit/*
+                    pytest tests/unit/test_*
                 '''
-            }
-
-            post {
-                always {
-                    junit keepLongStdio: true, testResults: 'report/pytext.xml'
-                    publishHTML target: [
-                        reportDir: 'report/coverage',
-                        reportFiles: 'index.hmtl',
-                        reportName: 'Coverage Report - Unit Test'
-                    ]
-                }
-            }
-        }
-
-        stage ('Cleanup') {
-            steps {
-                sh 'rm -rf venv'
             }
         }
 
