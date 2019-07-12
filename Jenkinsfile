@@ -20,7 +20,7 @@ pipeline {
                     [ -d venv ] && rm -rf venv
                     virtualenv venv --python=python3.7
                     #. venv/bin/activate
-                    export PATH=${VIRTUAL_END}/bin:${PATH}
+                    export PATH=${VIRTUAL_ENV}/bin:${PATH}
                     python3 -m pip install -r requirements.txt
                 """
             }
