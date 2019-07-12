@@ -15,24 +15,24 @@ pipeline {
 
         stage ('Install Requirements') {
             steps {
-                sh """
+                sh '''
                     echo ${SHELL}
                     [ -d venv ] && rm -rf venv
                     virtualenv venv --python=python3.7
                     #. venv/bin/activate
                     export PATH=${VIRTUAL_ENV}/bin:${PATH}
                     python3 -m pip install -r requirements.txt
-                """
+                '''
             }
         }
 
         stage ('Run Unit Tests') {
             steps {
-                sh """
+                sh '''
                     #. venv/bin/activate
                     export PATH=${VIRTUAL_ENV}/bin:${PATH}
                     py.test --cov=$(NAME) --junitxml $(REPORT_DIR)/pytest.xml --cov-report html:$(REPORT_DIR)/coverage/index.html tests/unit/*
-                """
+                '''
             }
 
             post {
