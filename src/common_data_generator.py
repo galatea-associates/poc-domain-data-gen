@@ -3,27 +3,27 @@ import string
 from functools import partial
 from datetime import datetime, timezone, timedelta
 import time
-# from pandas import Timestamp
 import pandas as pd
 # TODO: merge sedol and cusip dictionaries
 # TODO: check inst_id is unique
 
 
-class DataGenerator:
+class CommonDataGenerator:
 
     def __init__(self):
         self.__update_timestamp = 0
         self.__possible_ex_codes = ['L', 'N', 'OQ', 'SI', 'AL', 'VI', 'BB', 'BM', 'BR', 'BG', 'TC', 'TO', 'HK', 'SS',
                                     'FR', 'BE', 'DE', 'JA', 'DE', 'IL', 'VX', 'MFM', 'PA', 'ME', 'NZ']
         self.__possible_cois = ['US', 'GB', 'CA', 'FR', 'DE', 'CH', 'SG', 'JP']
-        self.__tickers = self.__read_tickers_from_csv('data_gen/src/tickers.csv')
+        self.__tickers = self.__read_tickers_from_csv('tickers.csv')
         self.__date = None
         self.__curr_in_inst = []
         self.__stock_loan_contract_ids = []
         self.__swap_contract_ids = []
         self.__per_ticker_info = {}
         self.__ticker_to_coi = {}
-        self.__state = {}
+        self.__current_record_state = {}
+        self.__global_state = {}
         self.__possible_currs = ['USD', 'CAD', 'EUR', 'GBP']
         self.__rics_to_use \
             = list(set([ticker + '.' + code for ticker in self.__tickers for code in self.__possible_ex_codes]))
@@ -33,25 +33,25 @@ class DataGenerator:
         return pd.read_csv(csv_file)['Symbol'].drop_duplicates().values.tolist()
 
     def state_contains_field(self, field_to_generate):
-        return field_to_generate in self.__state
+        return field_to_generate in self.__current_record_state
 
     def get_state_value(self, field_to_generate):
-        return self.__state[field_to_generate]
+        return self.__current_record_state[field_to_generate]
 
-    def clear_state(self):
-        self.__state = {}
+    def clear_current_record_state(self):
+        self.__current_record_state = {}
 
     def set_date(self, date):
         self.__date = date
 
     # TODO: change this to function calls, don't pass actual value
     def __get_preemptive_generation(self, field_name, field_value_gen):
-        if field_name not in self.__state:
+        if field_name not in self.__current_record_state:
             field_value = field_value_gen()
-            self.__state[field_name] = field_value
+            self.__current_record_state[field_name] = field_value
             return field_value
         else:
-            return self.__state[field_name]
+            return self.__current_record_state[field_name]
 
     def generate_cusip(self, n_digits=9, ticker=None, asset_class=None,
                        no_cash=False):
@@ -64,7 +64,7 @@ class DataGenerator:
                     partial(self.generate_asset_class, generating_inst=True))
 
         if asset_class is 'Cash':
-            return 0
+            return ''
 
         if ticker is None:
             ticker = self.__get_preemptive_generation(
@@ -93,7 +93,7 @@ class DataGenerator:
                 partial(self.generate_asset_class, generating_inst=True))
 
         if asset_class == 'Cash':
-            return 0
+            return ''
 
         if ticker is None:
             ticker = self.__get_preemptive_generation(
@@ -158,7 +158,7 @@ class DataGenerator:
         else:
             ric = random.choice(self.__rics_to_use)
 
-        self.__state['ticker'] = ric.partition('.')[0]
+        self.__current_record_state['ticker'] = ric.partition('.')[0]
         return ric
 
     def generate_new_ric(self, asset_class=None, no_cash=False):
@@ -176,7 +176,7 @@ class DataGenerator:
         ric = random.choice(self.__rics_to_use)
         self.__rics_to_use.remove(ric)
         self.__rics_in_use.append(ric)
-        self.__state['ticker'] = ric.partition('.')[0]
+        self.__current_record_state['ticker'] = ric.partition('.')[0]
         return ric
 
     def generate_ticker(self, asset_class=None, ric=None, new_ric_generator=False, no_cash=False):
@@ -337,6 +337,9 @@ class DataGenerator:
         Return: one of the following strings ['Credit', 'Debit']
         """
         return random.choice(['Credit', 'Debit'])
+
+    def generate_long_short(self):
+        return random.choice(['Long', 'Short'])
 
     def generate_qty(self, min_qty=1, max_qty=21):
         return random.choice([n * 100 for n in range(min_qty, max_qty)])
@@ -673,3 +676,22 @@ class DataGenerator:
         epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)  # use POSIX epoch
         posix_timestamp_micros = (now - epoch) // timedelta(microseconds=1)
         return posix_timestamp_micros
+
+    def persist_to_global_state(self, field_name, field_value):        
+        if field_name not in self.__global_state:
+            self.__global_state[field_name] = []            
+        
+        self.__global_state[field_name].append(field_value) 
+
+    def retrieve_from_global_state(self, field_name):    
+        return self.__global_state[field_name]
+
+    def persist_to_current_record_state(self, field_name, field_value):        
+        self.__current_record_state[field_name] = field_value
+
+    def retrieve_from_current_record_state(self, field_name):    
+        return self.__current_record_state[field_name]
+        
+        
+
+
