@@ -5,7 +5,7 @@
         "record_count":"1000",
         "max_objects_per_file":"10000",
         "file_name":"instruments",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false",
         "dummy_fields":[
@@ -20,7 +20,7 @@
         "record_count":"10",
         "max_objects_per_file":"10000",
         "file_name":"counterparties",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false", 
         "dummy_fields":[
@@ -32,10 +32,10 @@
     {
         "module_name":"back_office_position",
         "class_name":"BackOfficePosition",
-        "record_count":"1",
+        "record_count":"100",
         "max_objects_per_file":"10000",
         "file_name":"back_office_positions",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false",
         "dummy_fields":[
@@ -50,7 +50,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"cash_balances",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false",    
         "dummy_fields":[
@@ -65,7 +65,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"depot_positions",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false",   
         "dummy_fields":[
@@ -80,7 +80,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"front_office_positions",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false",    
         "dummy_fields":[
@@ -95,7 +95,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"order_executions",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false", 
         "dummy_fields":[
@@ -110,7 +110,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"prices",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false", 
         "dummy_fields":[
@@ -125,7 +125,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"stock_loan_positions",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false", 
         "dummy_fields":[
@@ -140,7 +140,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"swap_contracts",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false",        
         "custom_args":{"swap_per_counterparty": {"min":"5", "max":"5"}},
@@ -156,7 +156,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"swap_positions",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false",     
         "dummy_fields":[
@@ -174,7 +174,7 @@
         "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"cashflows",
-        "file_builder_name":"JSON",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false",    
         "dummy_fields":[
