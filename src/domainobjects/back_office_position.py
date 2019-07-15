@@ -12,7 +12,7 @@ class BackOfficePosition(Generatable):
             'effective_date': {'func': partial(data_generator.generate_effective_date,
                                                 n_days_to_add=3),
                                 'args': ['knowledge_date', 'position_type']},
-            'account': {'func': data_generator.generate_account},
+            'account': {'func': partial(data_generator.generate_account, no_ecp=True)},
             'direction': {'func': data_generator.generate_direction},
             'qty': {'func': data_generator.generate_qty},
             'purpose': {'func': partial(data_generator.generate_purpose, data_type='BOP')},
