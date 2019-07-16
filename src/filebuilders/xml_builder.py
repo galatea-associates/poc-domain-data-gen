@@ -6,7 +6,7 @@ from xml.dom.minidom import parseString
 
 class XMLBuilder(FileBuilder):
 
-    def build(self, output_dir, file_name, file_extension, data, max_objects_per_file):
+    def build(self, output_dir, file_name, file_extension, data, max_objects_per_file, root_element_name):
         file_name = file_name + '_{0}' + file_extension
 
         if not os.path.exists(output_dir):
