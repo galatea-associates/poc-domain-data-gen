@@ -1,4 +1,4 @@
-from domainobjects.generatable import Generatable
+from src.domainobjects.generatable import Generatable
 import random
 import pandas as pd
 import datetime
