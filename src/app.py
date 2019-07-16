@@ -4,7 +4,7 @@ import json
 import os
 import logging
 import pandas as pd
-from cache import Cache
+from src.cache import Cache
 
 def process_domain_object(domain_obj_config, cache):
     domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
