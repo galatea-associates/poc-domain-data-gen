@@ -34,7 +34,7 @@
     {
         "module_name":"back_office_position",
         "class_name":"BackOfficePosition",
-        "record_count":"1",
+        "record_count":"100",
         "max_objects_per_file":"10000",
         "file_name":"back_office_positions",
         "root_element_name":"back_office_positions",
