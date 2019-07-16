@@ -6,14 +6,12 @@ class Price(Generatable):
     
     def generate(self, record_count, custom_args):        
         records = []
+        instruments = self.cache.retrieve_from_cache('instruments')
                 
         for _ in range(0, record_count): 
-            asset_class = self.generate_asset_class()
-            ticker = self.generate_currency() if asset_class == 'Cash' else self.generate_ticker()       
-            exchange_code = '' if asset_class == 'Cash' else self.generate_exchange_code() 
-            ric = '' if asset_class == 'Cash' else self.generate_ric(ticker, exchange_code)                
+            instrument = random.choice(instruments)      
             records.append({
-                'ric': ric,
+                'ric': instrument['ric'],
                 'price': self.generate_random_decimal(),
                 'curr': self.generate_currency(),
                 'time_stamp': datetime.now()

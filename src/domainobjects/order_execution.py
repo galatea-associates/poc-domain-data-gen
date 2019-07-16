@@ -6,12 +6,10 @@ class OrderExecution(Generatable):
     
     def generate(self, record_count, custom_args):
         records = []
+        instruments = self.cache.retrieve_from_cache('instruments')
         
         for i in range(0, record_count):    
-            asset_class = self.generate_asset_class()
-            ticker = self.generate_currency() if asset_class == 'Cash' else self.generate_ticker()       
-            exchange_code = '' if asset_class == 'Cash' else self.generate_exchange_code()     
-            ric = '' if asset_class == 'Cash' else self.generate_ric(ticker, exchange_code)  
+            instrument = random.choice(instruments)
                 
             records.append({
                 'order_id': i,
@@ -21,7 +19,7 @@ class OrderExecution(Generatable):
                 'agent_id': self.generate_random_integer(length=7),
                 'price': self.generate_random_decimal(),
                 'curr': self.generate_currency(),
-                'ric': ric,
+                'ric': instrument['ric'],
                 'qty': self.generate_random_integer(),
                 'time_stamp': datetime.now(),
             })     

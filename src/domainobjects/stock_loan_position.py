@@ -7,19 +7,17 @@ class StockLoanPosition(Generatable):
 
     def generate(self, record_count, custom_args):
         records = []
+        instruments = self.cache.retrieve_from_cache('instruments')
         
-        for i in range(0, record_count):            
-            asset_class = self.generate_asset_class()        
-            ticker = self.generate_currency() if asset_class == 'Cash' else self.generate_ticker()       
-            exchange_code = '' if asset_class == 'Cash' else self.generate_exchange_code() 
-            ric = '' if asset_class == 'Cash' else self.generate_ric(ticker, exchange_code)  
+        for i in range(0, record_count):   
+            instrument = random.choice(instruments)      
             position_type = self.generate_position_type()
             knowledge_date = self.generate_knowledge_date() 
             collateral_type = self.generate_collateral_type()    
                 
             records.append({
                 'stock_loan_contract_id': i,
-                'ric': ric,
+                'ric': instrument['ric'],
                 'knowledge_date': knowledge_date,
                 'effective_date': self.generate_effective_date(0, knowledge_date, position_type),
                 'purpose': self.generate_purpose(),

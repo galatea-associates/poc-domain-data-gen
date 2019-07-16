@@ -9,7 +9,8 @@ class DepotPosition(Generatable):
         records = []        
         instruments = self.cache.retrieve_from_cache('instruments')
 
-        for instrument in instruments:           
+        for _ in range(0, record_count): 
+            instrument = random.choice(instruments)          
             position_type = self.generate_position_type()
             knowledge_date = self.generate_knowledge_date()
                 
