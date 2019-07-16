@@ -3,9 +3,7 @@ import importlib
 import json
 import os
 import logging
-from pydrive.auth import GoogleAuth
-from pydrive.drive import GoogleDrive
-from functools import partial
+import pandas as pd
 from cache import Cache
 
 def process_domain_object(domain_obj_config, cache):

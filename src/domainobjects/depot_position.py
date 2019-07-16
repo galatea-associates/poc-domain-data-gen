@@ -14,12 +14,10 @@ class DepotPosition(Generatable):
             knowledge_date = self.generate_knowledge_date()
                 
             records.append({
-                'isin': instrument['isin'],
-                'position_type': position_type,
+                'isin': instrument['isin'],                
                 'knowledge_date': knowledge_date,
                 'effective_date': self.generate_effective_date(3, knowledge_date, position_type),
-                'account': self.generate_account(),
-                'direction': self.generate_credit_debit(),
+                'account': self.generate_account(),               
                 'qty': self.generate_random_integer(),
                 'purpose': self.generate_purpose(),
                 'depot_id': self.generate_random_integer(length=5),

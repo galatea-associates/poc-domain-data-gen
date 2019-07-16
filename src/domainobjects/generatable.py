@@ -68,8 +68,8 @@ class Generatable(ABC):
     def generate_effective_date(self, n_days_to_add=3, knowledge_date=None, position_type=None):
         return knowledge_date if position_type == 'SD' else knowledge_date + timedelta(days=n_days_to_add)
 
-    def generate_account(self):
-        account_type = random.choice(['ICP', 'ECP'])
+    def generate_account(self, account_types=['ICP, ECP']):
+        account_type = random.choice(account_types)
         return account_type + ''.join([random.choice(string.digits) for _ in range(4)])      
        
     def generate_return_type(self):
