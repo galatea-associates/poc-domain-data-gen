@@ -1,26 +1,33 @@
 from domainobjects.generatable import Generatable
-from functools import partial
+from datetime import datetime
 
 class Instrument(Generatable):
-
-    def get_template(self, data_generator):
-        return {
-            'instrument_id': {'func': data_generator.generate_new_ric, 'field_type':'id'},
-            'ric': {'func': data_generator.generate_new_ric, 'args': ['asset_class']},
-            'isin': {'func': data_generator.generate_isin,
-                        'args': ['coi', 'cusip', 'asset_class'],
-                        'field_type':'shared'},
-            'sedol': {'func': data_generator.generate_sedol,
-                        'args': ['ticker', 'asset_class'],
-                        'field_type':'shared'},
-            'ticker': {'func': partial(data_generator.generate_ticker, new_ric_generator=True),
-                        'args': ['asset_class', 'ric'],
-                        'field_type':'shared'},
-            'cusip': {'func': data_generator.generate_cusip,
-                        'args': ['ticker', 'asset_class'],
-                        'field_type':'shared'},
-            'asset_class': {'func': partial(data_generator.generate_asset_class,
-                                            generating_inst=True)},
-            'coi': {'func': data_generator.generate_coi, 'args': ['asset_class']},
-            'time_stamp': {'func': data_generator.generate_time_stamp},
-        }
+    
+    def generate(self, record_count, custom_args):        
+        records = []
+        
+        for i in range(0, record_count):            
+            asset_class = self.generate_asset_class()         
+            ticker = self.generate_currency() if asset_class == 'Cash' else self.generate_ticker()
+            coi = '' if asset_class == 'Cash' else self.generate_coi()
+            exchange_code = '' if asset_class == 'Cash' else self.generate_exchange_code()
+            cusip = '' if asset_class == 'Cash' else str(self.generate_random_integer(length=9))
+            isin = '' if asset_class == 'Cash' else self.generate_isin(coi, cusip)
+            ric = '' if asset_class == 'Cash' else self.generate_ric(ticker, exchange_code)
+            sedol = '' if asset_class == 'Cash' else self.generate_random_integer(length=7)
+                
+            records.append({
+                'instrument_id':i+1,
+                'ric':ric,
+                'isin':isin,
+                'sedol':sedol,
+                'ticker':ticker,
+                'cusip':cusip,
+                'asset_class':asset_class,
+                'coi':coi,
+                'time_stamp':datetime.now()})
+        
+        self.cache.persist_to_cache('instruments', records)
+        return records
+   
+  

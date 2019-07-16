@@ -1,20 +1,31 @@
 from domainobjects.generatable  import Generatable
-from functools import partial
+from datetime import datetime
+import random
 
 class BackOfficePosition(Generatable):
-
-    def get_template(self, data_generator):
-        return {
-            'cusip': {'func': partial(data_generator.generate_cusip, no_cash=True),
-                    'args': ['ticker', 'asset_class']},
-            'position_type': {'func': data_generator.generate_position_type},
-            'knowledge_date': {'func': data_generator.generate_knowledge_date},
-            'effective_date': {'func': partial(data_generator.generate_effective_date,
-                                                n_days_to_add=3),
-                                'args': ['knowledge_date', 'position_type']},
-            'account': {'func': data_generator.generate_account},
-            'direction': {'func': data_generator.generate_direction},
-            'qty': {'func': data_generator.generate_qty},
-            'purpose': {'func': partial(data_generator.generate_purpose, data_type='BOP')},
-            'time_stamp': {'func': data_generator.generate_time_stamp},
-        }
+    
+    def generate(self, record_count, custom_args):
+        records = []
+        
+        for _ in range(0, record_count):            
+            asset_class = self.generate_asset_class()             
+            cusip = '' if asset_class == 'Cash' else str(self.generate_random_integer(length=9))
+            position_type = self.generate_position_type()
+            knowledge_date = self.generate_knowledge_date()
+                
+            records.append({
+                'cusip': cusip,
+                'position_type': position_type,
+                'knowledge_date': knowledge_date,
+                'effective_date': self.generate_effective_date(3, knowledge_date, position_type),
+                'account': self.generate_account(),
+                'direction': self.generate_credit_debit(),
+                'qty': self.generate_random_integer(),
+                'purpose': self.generate_purpose(),
+                'time_stamp': datetime.now(),
+            })        
+        
+        return records
+    
+    def generate_purpose(self):
+        return 'Outright'

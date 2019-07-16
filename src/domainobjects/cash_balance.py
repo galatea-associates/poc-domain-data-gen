@@ -1,13 +1,22 @@
 from domainobjects.generatable  import Generatable
-from functools import partial
+from datetime import datetime
+import random
 
 class CashBalance(Generatable):
+    
+    def generate(self, record_count, custom_args):
+        records = []        
 
-    def get_template(self, data_generator):
-        return {
-            'amount': {'func': data_generator.generate_qty},
-            'curr': {'func': data_generator.generate_currency},
-            'account_num': {'func': data_generator.generate_account_number},
-            'purpose': {'func': partial(data_generator.generate_purpose, data_type='C')},
-            'time_stamp': {'func': data_generator.generate_time_stamp},
-        }
+        for _ in range(0, record_count):                  
+            records.append({
+                'amount': self.generate_random_integer(),
+                'curr': self.generate_currency(),
+                'account_num': self.generate_random_integer(length=8),
+                'purpose': self.generate_purpose(),
+                'time_stamp': datetime.now(),
+            })        
+        
+        return records
+    
+    def generate_purpose(self):
+        return random.choice(['Cash Balance', 'P&L', 'Fees'])

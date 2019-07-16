@@ -1,19 +1,29 @@
 from domainobjects.generatable  import Generatable
-from functools import partial
+import random
+import string
+from datetime import datetime
 
 class Counterparty(Generatable):
+    
+    def generate(self, record_count, custom_args):        
+        records = []
+                
+        for i in range(0, record_count):                 
+            records.append({
+                'counterparty_id':i+1,
+                'counterparty_field1': self.generate_random_string(10),
+                'counterparty_field2': self.generate_random_string(10),
+                'counterparty_field3': self.generate_random_string(10),
+                'counterparty_field4': self.generate_random_string(10),
+                'counterparty_field5': self.generate_random_string(10),
+                'counterparty_field6': self.generate_random_string(10),
+                'counterparty_field7': self.generate_random_string(10),
+                'counterparty_field8': self.generate_random_string(10),
+                'counterparty_field9': self.generate_random_string(10),
+                'counterparty_field10': self.generate_random_string(10),
+                'time_stamp':datetime.now()})
+        
+        self.cache.persist_to_cache('counterparties', records)
+        return records
 
-    def get_template(self, data_generator):
-        return {
-            'counterparty_id': {'func': data_generator.generate_rdn, 'field_type': 'id'},
-            'counterparty_field1': {'func': data_generator.generate_rdn},
-            'counterparty_field2': {'func': data_generator.generate_rdn},
-            'counterparty_field3': {'func': data_generator.generate_rdn},
-            'counterparty_field4': {'func': data_generator.generate_rdn},
-            'counterparty_field5': {'func': data_generator.generate_rdn},
-            'counterparty_field6': {'func': data_generator.generate_rdn},
-            'counterparty_field7': {'func': data_generator.generate_rdn},
-            'counterparty_field8': {'func': data_generator.generate_rdn},
-            'counterparty_field9': {'func': data_generator.generate_rdn},
-            'counterparty_field10': {'func': data_generator.generate_rdn}
-        }
+   

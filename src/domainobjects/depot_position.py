@@ -1,21 +1,32 @@
 from domainobjects.generatable import Generatable
-from functools import partial
+from datetime import datetime
+import random
+import string
 
 class DepotPosition(Generatable):
+    
+    def generate(self, record_count, custom_args):
+        records = []        
+        instruments = self.cache.retrieve_from_cache('instruments')
 
-    def get_template(self, data_generator):
-        return {
-            'isin': {'func': partial(data_generator.generate_isin, no_cash=True),
-                    'args': ['coi', 'cusip', 'asset_class']},
-            'position_type': {'func': partial(data_generator.generate_position_type,
-                                            no_td=True)},
-            'knowledge_date': {'func': data_generator.generate_knowledge_date},
-            'effective_date': {'func': data_generator.generate_effective_date,
-                                'args': ['knowledge_date', 'position_type']},
-            'account': {'func': partial(data_generator.generate_account, no_ecp=True)},
-            'direction': {'func': data_generator.generate_direction},
-            'qty': {'func': data_generator.generate_qty},
-            'purpose': {'func': partial(data_generator.generate_purpose, data_type='DP')},
-            'depot_id': {'func': data_generator.generate_depot_id},
-            'time_stamp': {'func': data_generator.generate_time_stamp},
-        }
+        for instrument in instruments:           
+            position_type = self.generate_position_type()
+            knowledge_date = self.generate_knowledge_date()
+                
+            records.append({
+                'isin': instrument['isin'],
+                'position_type': position_type,
+                'knowledge_date': knowledge_date,
+                'effective_date': self.generate_effective_date(3, knowledge_date, position_type),
+                'account': self.generate_account(),
+                'direction': self.generate_credit_debit(),
+                'qty': self.generate_random_integer(),
+                'purpose': self.generate_purpose(),
+                'depot_id': self.generate_random_integer(length=5),
+                'time_stamp': datetime.now(),
+            })        
+        
+        return records
+    
+    def generate_purpose(self):
+        return random.choice(['Holdings', 'Seg'])

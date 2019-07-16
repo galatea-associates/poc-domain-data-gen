@@ -1,13 +1,21 @@
 from domainobjects.generatable import Generatable
-from functools import partial
+from datetime import datetime
+import random
 
 class Price(Generatable):
-
-    def get_template(self, data_generator):
-        return {
-            'ric': {'func': partial(data_generator.generate_ric, no_cash=True),
-                    'args': ['ticker', 'ric']},
-            'price': {'func': data_generator.generate_price, 'args': ['ticker']},
-            'curr': {'func': partial(data_generator.generate_currency, for_ticker=True)},
-            'update_time_stamp*': {'func': data_generator.generate_update_time_stamp}
-        }
+    
+    def generate(self, record_count, custom_args):        
+        records = []
+                
+        for _ in range(0, record_count): 
+            asset_class = self.generate_asset_class()
+            ticker = self.generate_currency() if asset_class == 'Cash' else self.generate_ticker()       
+            exchange_code = '' if asset_class == 'Cash' else self.generate_exchange_code() 
+            ric = '' if asset_class == 'Cash' else self.generate_ric(ticker, exchange_code)                
+            records.append({
+                'ric': ric,
+                'price': self.generate_random_decimal(),
+                'curr': self.generate_currency(),
+                'time_stamp': datetime.now()
+            })
+        return records

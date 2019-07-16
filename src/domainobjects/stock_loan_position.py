@@ -1,32 +1,62 @@
 from domainobjects.generatable import Generatable
 from functools import partial
+from datetime import datetime
+import random
 
 class StockLoanPosition(Generatable):
 
-    def get_template(self, data_generator):
-        return {
-            'stock_loan_contract_id': {
-                'func': data_generator.generate_new_stock_loan_contract_id
-            },
-            'ric': {'func': partial(data_generator.generate_ric, no_cash=True),
-                    'args': ['ticker', 'asset_class']},
-            'knowledge_date': {'func': data_generator.generate_knowledge_date},
-            'effective_date': {'func': data_generator.generate_effective_date,
-                                'args': ['knowledge_date', 'position_type']},
-            'purpose': {'func': partial(data_generator.generate_purpose, data_type='SL')},
-            'td_qty': {'func': data_generator.generate_qty},
-            'sd_qty': {'func': data_generator.generate_qty},
-            'collateral_type': {'func': data_generator.generate_collateral_type},
-            'haircut': {'func': data_generator.generate_haircut, 'args': ['collateral_type']},
-            'collateral_margin': {'func': data_generator.generate_collateral_margin,
-                                'args': ['collateral_type']},
-            'rebate_rate': {'func': data_generator.generate_rebate_rate,
-                            'args': ['collateral_type']},
-            'borrow_fee': {'func': data_generator.generate_borrow_fee,
-                        'args': ['collateral_type']},
-            'termination_date': {'func': data_generator.generate_termination_date},
-            'account': {'func': data_generator.generate_account},
-            'is_callable': {'func': data_generator.generate_is_callable},
-            'return_type': {'func': data_generator.generate_return_type},
-            'time_stamp': {'func': data_generator.generate_time_stamp},
-        }
+    def generate(self, record_count, custom_args):
+        records = []
+        
+        for i in range(0, record_count):            
+            asset_class = self.generate_asset_class()        
+            ticker = self.generate_currency() if asset_class == 'Cash' else self.generate_ticker()       
+            exchange_code = '' if asset_class == 'Cash' else self.generate_exchange_code() 
+            ric = '' if asset_class == 'Cash' else self.generate_ric(ticker, exchange_code)  
+            position_type = self.generate_position_type()
+            knowledge_date = self.generate_knowledge_date() 
+            collateral_type = self.generate_collateral_type()    
+                
+            records.append({
+                'stock_loan_contract_id': i,
+                'ric': ric,
+                'knowledge_date': knowledge_date,
+                'effective_date': self.generate_effective_date(0, knowledge_date, position_type),
+                'purpose': self.generate_purpose(),
+                'td_qty': self.generate_random_integer(),
+                'sd_qty': self.generate_random_integer(),
+                'collateral_type': collateral_type,
+                'haircut': self.generate_haircut(collateral_type),
+                'collateral_margin': self.generate_collateral_margin(collateral_type),
+                'rebate_rate': self.generate_rebate_rate(collateral_type),
+                'borrow_fee': self.generate_borrow_fee(collateral_type),
+                'termination_date': self.generate_termination_date(),
+                'account': self.generate_account(),
+                'is_callable': self.generate_random_boolean(),
+                'return_type': self.generate_return_type(),
+                'time_stamp': datetime.now()
+            })        
+        
+        return records
+    
+    def generate_haircut(self, collateral_type):      
+        return '2.00%' if collateral_type == 'Non Cash' else None
+    
+    def generate_collateral_margin(self, collateral_type): 
+        return '140.00%' if collateral_type == 'Cash' else None
+    
+    def generate_collateral_type(self):      
+        return random.choice(['Cash', 'Non Cash'])
+    
+    def generate_termination_date(self):
+        does_exist = random.choice([True, False])        
+        return None if not does_exist else self.generate_knowledge_date()
+        
+    def generate_rebate_rate(self, collateral_type):       
+        return '5.75%' if collateral_type == 'Cash' else None
+    
+    def generate_borrow_fee(self, collateral_type):      
+        return '4.00%'if collateral_type == 'Non Cash' else None
+    
+    def generate_purpose(self):      
+        return random.choice(['Borrow', 'Loan'])

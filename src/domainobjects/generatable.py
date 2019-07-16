@@ -1,73 +1,86 @@
 from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
 import random
+import string
 
-class Generatable(ABC):
+class Generatable(ABC):   
+
+    def __init__(self, cache): 
+        self.cache = cache
 
     @abstractmethod
-    def get_template(self, data_generator, custom_args):
-        pass
+    def generate(self, record_count, custom_args):
+       pass
+      
+    def generate_random_string(self, length):
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+     
+    def generate_random_boolean(self):
+        return random.choice([True, False])
     
-    def generate(self, data_generator, record_count, custom_args):
-        records = []
-        for i in range(0, record_count):
-            records.append(self.generate_record(data_generator, i + 1))
-            data_generator.clear_current_record_state()
-        
-        return records
+    def generate_random_date(self, from_year=2016, to_year=2017,
+                                 from_month=1, to_month=12,
+                                 from_day=1, to_day=28):
+        year = random.randint(from_year, to_year)
+        month = random.randint(from_month, to_month)
+        day = random.randint(from_day, to_day)
+        return datetime(year, month, day).date()
+    
+    def generate_random_integer(self, min=1, max=10000, length=None):        
+        if length is not None:
+            min = 10**(length-1)
+            max = (10**length)-1
 
-    def generate_record(self, data_generator, current_record):
-        data = {}
-        template = self.get_template(data_generator)
-        for field, field_data in template.items():
-            field_generator = field_data.get('func')
-            field_args = field_data.get('args')
-            field_type = field_data.get('field_type')
+        return random.randint(min,max) 
+    
+    def generate_random_decimal(self, min=10, max=10000, dp=2):          
+        return round(random.uniform(min, max), dp)
 
-            if field_type == "id":
-                data[field] = current_record                
-                data_generator.persist_to_global_state(field, current_record)   
-                continue
-            elif field_type == "key":
-                values = data_generator.retrieve_from_global_state(field)
-                data[field] = random.choice(values)   
-                continue
+    def generate_currency(self):
+        return random.choice(['USD', 'CAD', 'EUR', 'GBP'])
+    
+    def generate_asset_class(self):
+        return random.choice(['Stock', 'Cash'])
+    
+    def generate_ric(self, ticker, exchange_code):
+        return '{0}.{1}'.format(ticker, exchange_code)
+    
+    def generate_isin(self, coi, cusip):
+        return coi + cusip + '4'
+    
+    def generate_credit_debit(self):
+        return random.choice(['Credit', 'Debit'])
+    
+    def generate_long_short(self):
+        return random.choice(['Long', 'Short'])
+    
+    def generate_position_type(self, no_sd=False, no_td=False):
+        choices = ['SD', 'TD']
+        if no_sd:
+            choices.remove('SD')
+        if no_td:
+            choices.remove('TD')
+        return random.choice(choices)
+    
+    def generate_knowledge_date(self):
+        return datetime.today()
+    
+    def generate_effective_date(self, n_days_to_add=3, knowledge_date=None, position_type=None):
+        return knowledge_date if position_type == 'SD' else knowledge_date + timedelta(days=n_days_to_add)
 
-            if not self.__field_already_generated(field, data):
-                if self.__is_key(field, data):
-                    suffix = '*'
-                    field = self.__remove_asterisk_from_field_name(field)
-                else:
-                    suffix = ''
+    def generate_account(self):
+        account_type = random.choice(['ICP', 'ECP'])
+        return account_type + ''.join([random.choice(string.digits) for _ in range(4)])      
+       
+    def generate_return_type(self):
+        return random.choice(['Outstanding', 'Pending Return', 'Pending Recall',
+                              'Partial Return', 'Partial Recall', 'Settled'])
+     
+    def generate_ticker(self):
+        return random.choice(self.cache.retrieve_from_cache('tickers'))
 
-                if data_generator.state_contains_field(field):
-                    data[field + suffix] = data_generator.get_state_value(field)
-                elif 'args' in field_data:
-                    args_needed = field_args
-                    args_generated = self.__generate_args_for_generator_function(data_generator, args_needed, data)
-                    data[field + suffix] = field_generator(**args_generated)
-                else:
-                    data[field + suffix] = field_generator()
-        
-        return data
+    def generate_coi(self):
+        return random.choice(self.cache.retrieve_from_cache('cois'))
 
-    def __remove_asterisk_from_field_name(self, field):
-        return field.replace('*', '')
-
-    def __is_key(self, field, data):
-        return field + '*' in data
-
-    def __field_already_generated(self, field, data):
-        return field in data
-
-    def __generate_args_for_generator_function(self, data_generator, args_needed, data):
-        args_generated = {}
-        for field in args_needed:
-            if self.__field_already_generated(field, data):
-                args_generated[field] = data[field]
-            elif self.__is_key(field, data):
-                args_generated[field] = data[field + '*']
-            elif data_generator.state_contains_field(field):
-                args_generated[field] = data_generator.get_state_value(field)
-        return args_generated
-
-   
+    def generate_exchange_code(self):
+        return random.choice(self.cache.retrieve_from_cache('exchange_codes'))            
