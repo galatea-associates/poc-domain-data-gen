@@ -1,27 +1,30 @@
 import pytest
+import datetime
 from src.domainobjects import generatable as generator
 
+# Tests generation methods as provided by generatable #
 class Test_Shared_Generation_Methods(object):
 
-    # Investigate best way you can verify a variable is of Type #
     def test_generate_random_string(self):
-        return True
+        random_string = generator.Generatable.generate_random_string(self, 10)
+        assert isinstance(random_string, str)
 
-     # Investigate best way you can verify a variable is of Type #
     def test_generate_random_boolean(self):
-        return True
+        random_bool = generator.Generatable.generate_random_boolean(self)
+        assert isinstance(random_bool, bool)
     
-     # Investigate whether you can verify a Date is of type Datetime #
     def test_generate_random_date(self):
-        return True
+        random_date = generator.Generatable.generate_random_date(self)
+        assert isinstance(random_date, datetime.datetime)
     
-    # Investigate best way you can verify a variable is of Type #
     def test_generate_random_integer(self):
-        return True
+        random_integer = generator.Generatable.generate_random_integer(self)
+        assert isinstance(random_integer, int)
     
     # Investigate best way you can verify a variable is of Type #
     def test_generate_random_decimal(self):
-        return True
+        random_decimal = generator.Generatable.generate_random_decimal(self)
+        assert isinstance(random_decimal, float)
     
     def test_generate_currency(self):
         currency = generator.Generatable.generate_currency(self)
@@ -53,15 +56,18 @@ class Test_Shared_Generation_Methods(object):
     
     # Investigate whether you can verify a Date is of type Datetime #
     def test_generate_knowledge_date(self):
-        return True
+        knowledge_date = generator.Generatable.generate_knowledge_date(self)
+        assert isinstance(knowledge_date, datetime.datetime)
     
     # Investigate whether you can verify a Date is of type Datetime #
     def test_generate_effective_date(self):
-        return True
+        effective_date = generator.Generatable.generate_effective_date(self)
+        assert isinstance(effective_date, datetime.datetime)
     
     # Investigate ways to verify Account Type [ICP/ECP]RANDDIGIT #
     def test_generate_account(self):
-        return True
+        account = generator.Generatable.generate_account(self)
+        assert account[:3] in ['ICP','ECP']
     
     def test_generate_return_type(self):
         return_type = generator.Generatable.generate_return_type(self)
