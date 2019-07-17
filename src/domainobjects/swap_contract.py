@@ -1,4 +1,4 @@
-from src.domainobjects.generatable import Generatable
+from domainobjects.generatable import Generatable
 import random
 from datetime import datetime, timedelta
 

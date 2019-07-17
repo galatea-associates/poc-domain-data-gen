@@ -21,7 +21,6 @@ class Test_Shared_Generation_Methods(object):
         random_integer = generator.Generatable.generate_random_integer(self)
         assert isinstance(random_integer, int)
     
-    # Investigate best way you can verify a variable is of Type #
     def test_generate_random_decimal(self):
         random_decimal = generator.Generatable.generate_random_decimal(self)
         assert isinstance(random_decimal, float)
@@ -39,6 +38,7 @@ class Test_Shared_Generation_Methods(object):
         return True
     
     # Verify is is COI + CUSIP + '4' # 
+    # Provide mock COI, cusip, assert that a 4 is appended #
     def test_generate_isin(self):
         return True
     
@@ -54,17 +54,14 @@ class Test_Shared_Generation_Methods(object):
         position_type = generator.Generatable.generate_position_type(self)
         assert position_type in ['SD', 'TD']
     
-    # Investigate whether you can verify a Date is of type Datetime #
     def test_generate_knowledge_date(self):
         knowledge_date = generator.Generatable.generate_knowledge_date(self)
         assert isinstance(knowledge_date, datetime.datetime)
     
-    # Investigate whether you can verify a Date is of type Datetime #
     def test_generate_effective_date(self):
         effective_date = generator.Generatable.generate_effective_date(self)
         assert isinstance(effective_date, datetime.datetime)
     
-    # Investigate ways to verify Account Type [ICP/ECP]RANDDIGIT #
     def test_generate_account(self):
         account = generator.Generatable.generate_account(self)
         assert account[:3] in ['ICP','ECP']
