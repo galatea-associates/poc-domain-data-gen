@@ -69,7 +69,7 @@ TODO : Add more detail on how the upload to Google drive works, including the us
 The Galatea Jenkins server can be found at: https://jenkins.fuse.galatea-associates.com/.
 The FUSE-Test-Data-Gen job is the job for this project.
 #### Pipeline
-The Jenkins file defines a pipeline of the stages Jenkins will perform, the order in which to perform them, the commands required to execute them, as well as any options and environment details. The current stages in this project are:
+The Jenkinsfile defines a pipeline of the stages Jenkins will perform, the order in which to perform them, the commands required to execute them, as well as any options and environment details. The current stages in this project are:
 ##### Install Requirements
 Runs ```pip install -r requirements.txt``` to install the necessary plugins to the virtual environment.
 ##### Run Unit Tests
