@@ -4,5 +4,5 @@ import abc
 class FileBuilder(abc.ABC):
 
     @abc.abstractmethod
-    def build(self, output_dir, file_name, file_extension, data, objects_per_file, root_element_name):
+    def build(self, file_extension, data, domain_object):      
         pass

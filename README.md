@@ -29,21 +29,21 @@ The entire tool is driven by a JSON config file which contains a list of all dom
 
 ```json
 {
-    "module_name":"front_office_position",
-    "class_name":"FrontOfficePosition",
-    "record_count":"1",
-    "max_objects_per_file":"10",
-    "file_name":"front_office_positions",
-    "root_element_name":"front_office_positions",
-    "file_builder_name":"CSV",
+    "module_name":"instrument",
+    "class_name":"Instrument",
+    "record_count":"10",
+    "max_objects_per_file":"1000000",
+    "file_name":"instruments",
+    "root_element_name":"instruments",
+    "item_name":"instrument",
+    "file_builder_name":"XML",
     "output_directory":"out",
     "upload_to_google_drive":"false",
-    "custom_args":{"swap_per_counterparty": {"min":"5", "max":"5"}},
     "dummy_fields":[
         { "data_type": "string", "field_count" : "50" },
         { "data_type": "numeric", "field_count" : "50" }
     ],
-    "dependencies":["counterparty"]
+    "custom_args":{}
 }
 ```
 
