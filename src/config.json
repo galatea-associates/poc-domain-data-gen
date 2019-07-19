@@ -7,7 +7,7 @@
         "file_name":"instruments",
         "root_element_name":"instruments",
         "item_name":"instrument",
-        "file_builder_name":"XML",
+        "file_builder_name":"JSONL",
         "output_directory":"out",
         "upload_to_google_drive":"true",
         "dummy_fields":[
@@ -41,7 +41,7 @@
         "file_name":"back_office_positions",
         "root_element_name":"back_office_positions",
         "item_name":"back_office_position",
-        "file_builder_name":"XML",
+        "file_builder_name":"JSON",
         "output_directory":"out",
         "upload_to_google_drive":"false",
         "dummy_fields":[
@@ -58,7 +58,7 @@
         "file_name":"cash_balances",
         "root_element_name":"cash_balances",
         "item_name":"cash_balance",
-        "file_builder_name":"XML",
+        "file_builder_name":"CSV",
         "output_directory":"out",
         "upload_to_google_drive":"false",    
         "dummy_fields":[

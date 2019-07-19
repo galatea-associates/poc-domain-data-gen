@@ -43,15 +43,15 @@ def main():
     with open(args.config) as config_file:
         config = json.load(config_file)
 
-    domain_objects = config['domain_objects']
+    domain_object_configs = config['domain_objects']
     file_builders = config['file_builders']
     shared_domain_obj_args = config['shared_domain_object_args']
 
-    for domain_object in domain_objects:                
-        domain_obj_result = process_domain_object(domain_object, cache)
-        file_builder_config = get_file_builder_config(file_builders, domain_object['file_builder_name'])      
+    for domain_object_config in domain_object_configs:                
+        domain_obj_result = process_domain_object(domain_object_config, cache)
+        file_builder_config = get_file_builder_config(file_builders, domain_object_config['file_builder_name'])      
         file_builder = get_file_builder(file_builder_config)(google_drive_connector)     
-        file_builder.build(file_builder_config['file_extension'], domain_obj_result, domain_object)    
+        file_builder.build(file_builder_config['file_extension'], domain_obj_result, domain_object_config)    
 
 if __name__ == '__main__':   
     main()

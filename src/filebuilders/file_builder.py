@@ -8,7 +8,7 @@ class FileBuilder(abc.ABC):
         self.google_drive_connector = google_drive_connector
 
     @abc.abstractmethod
-    def build(self, file_extension, data, domain_object):      
+    def build(self, file_extension, data, domain_object_config):      
         pass
 
     def upload_to_google_drive(self, local_folder_name, file_name):        

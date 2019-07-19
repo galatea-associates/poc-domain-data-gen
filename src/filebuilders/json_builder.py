@@ -4,17 +4,17 @@ import os
 
 class JSONBuilder(FileBuilder):
 
-    def build(self, file_extension, data, domain_object):                       
-        file_name = domain_object['file_name'] + '_{0}' + file_extension
-        output_dir = domain_object['output_directory']
+    def build(self, file_extension, data, domain_object_config):                       
+        file_name = domain_object_config['file_name'] + '_{0}' + file_extension
+        output_dir = domain_object_config['output_directory']
 
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
         start = 0
-        max_objects_per_file = int(domain_object['max_objects_per_file'])
+        max_objects_per_file = int(domain_object_config['max_objects_per_file'])
         file_count = max(int(len(data) / max_objects_per_file), 1)
-        upload_to_google_drive = domain_object['upload_to_google_drive']
+        upload_to_google_drive = domain_object_config['upload_to_google_drive']
 
         for i in range(0, file_count):
             current_slice = data[start : start + max_objects_per_file]
