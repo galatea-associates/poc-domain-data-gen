@@ -9,7 +9,6 @@ venv
 *.so
 *.o
 out/*
-credentials.json
 token.json
 token.pickle
 .mypy_cache

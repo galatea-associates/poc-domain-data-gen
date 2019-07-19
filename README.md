@@ -77,4 +77,12 @@ The common data generator class contains functions to generate data that is shar
 
 ### Uploading to Google Drive
 The uploading of files to Google is optional and controlled at the domain object level.  This is configured by the "upload_to_google_drive" value (true or false), shown in the domain object configuration JSON above.
-TODO : Add more detail on how the upload to Google drive works, including the use of credentials.json
+
+An optional command line parameter --g-drive-root can be supplied, which represents the Google Drive ID of a folder where you would like the files uploaded to.  If this parameter isn't supplied, the files will be uploaded to the root of your own Google drive.
+
+When files are uploaded to Google drive, they will be uploaded into a folder with today's date (YYYY-MM-DD) as the name.  If the folder doesn't exist for today, it will be created.  If you are re-uploading the same files on a date where they have already been uploaded, the existing version(s) will be kept using the Google Drive versioning functionality.  To see the version history of a given file, you can right-click on a file in Google Drive and select "Manage Versions".
+
+When uploading to Google Drive for the first time, you will be required to login using your Galatea Google account, a browser window should automatically load to allow you do this.  Once you have done this, an authentication token file "token.pickle" will be downloaded onto your machine.  When running the service remotely, it is important to ensure that a valid token.pickle file exists in the same directory as the application.
+
+TODO: Investigate the use of the Google service accounts for Google Drive connectivity
+

@@ -29,7 +29,7 @@ class XMLBuilder(FileBuilder):
                 xml = xml.replace(' type=\"str\"', '').replace(' type=\"dict\"', '').replace(' type=\"int\"', '')
                 output_file.write(xml)
 
-            if upload_to_google_drive:
+            if upload_to_google_drive.upper() == 'TRUE':
                 self.upload_to_google_drive(output_dir, file_name)
 
             start += max_objects_per_file

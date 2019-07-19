@@ -45,8 +45,12 @@ class GoogleDriveConnector():
         return self.service.files().create(body=folder_metadata, fields='id').execute().get('id')    
 
     def get_folder_id(self, folder_name, parent_folder_id):
-        q = "mimeType='application/vnd.google-apps.folder' and name='{0}' and trashed=false and parents in '{1}'"
-        folders = self.service.files().list(q=q.format(folder_name, parent_folder_id),
+        q = "mimeType='application/vnd.google-apps.folder' and name='{0}' and trashed=false"
+        
+        if parent_folder_id is not None:
+            q +=  " and parents in '{0}'".format(parent_folder_id)
+        
+        folders = self.service.files().list(q=q.format(folder_name),
                                             spaces='drive',
                                             fields='nextPageToken, files(id, name)',
                                             ).execute().get('files', [])
@@ -54,8 +58,12 @@ class GoogleDriveConnector():
         return folders[0].get('id') if len(folders) > 0 else None
 
     def get_file_id(self, file_name, parent_folder_id):
-        q = "name='{0}' and trashed=false and parents in '{1}'"
-        files = self.service.files().list(q=q.format(file_name, parent_folder_id),
+        q = "name='{0}' and trashed=false"
+
+        if parent_folder_id is not None:
+            q +=  " and parents in '{0}'".format(parent_folder_id)
+
+        files = self.service.files().list(q=q.format(file_name),
                                             spaces='drive',
                                             fields='nextPageToken, files(id, name)',
                                             ).execute().get('files', [])

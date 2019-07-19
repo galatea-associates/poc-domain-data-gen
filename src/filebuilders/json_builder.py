@@ -22,7 +22,7 @@ class JSONBuilder(FileBuilder):
             with open(os.path.join(output_dir, file_name), 'w') as output_file:
                 json.dump(current_slice, output_file, default=str)
 
-            if upload_to_google_drive:
+            if upload_to_google_drive.upper() == 'TRUE':
                 self.upload_to_google_drive(output_dir, file_name)
             
             start += max_objects_per_file

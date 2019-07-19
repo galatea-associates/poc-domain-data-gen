@@ -24,7 +24,7 @@ class JSONLBuilder(FileBuilder):
             with jsonlines.open(os.path.join(output_dir, file_name), mode='w', dumps=encoder.encode) as output_file:                
                 output_file.write_all(current_slice)
 
-            if upload_to_google_drive:
+            if upload_to_google_drive.upper() == 'TRUE':
                 self.upload_to_google_drive(output_dir, file_name)
             
             start += max_objects_per_file

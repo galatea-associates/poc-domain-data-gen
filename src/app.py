@@ -24,7 +24,7 @@ def get_file_builder(file_builder_config):
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default=r'src\config.json', help='JSON config file location')
-    parser.add_argument('--g-drive-root', default='1LC173TFWejFn6U4enRvNR0cxlbhRrDAc', help='Google Drive root folder ID')
+    parser.add_argument('--g-drive-root', default='root', help='Google Drive root folder ID')
     return parser.parse_args()
 
 def initialise_cache(cache):
