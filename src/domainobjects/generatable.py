@@ -82,5 +82,5 @@ class Generatable(ABC):
     def generate_coi(self):
         return random.choice(self.cache.retrieve_from_cache('cois'))
 
-    def generate_exchange_code(self):
-        return random.choice(self.cache.retrieve_from_cache('exchange_codes'))            
+    def generate_exchange_country(self):
+        return random.choice(self.cache.retrieve_from_cache('exchanges_countries'))            

@@ -28,9 +28,9 @@ def get_args():
 def initialise_cache(cache):
     cache.persist_to_cache('currencies', ['USD', 'CAD', 'EUR', 'GBP'])
     cache.persist_to_cache('tickers', pd.read_csv('tickers.csv')['Symbol'].drop_duplicates().values.tolist())
-    cache.persist_to_cache('exchange_codes', ['L', 'N', 'OQ', 'SI', 'AL', 'VI', 'BB', 'BM', 'BR', 'BG', 'TC', 'TO', 'HK', 'SS',
-                                    'FR', 'BE', 'DE', 'JA', 'DE', 'IL', 'VX', 'MFM', 'PA', 'ME', 'NZ'])
-    cache.persist_to_cache('cois', ['US', 'GB', 'CA', 'FR', 'DE', 'CH', 'SG', 'JP'])
+    cache.persist_to_cache('exchanges_countries', 
+        [('L', 'UK'), ('N', 'US'),  ('O', 'US'), ('SI', 'SG'), ('VI', 'AT'), ('BM', 'DE'), ('BR', 'BE'), ('TO', 'CA'), ('HK', 'HK'), ('SS', 'CN'),
+                                    ('F', 'DE'), ('BE', 'DE'), ('PA', 'FR'), ('NZ', 'NZ')])
 
 def main():
     cache = Cache()
