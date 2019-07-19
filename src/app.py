@@ -4,7 +4,9 @@ import json
 import os
 import logging
 import pandas as pd
+from datetime import datetime
 from cache import Cache
+from google_drive_connector import GoogleDriveConnector
 
 def process_domain_object(domain_obj_config, cache):
     domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
@@ -17,12 +19,12 @@ def get_file_builder_config(file_builders, file_builder_name):
     return list(filter(lambda file_builder: file_builder['name'] == file_builder_name, file_builders))[0]
 
 def get_file_builder(file_builder_config):
-    file_builder_class = getattr(importlib.import_module('filebuilders.' + file_builder_config['module_name']), file_builder_config['class_name'])
-    return file_builder_class()
+    return getattr(importlib.import_module('filebuilders.' + file_builder_config['module_name']), file_builder_config['class_name'])    
 
 def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', default=r'src\config.json', help='JSON config file location')
+    parser.add_argument('--g-drive-root', default='1LC173TFWejFn6U4enRvNR0cxlbhRrDAc', help='Google Drive root folder ID')
     return parser.parse_args()
 
 def initialise_cache(cache):
@@ -33,9 +35,10 @@ def initialise_cache(cache):
     cache.persist_to_cache('cois', ['US', 'GB', 'CA', 'FR', 'DE', 'CH', 'SG', 'JP'])
 
 def main():
-    cache = Cache()
     args = get_args()  
+    cache = Cache()    
     initialise_cache(cache)
+    google_drive_connector = GoogleDriveConnector(args.g_drive_root)
 
     with open(args.config) as config_file:
         config = json.load(config_file)
@@ -47,9 +50,9 @@ def main():
     for domain_object in domain_objects:                
         domain_obj_result = process_domain_object(domain_object, cache)
         file_builder_config = get_file_builder_config(file_builders, domain_object['file_builder_name'])      
-        file_builder = get_file_builder(file_builder_config)      
+        file_builder = get_file_builder(file_builder_config)(google_drive_connector)      
         file_builder.build(domain_object['output_directory'], domain_object['file_name'], file_builder_config['file_extension'], 
-            domain_obj_result, domain_object['max_objects_per_file'], domain_object['root_element_name'])    
+            domain_obj_result, domain_object['max_objects_per_file'], domain_object['root_element_name'], bool(domain_object['upload_to_google_drive'])) 
 
 if __name__ == '__main__':   
     main()

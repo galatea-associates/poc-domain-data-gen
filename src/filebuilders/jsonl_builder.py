@@ -5,7 +5,7 @@ import os
 
 class JSONLBuilder(FileBuilder):
 
-    def build(self, output_dir, file_name, file_extension, data, max_objects_per_file, root_element_name):
+    def build(self, output_dir, file_name, file_extension, data, max_objects_per_file, root_element_name, upload_to_google_drive):
         file_name = file_name + '_{0}' + file_extension
 
         if not os.path.exists(output_dir):
@@ -18,8 +18,12 @@ class JSONLBuilder(FileBuilder):
         encoder = JSONEncoder(default=str)
         for i in range(0, file_count):
             current_slice = data[start : start + max_objects_per_file]
-            with jsonlines.open(os.path.join(output_dir, file_name.format(f'{i+1:03}')), mode='w', dumps=encoder.encode) as output_file:                
+            file_name = file_name.format(f'{i+1:03}')
+            with jsonlines.open(os.path.join(output_dir, file_name), mode='w', dumps=encoder.encode) as output_file:                
                 output_file.write_all(current_slice)
+
+            if upload_to_google_drive:
+                self.upload_to_google_drive(output_dir, file_name)
             
             start += max_objects_per_file
         
