@@ -29,5 +29,3 @@ class Instrument(Generatable):
         
         self.cache.persist_to_cache('instruments', records)
         return records
-   
-  

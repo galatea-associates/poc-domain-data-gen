@@ -10,5 +10,3 @@ class Cache:
 
     def retrieve_from_cache(self, field_name):    
         return self.__cache[field_name]
-
-   
