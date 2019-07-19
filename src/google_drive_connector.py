@@ -75,11 +75,9 @@ class GoogleDriveConnector():
         while response is None:
             status, response = request.next_chunk()
             if status:
-                print("Uploaded %d%%." % int(status.progress() * 100))
-        print("File created.")
+                print("Uploaded %d%%." % int(status.progress() * 100))        
 
     def update_file(self, file_path, file_name, file_id):
         file_location = os.path.join(file_path, file_name)      
         media_body = MediaFileUpload(file_location, resumable=True)    
-        self.service.files().update(fileId=file_id, media_body=media_body).execute()   
-        print("File updated.")
+        self.service.files().update(fileId=file_id, media_body=media_body).execute()           

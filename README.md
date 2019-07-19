@@ -29,14 +29,21 @@ The entire tool is driven by a JSON config file which contains a list of all dom
 
 ```json
 {
-    "module_name":"front_office_position",
-    "class_name":"FrontOfficePosition",
-    "file_count":"1",
-    "objects_per_file":"10",
-    "file_name":"front_office_positions",
-    "file_builder_name":"CSV",
+    "module_name":"instrument",
+    "class_name":"Instrument",
+    "record_count":"10",
+    "max_objects_per_file":"1000000",
+    "file_name":"instruments",
+    "root_element_name":"instruments",
+    "item_name":"instrument",
+    "file_builder_name":"XML",
     "output_directory":"out",
-    "upload_to_google_drive":"false"
+    "upload_to_google_drive":"false",
+    "dummy_fields":[
+        { "data_type": "string", "field_count" : "50" },
+        { "data_type": "numeric", "field_count" : "50" }
+    ],
+    "custom_args":{}
 }
 ```
 
@@ -52,6 +59,13 @@ Each file builder needs to contain the following config keys:
     "file_extension":".csv"        
 }
 ```
+
+### Specifying a custom config file
+By default, the application will run using the config.json file in the root of the src directory.  It is possible to maintain multiple config files and specify which to use via an optional command line argument.  For example, running the data generator as follows will use a custom JSON config file:
+
+```python src/app.py --config src/my_custom_config.json```
+
+Your custom config will need to contain at least one domain object configuration and one file builder configuration as show in the configuration section above.
 
 ### Running the data generator
 - Clone the repo

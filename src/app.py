@@ -50,9 +50,8 @@ def main():
     for domain_object in domain_objects:                
         domain_obj_result = process_domain_object(domain_object, cache)
         file_builder_config = get_file_builder_config(file_builders, domain_object['file_builder_name'])      
-        file_builder = get_file_builder(file_builder_config)(google_drive_connector)      
-        file_builder.build(domain_object['output_directory'], domain_object['file_name'], file_builder_config['file_extension'], 
-            domain_obj_result, domain_object['max_objects_per_file'], domain_object['root_element_name'], bool(domain_object['upload_to_google_drive'])) 
+        file_builder = get_file_builder(file_builder_config)(google_drive_connector)     
+        file_builder.build(file_builder_config['file_extension'], domain_obj_result, domain_object)    
 
 if __name__ == '__main__':   
     main()
