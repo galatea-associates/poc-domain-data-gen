@@ -10,13 +10,14 @@ import psutil
 from output_data_assembler import OutputDataAssembler
 import io
 import csv
+import sys
 
-def process_domain_object(domain_obj_config, cache):
+def process_domain_object(domain_obj_config, cache, domain_obj_id):
     domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
     domain_obj = domain_obj_class(cache)
     record_count = int(domain_obj_config['record_count'])
     custom_args = domain_obj_config['custom_args']
-    return domain_obj.generate(record_count, custom_args)
+    return domain_obj.generate(custom_args, domain_obj_id)
 
 def get_output_formatter_config(output_formatters, output_formatter_name):
     return list(filter(lambda output_formatter: output_formatter['name'] == output_formatter_name, output_formatters))[0]
@@ -52,7 +53,7 @@ def main():
     shared_domain_obj_args = config['shared_domain_object_args']
     assigned_RAM_MB = float(config['assigned_RAM_MB'])
 
-    for domain_object_config in domain_objects:                        
+    for domain_object_config in domain_objects:                  
         max_objects_per_file = int(domain_object_config['max_objects_per_file'])
         num_records =  int(domain_object_config['record_count'])
 
@@ -64,22 +65,26 @@ def main():
         file_name = domain_object_config['file_name']
         output_directory = domain_object_config['output_directory']
         file_extension = output_formatter_config['file_extension']
-        
-        domain_obj_result = process_domain_object(domain_object_config, cache)
+        print(file_name)
+
+        #domain_obj_result = process_domain_object(domain_object_config, cache)
+        domain_obj_result = []
         curr_process_mem = get_process_memory()
         if (curr_process_mem > assigned_RAM_MB):
             print("Warning, RAM allocated exceeded")
 
-        sample_record = domain_obj_result[0]
+        #sample_record = domain_obj_result[0]
+        sample_record = process_domain_object(domain_object_config, cache, 0)
         storage_used_for_single_record = output_data_assembler.get_predicted_mem_usage(num_records, assigned_RAM_MB, sample_record, output_formatter, file_extension)
         
         remaining_num_records = num_records
-        
+
         file_no = 1
         remainder = 0
+        domain_obj_id = 1
         while (True): 
-            output_file_name = setup_file_output(file_name, file_extension, file_no, output_directory, domain_obj_result[0], output_data_assembler)
-        
+            output_file_name = setup_file_output(file_name, file_extension, file_no, output_directory, sample_record, output_data_assembler)
+            print(output_file_name)
             if (remaining_num_records > max_objects_per_file):
                 remainder = remaining_num_records - max_objects_per_file
                 remaining_num_records = max_objects_per_file
@@ -87,7 +92,7 @@ def main():
             # Single file loop
             while (True):
                 print("Remaining num records: ", remaining_num_records, "/", num_records)
-                curr_partition, remaining_num_records = output_data_assembler.fill_partition(domain_obj_result, cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record)
+                curr_partition, remaining_num_records, domain_obj_id = output_data_assembler.fill_partition(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id)
                 output_data_assembler.compress_partition(curr_partition, output_file_name, output_directory)
                 curr_partition.clear()
                 if remaining_num_records == 0: break
@@ -97,8 +102,14 @@ def main():
             
             remaining_num_records = remainder
             remainder = 0
+            print("domain_obj_id ", domain_obj_id)
+            
             if (remaining_num_records == 0): break
             file_no = file_no + 1
+            
+        size_of_cache = __convert_bytes_to_MB(sys.getsizeof(cache))
+        print("Size of cache: ", size_of_cache, "MB")
+        print()
 
     print("Process Complete")
 
@@ -132,9 +143,9 @@ def get_process_memory():
 def file_size(file_path):
         if os.path.isfile(file_path):
             file_info = os.stat(file_path)
-            return convert_bytes(file_info.st_size)
+            return __convert_bytes_to_MB(file_info.st_size)
 
-def convert_bytes(num):
+def __convert_bytes_to_MB(num):
         return num/1000000
 
 if __name__ == '__main__':   

@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 class SwapContract(Generatable):
     
-    def generate(self, record_count, custom_args):
+    def generate(self, custom_args, swap_contract_id):
         # Get the existing swap contracts and the range of ins per swap counts
         counterparties = self.cache.retrieve_from_cache('counterparties')
         swap_per_counterparty_min = int(custom_args['swap_per_counterparty']['min'])
@@ -19,7 +19,7 @@ class SwapContract(Generatable):
                 start_date = self.generate_random_date()
                 status = self.generate_status()
                 records.append({
-                    'swap_contract_id': i,
+                    'swap_contract_id': swap_contract_id,
                     'counterparty_id': counterparty['counterparty_id'],
                     'swap_mnemonic': self.generate_random_string(10),
                     'is_short_mtm_financed': self.generate_random_boolean(),

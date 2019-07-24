@@ -35,13 +35,13 @@ class Compressor:
         finally:
             f.close()
 
-    def __convert_bytes(self, num):
+    def __convert_bytes_to_MB(self, num):
         return num/1000000
 
     def __file_size(self, file_path):
         if os.path.isfile(file_path):
             file_info = os.stat(file_path)
-            return self.__convert_bytes(file_info.st_size)
+            return self.__convert_bytes_to_MB(file_info.st_size)
 
     def __get_process_memory(self):
         process = psutil.Process(os.getpid())

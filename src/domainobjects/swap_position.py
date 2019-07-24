@@ -6,7 +6,7 @@ import pandas as pd
 
 class SwapPosition(Generatable):
     
-    def generate(self, record_count, custom_args):        
+    def generate(self, custom_args, swap_position_id):        
         swap_contracts = self.cache.retrieve_from_cache('swap_contracts')
         ins_per_swap_range = custom_args['ins_per_swap']
         records = []
@@ -26,7 +26,7 @@ class SwapPosition(Generatable):
                     quantity = self.generate_random_integer()
                     for date in date_range:                        
                         records.append({
-                            'swap_position_id': i,
+                            'swap_position_id': swap_position_id,
                             'ric': instrument['ric'],
                             'swap_contract_id': swap_contract['swap_contract_id'],           
                             'position_type': position_type,

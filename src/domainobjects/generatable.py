@@ -9,7 +9,7 @@ class Generatable(ABC):
         self.cache = cache
 
     @abstractmethod
-    def generate(self, record_count, custom_args):
+    def generate(self, custom_args, domain_obj_id):
        pass
       
     def generate_random_string(self, length):

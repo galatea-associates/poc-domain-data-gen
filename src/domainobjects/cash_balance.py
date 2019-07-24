@@ -4,14 +4,14 @@ import random
 
 class CashBalance(Generatable):
     
-    def generate(self, record_count, custom_args):                  
-        record = ({
+    def generate(self, custom_args, domain_obj_id):                  
+        record = {
             'amount': self.generate_random_integer(),
             'curr': self.generate_currency(),
             'account_num': self.generate_random_integer(length=8),
             'purpose': self.generate_purpose(),
             'time_stamp': datetime.now(),
-        })        
+        }       
         
         return record
     

@@ -1,12 +1,13 @@
-{ "domain_objects" : [
+{"domain_objects" : [
     {
         "module_name":"instrument",
         "class_name":"Instrument",
-        "record_count":"100",
-        "max_objects_per_file":"50",
+        "record_count":"10000",
+        "max_objects_per_file":"10000",
         "file_name":"instruments",
         "root_element_name":"instruments",
-        "file_builder_name":"CSV",
+        "item_name":"instrument",
+        "file_builder_name":"XML",
         "output_directory":"out",
         "upload_to_google_drive":"false",
         "dummy_fields":[
@@ -14,8 +15,126 @@
             { "data_type": "numeric", "field_count" : "50" }
         ],
         "custom_args":{}
+    },
+    {
+        "module_name":"counterparty",
+        "class_name":"Counterparty",
+        "record_count":"10000",
+        "max_objects_per_file":"10000",
+        "file_name":"counterparties",
+        "root_element_name":"counterparties",
+        "item_name":"counterparty",
+        "file_builder_name":"XML",
+        "output_directory":"out",
+        "upload_to_google_drive":"false", 
+        "dummy_fields":[
+            { "data_type": "string", "field_count" : "50" },
+            { "data_type": "numeric", "field_count" : "50" }
+        ],       
+        "custom_args":{}
+    },
+    {
+        "module_name":"back_office_position",
+        "class_name":"BackOfficePosition",
+        "record_count":"10000",
+        "max_objects_per_file":"10000",
+        "file_name":"back_office_positions",
+        "root_element_name":"back_office_positions",
+        "item_name":"back_office_position",
+        "file_builder_name":"XML",
+        "output_directory":"out",
+        "upload_to_google_drive":"false",
+        "dummy_fields":[
+            { "data_type": "string", "field_count" : "50" },
+            { "data_type": "numeric", "field_count" : "50" }
+        ],        
+        "custom_args":{}
+    },
+    {
+        "module_name":"cash_balance",
+        "class_name":"CashBalance",
+        "record_count":"10000",
+        "max_objects_per_file":"10000",
+        "file_name":"cash_balances",
+        "root_element_name":"cash_balances",
+        "item_name":"cash_balance",
+        "file_builder_name":"XML",
+        "output_directory":"out",
+        "upload_to_google_drive":"false",    
+        "dummy_fields":[
+            { "data_type": "string", "field_count" : "50" },
+            { "data_type": "numeric", "field_count" : "50" }
+        ],    
+        "custom_args":{}
+    },
+    {
+        "module_name":"depot_position",
+        "class_name":"DepotPosition",
+        "record_count":"10000",
+        "max_objects_per_file":"10000",
+        "file_name":"depot_positions",
+        "root_element_name":"depot_positions",
+        "item_name":"depot_position",
+        "file_builder_name":"XML",
+        "output_directory":"out",
+        "upload_to_google_drive":"false",   
+        "dummy_fields":[
+            { "data_type": "string", "field_count" : "50" },
+            { "data_type": "numeric", "field_count" : "50" }
+        ],     
+        "custom_args":{}
+    },
+    {
+        "module_name":"front_office_position",
+        "class_name":"FrontOfficePosition",
+        "record_count":"10000",
+        "max_objects_per_file":"10000",
+        "file_name":"front_office_positions",
+        "root_element_name":"front_office_positions",
+        "item_name":"front_office_position",
+        "file_builder_name":"XML",
+        "output_directory":"out",
+        "upload_to_google_drive":"false",    
+        "dummy_fields":[
+            { "data_type": "string", "field_count" : "50" },
+            { "data_type": "numeric", "field_count" : "50" }
+        ],    
+        "custom_args":{}
+    },  
+    {
+        "module_name":"order_execution",
+        "class_name":"OrderExecution",
+        "record_count":"10000",
+        "max_objects_per_file":"10000",
+        "file_name":"order_executions",
+        "root_element_name":"order_executions",
+        "item_name":"order_execution",
+        "file_builder_name":"XML",
+        "output_directory":"out",
+        "upload_to_google_drive":"false", 
+        "dummy_fields":[
+            { "data_type": "string", "field_count" : "50" },
+            { "data_type": "numeric", "field_count" : "50" }
+        ],       
+        "custom_args":{}
+    },
+    {
+        "module_name":"price",
+        "class_name":"Price",
+        "record_count":"10000",
+        "max_objects_per_file":"10000",
+        "file_name":"prices",
+        "root_element_name":"prices",
+        "item_name":"price",
+        "file_builder_name":"XML",
+        "output_directory":"out",
+        "upload_to_google_drive":"false", 
+        "dummy_fields":[
+            { "data_type": "string", "field_count" : "50" },
+            { "data_type": "numeric", "field_count" : "50" }
+        ],       
+        "custom_args":{}
     }
-
 ],
 "shared_domain_object_args" : [
     { "start_date" : "20190701" }
@@ -72,5 +191,5 @@
         "file_extension":".jsonl"        
     }
 ],
-"assigned_RAM_MB" : "1000"
+"assigned_RAM_MB" : "2000"
 }

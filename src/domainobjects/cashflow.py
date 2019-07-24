@@ -6,7 +6,7 @@ import calendar
 
 class Cashflow(Generatable):
     
-    def generate(self, record_count, custom_args):
+    def generate(self, custom_args, cashflow_id):
         cashflow_gen_args = custom_args['cashflow_generation']          
         records = []
         i = 1
@@ -23,7 +23,7 @@ class Cashflow(Generatable):
                     pay_date_func = self.get_pay_date_func(pay_date_period)                     
 
                     records.append({
-                        'cashflow_id': i,
+                        'cashflow_id': cashflow_id,
                         'swap_contract_id': swap_position['swap_contract_id'],
                         'ric': swap_position['ric'],
                         'cashflow_type': cashflow_gen_arg['cashFlowType'],
