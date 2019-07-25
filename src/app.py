@@ -5,19 +5,9 @@ import os
 import logging
 import pandas as pd
 from cache import Cache
-import gzip
-import psutil
+from memutil import MemUtil
 from output_data_assembler import OutputDataAssembler
-import io
-import csv
-import sys
-
-def process_domain_object(domain_obj_config, cache, domain_obj_id):
-    domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
-    domain_obj = domain_obj_class(cache)
-    record_count = int(domain_obj_config['record_count'])
-    custom_args = domain_obj_config['custom_args']
-    return domain_obj.generate(custom_args, domain_obj_id)
+from compressor import Compressor
 
 def get_output_formatter_config(output_formatters, output_formatter_name):
     return list(filter(lambda output_formatter: output_formatter['name'] == output_formatter_name, output_formatters))[0]
@@ -38,9 +28,22 @@ def initialise_cache(cache):
                                     'FR', 'BE', 'DE', 'JA', 'DE', 'IL', 'VX', 'MFM', 'PA', 'ME', 'NZ'])
     cache.persist_to_cache('cois', ['US', 'GB', 'CA', 'FR', 'DE', 'CH', 'SG', 'JP'])
 
+def get_file_name(domain_object_config, output_formatter_config, file_no):
+    config_file_name = domain_object_config['file_name']
+    output_directory = domain_object_config['output_directory']
+    file_extension = output_formatter_config['file_extension']
+    output_file_name = config_file_name + '_{0}' + file_extension + '.gz'
+    output_file_name = output_file_name.format(f'{file_no:03}')
+
+    return output_file_name
+
+def setup_file_output(file_extension, domain_obj_dict, file_name):
+    OutputDataAssembler.create_output_file(file_name) 
+    if (file_extension == ".csv"): 
+        OutputDataAssembler.write_csv_header(domain_obj_dict, file_name)
+
 def main():
     cache = Cache()
-    output_data_assembler = OutputDataAssembler()
     args = get_args()  
     initialise_cache(cache)
     
@@ -65,26 +68,22 @@ def main():
         file_name = domain_object_config['file_name']
         output_directory = domain_object_config['output_directory']
         file_extension = output_formatter_config['file_extension']
-        print(file_name)
 
-        #domain_obj_result = process_domain_object(domain_object_config, cache)
-        domain_obj_result = []
-        curr_process_mem = get_process_memory()
+        curr_process_mem = MemUtil.get_process_memory_MB()
         if (curr_process_mem > assigned_RAM_MB):
             print("Warning, RAM allocated exceeded")
 
-        #sample_record = domain_obj_result[0]
-        sample_record = process_domain_object(domain_object_config, cache, 0)
-        storage_used_for_single_record = output_data_assembler.get_predicted_mem_usage(num_records, assigned_RAM_MB, sample_record, output_formatter, file_extension)
+        sample_record = OutputDataAssembler.process_domain_object(domain_object_config, cache, 0)
+        storage_used_for_single_record = OutputDataAssembler.get_predicted_mem_for_single_record(assigned_RAM_MB, sample_record, output_formatter, file_extension)
         
         remaining_num_records = num_records
-
         file_no = 1
         remainder = 0
         domain_obj_id = 1
-        while (True): 
-            output_file_name = setup_file_output(file_name, file_extension, file_no, output_directory, sample_record, output_data_assembler)
-            print(output_file_name)
+        while (True):
+            file_name = get_file_name(domain_object_config, output_formatter_config, file_no) 
+            setup_file_output(file_extension, sample_record, file_name)
+            print(file_name)
             if (remaining_num_records > max_objects_per_file):
                 remainder = remaining_num_records - max_objects_per_file
                 remaining_num_records = max_objects_per_file
@@ -92,61 +91,23 @@ def main():
             # Single file loop
             while (True):
                 print("Remaining num records: ", remaining_num_records, "/", num_records)
-                curr_partition, remaining_num_records, domain_obj_id = output_data_assembler.fill_partition(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id)
-                output_data_assembler.compress_partition(curr_partition, output_file_name, output_directory)
-                curr_partition.clear()
+                curr_batch, remaining_num_records, domain_obj_id = OutputDataAssembler.fill_batch(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id)
+                Compressor.compress_batch(curr_batch, file_name, output_directory)
+                
+                curr_batch.clear()
                 if remaining_num_records == 0: break
             
-            storage_used_for_file = file_size(output_file_name) 
+            storage_used_for_file = MemUtil.get_file_size_MB(file_name) 
             print("Storage used for current file: ", storage_used_for_file , "MB")
             
             remaining_num_records = remainder
             remainder = 0
-            print("domain_obj_id ", domain_obj_id)
-            
             if (remaining_num_records == 0): break
-            file_no = file_no + 1
+            file_no += 1
             
-        size_of_cache = __convert_bytes_to_MB(sys.getsizeof(cache))
-        print("Size of cache: ", size_of_cache, "MB")
         print()
 
     print("Process Complete")
-
-def setup_file_output(file_name, file_extension, file_no, output_directory, domain_obj_dict, output_data_assembler):
-    output_file_name = file_name + '_{0}' + file_extension + '.gz'
-    output_file_name = output_file_name.format(f'{file_no:03}')
-    f = gzip.open(output_file_name, 'w').close()
-
-    if (file_extension == ".csv"):
-        write_header_csv(domain_obj_dict, output_file_name)
-
-    return output_file_name
-
-def write_header_csv(domain_obj_dict, output_file_name):
-    output = io.StringIO()    
-    dict_writer = csv.DictWriter(output, restval="-", fieldnames=domain_obj_dict.keys(), delimiter=',')
-    dict_writer.writeheader()
-    output.seek(0)
-    output_string = output.read()
-    open_file = gzip.open(output_file_name, 'a')
-    f = io.BufferedWriter(open_file)
-    try:
-        f.write(str(output_string).encode('utf-8'))
-    finally:
-        f.close()
-
-def get_process_memory():
-        process = psutil.Process(os.getpid())
-        return process.memory_info().rss/1000000 # MB
-
-def file_size(file_path):
-        if os.path.isfile(file_path):
-            file_info = os.stat(file_path)
-            return __convert_bytes_to_MB(file_info.st_size)
-
-def __convert_bytes_to_MB(num):
-        return num/1000000
 
 if __name__ == '__main__':   
     main()
