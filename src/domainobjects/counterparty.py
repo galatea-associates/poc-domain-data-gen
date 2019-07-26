@@ -11,6 +11,7 @@ class Counterparty(Generatable):
         for i in range(0, record_count):                 
             records.append({
                 'counterparty_id':i+1,
+                'book':self.generate_random_string(5, include_numbers=False),
                 'counterparty_field1': self.generate_random_string(10),
                 'counterparty_field2': self.generate_random_string(10),
                 'counterparty_field3': self.generate_random_string(10),
