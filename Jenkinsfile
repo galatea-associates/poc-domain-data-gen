@@ -12,7 +12,8 @@ pipeline {
     }
 
     stages {
-
+        
+        // Virtual environments used to ensure a clean install on each run
         stage ('Set up Virtual Environment') {
             steps {
                 sh '''
