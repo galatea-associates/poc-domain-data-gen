@@ -22,7 +22,7 @@ def get_file_builder(file_builder_config):
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default=r'src\config.json', help='JSON config file location')
+    parser.add_argument('--config', default=os.path.join('src', 'config.json'), help='JSON config file location')
     return parser.parse_args()
 
 def initialise_cache(cache):
