@@ -8,13 +8,13 @@ class Instrument(Generatable):
         
         for i in range(0, record_count):            
             asset_class = self.generate_asset_class()         
-            ticker = self.generate_currency() if asset_class == 'Cash' else self.generate_ticker()
-            coi = '' if asset_class == 'Cash' else self.generate_coi()
-            exchange_code = '' if asset_class == 'Cash' else self.generate_exchange_code()
-            cusip = '' if asset_class == 'Cash' else str(self.generate_random_integer(length=9))
-            isin = '' if asset_class == 'Cash' else self.generate_isin(coi, cusip)
-            ric = '' if asset_class == 'Cash' else self.generate_ric(ticker, exchange_code)
-            sedol = '' if asset_class == 'Cash' else self.generate_random_integer(length=7)
+            ticker = self.generate_ticker()
+            coi = self.generate_coi()
+            exchange_code = self.generate_exchange_code()
+            cusip = str(self.generate_random_integer(length=9))
+            isin = self.generate_isin(coi, cusip)
+            ric = self.generate_ric(ticker, exchange_code)
+            sedol = self.generate_random_integer(length=7)
                 
             records.append({
                 'instrument_id':i+1,
@@ -30,4 +30,6 @@ class Instrument(Generatable):
         self.cache.persist_to_cache('instruments', records)
         return records
    
+    def generate_asset_class(self):
+        return 'Stock'
   
