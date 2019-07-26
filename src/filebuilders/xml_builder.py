@@ -2,11 +2,13 @@ from filebuilders.file_builder import FileBuilder
 import csv
 import os
 import dicttoxml
+import logging
 from xml.dom.minidom import parseString
 
 class XMLBuilder(FileBuilder):
 
-    def build(self, file_extension, data, domain_object_config):                       
+    def build(self, file_extension, data, domain_object_config):    
+        dicttoxml.LOG.setLevel(logging.ERROR)                   
         file_name = domain_object_config['file_name'] + '_{0}' + file_extension
         output_dir = domain_object_config['output_directory']              
         root_element_name = domain_object_config['root_element_name']              
