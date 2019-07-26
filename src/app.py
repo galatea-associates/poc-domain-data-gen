@@ -37,10 +37,18 @@ def get_file_name(domain_object_config, output_formatter_config, file_no):
 
     return output_file_name
 
-def setup_file_output(file_extension, domain_obj_dict, file_name):
+def setup_file_output(file_extension, domain_obj_dict, file_name, output_directory):
     OutputDataAssembler.create_output_file(file_name) 
     if (file_extension == ".csv"): 
-        OutputDataAssembler.write_csv_header(domain_obj_dict, file_name)
+        OutputDataAssembler.write_csv_header(domain_obj_dict, file_name, output_directory)
+
+def str_to_bool(s):
+    if s == 'True':
+         return True
+    elif s == 'False':
+         return False
+    else:
+         raise ValueError
 
 def main():
     cache = Cache()
@@ -73,27 +81,35 @@ def main():
         if (curr_process_mem > assigned_RAM_MB):
             print("Warning, RAM allocated exceeded")
 
+        print(file_name)
+        records_returned_as_list = str_to_bool(domain_object_config['returns_list'])
+        print("Records returned: ", records_returned_as_list)
+
         sample_record = OutputDataAssembler.process_domain_object(domain_object_config, cache, 0)
+        if (records_returned_as_list == True):
+            sample_record = sample_record[0]
+
         storage_used_for_single_record = OutputDataAssembler.get_predicted_mem_for_single_record(assigned_RAM_MB, sample_record, output_formatter, file_extension)
         
         remaining_num_records = num_records
         file_no = 1
         remainder = 0
         domain_obj_id = 1
-        while (True):
+        while (True): 
             file_name = get_file_name(domain_object_config, output_formatter_config, file_no) 
-            setup_file_output(file_extension, sample_record, file_name)
-            print(file_name)
+            setup_file_output(file_extension, sample_record, file_name, output_directory)
+            
             if (remaining_num_records > max_objects_per_file):
                 remainder = remaining_num_records - max_objects_per_file
                 remaining_num_records = max_objects_per_file
                 
-            # Single file loop
-            while (True):
+            while (True): # For each file
                 print("Remaining num records: ", remaining_num_records, "/", num_records)
-                curr_batch, remaining_num_records, domain_obj_id = OutputDataAssembler.fill_batch(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id)
+                if (records_returned_as_list == False):
+                    curr_batch, remaining_num_records, domain_obj_id = OutputDataAssembler.fill_batch_with_single_records(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id)
+                else :
+                    curr_batch, remaining_num_records, domain_obj_id = OutputDataAssembler.fill_batch_with_list_of_records(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id)
                 Compressor.compress_batch(curr_batch, file_name, output_directory)
-                
                 curr_batch.clear()
                 if remaining_num_records == 0: break
             

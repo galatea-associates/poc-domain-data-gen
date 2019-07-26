@@ -6,7 +6,6 @@ from datetime import datetime
 class Counterparty(Generatable):
     
     def generate(self, custom_args, domain_obj_id):        
-              
         record = {
             'counterparty_id':domain_obj_id,
             'counterparty_field1': self.generate_random_string(10),
@@ -21,7 +20,7 @@ class Counterparty(Generatable):
             'counterparty_field10': self.generate_random_string(10),
             'time_stamp':datetime.now()}
         
-        self.cache.persist_to_cache('counterparties', record)
+        self.cache.append_to_cache('counterparties', record)
         return record
 
    

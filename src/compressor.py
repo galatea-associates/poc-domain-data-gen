@@ -19,7 +19,7 @@ class Compressor(object):
         del batch
 
         print("Pre-compression process memory: ", MemUtil.get_process_memory_MB(), " MB")
-        cls.__compression(concatenated_records, file_name, output_directory)
+        cls.compress(concatenated_records, file_name, output_directory)
         concatenated_records = "" # Garbage Collection
         del concatenated_records
         print("Post compression process memory: ", MemUtil.get_process_memory_MB(), " MB")
@@ -27,7 +27,7 @@ class Compressor(object):
         return MemUtil.get_file_size_MB(file_name)
 
     @staticmethod
-    def __compression(concatenated_records, file_name, output_directory):
+    def compress(concatenated_records, file_name, output_directory):
         open_file = gzip.open(file_name, 'a')
         f = io.BufferedWriter(open_file)
         try:

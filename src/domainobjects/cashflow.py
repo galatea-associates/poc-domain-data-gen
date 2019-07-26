@@ -5,7 +5,7 @@ import datetime
 import calendar
 
 class Cashflow(Generatable):
-    
+
     def generate(self, custom_args, cashflow_id):
         cashflow_gen_args = custom_args['cashflow_generation']          
         records = []
