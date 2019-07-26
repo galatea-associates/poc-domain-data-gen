@@ -23,7 +23,7 @@ class SwapPosition(Generatable):
                 long_short =  self.generate_long_short()  
                 purpose = self.generate_purpose()  
                 for position_type in ['S', 'I', 'E']:
-                    quantity = self.generate_random_integer()
+                    quantity = self.generate_random_integer(negative=long_short.upper() == "SHORT")
                     for date in date_range:                        
                         records.append({
                             'swap_position_id': i,
@@ -34,7 +34,7 @@ class SwapPosition(Generatable):
                             'effective_date': date.date(),
                             'account': self.generate_account(),
                             'long_short': long_short,
-                            'qty': quantity,
+                            'td_quantity': quantity,
                             'purpose': purpose,
                             'time_stamp': datetime.now(),
                         })
