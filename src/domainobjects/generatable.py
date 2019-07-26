@@ -12,8 +12,15 @@ class Generatable(ABC):
     def generate(self, record_count, custom_args):
        pass
       
-    def generate_random_string(self, length):
-        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
+    def generate_random_string(self, length, include_letters=True, include_numbers=True):
+        choices = ''
+        if include_letters:
+            choices += string.ascii_uppercase
+
+        if include_numbers:
+            choices += string.digits
+
+        return ''.join(random.choices(choices, k=length))
      
     def generate_random_boolean(self):
         return random.choice([True, False])
@@ -26,12 +33,13 @@ class Generatable(ABC):
         day = random.randint(from_day, to_day)
         return datetime(year, month, day).date()
     
-    def generate_random_integer(self, min=1, max=10000, length=None):        
+    def generate_random_integer(self, min=1, max=10000, length=None, negative=False):        
         if length is not None:
             min = 10**(length-1)
             max = (10**length)-1
 
-        return random.randint(min,max) 
+        value = random.randint(min,max) 
+        return value if not negative else -value
     
     def generate_random_decimal(self, min=10, max=10000, dp=2):          
         return round(random.uniform(min, max), dp)
