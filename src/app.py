@@ -44,7 +44,10 @@ def main():
     file_builders = config['file_builders']
     shared_domain_obj_args = config['shared_domain_object_args']
 
+    logging.basicConfig(level=logging.INFO)
+
     for domain_object in domain_objects:                
+        logging.info("Generating %s Object(s) of Domain Object %s in %s Format",domain_object['record_count'],domain_object['module_name'],domain_object['file_builder_name'])
         domain_obj_result = process_domain_object(domain_object, cache)
         file_builder_config = get_file_builder_config(file_builders, domain_object['file_builder_name'])      
         file_builder = get_file_builder(file_builder_config)      
