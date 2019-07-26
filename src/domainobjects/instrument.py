@@ -8,9 +8,10 @@ class Instrument(Generatable):
         
         for i in range(0, record_count):            
             asset_class = self.generate_asset_class()         
-            ticker = self.generate_currency() if asset_class == 'Cash' else self.generate_ticker()
-            coi = '' if asset_class == 'Cash' else self.generate_coi()
-            exchange_code = '' if asset_class == 'Cash' else self.generate_exchange_code()
+            ticker = self.generate_currency() if asset_class == 'Cash' else self.generate_ticker()            
+            exchange_country = '' if asset_class == 'Cash' else self.generate_exchange_country()
+            exchange_code = '' if asset_class == 'Cash' else exchange_country[0]
+            coi = '' if asset_class == 'Cash' else exchange_country[1]            
             cusip = '' if asset_class == 'Cash' else str(self.generate_random_integer(length=9))
             isin = '' if asset_class == 'Cash' else self.generate_isin(coi, cusip)
             ric = '' if asset_class == 'Cash' else self.generate_ric(ticker, exchange_code)

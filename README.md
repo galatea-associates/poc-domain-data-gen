@@ -86,3 +86,14 @@ When uploading to Google Drive for the first time, you will be required to login
 
 TODO: Investigate the use of the Google service accounts for Google Drive connectivity
 
+### Jenkins Build
+The Galatea Jenkins server can be found at: https://jenkins.fuse.galatea-associates.com/.
+The FUSE-Test-Data-Gen job is the job for this project.
+#### Pipeline
+The Jenkinsfile defines a pipeline of the stages Jenkins will perform, the order in which to perform them, the commands required to execute them, as well as any options and environment details. The current stages in this project are:
+##### Install Requirements
+Runs ```pip install -r requirements.txt``` to install the necessary plugins to the virtual environment.
+##### Run Unit Tests
+Executes the tests as supplied in the ```tests/unit/``` directory. Names of test files must be preceeded with ```test_```
+#### Discovery Method
+The discovery method is set within the configuration of the job itself rather than any external file. It is currently set to scan the repo & run once daily if not otherwise executed. Branches are automatically detected if they contain a Jenkinsfile. 
