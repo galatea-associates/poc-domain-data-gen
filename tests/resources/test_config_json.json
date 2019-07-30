@@ -153,7 +153,7 @@
         "file_builder_name":"JSON",
         "output_directory":"tests/output",
         "upload_to_google_drive":"false",        
-        "custom_args":{"swap_per_counterparty": {"min":"5", "max":"5"}},
+        "custom_args":{"swap_per_counterparty": {"min":"1", "max":"1"}},
         "dummy_fields":[
             { "data_type": "string", "field_count" : "50" },
             { "data_type": "numeric", "field_count" : "50" }
@@ -175,8 +175,8 @@
             { "data_type": "numeric", "field_count" : "50" }
         ],   
         "custom_args": {
-            "start_date":"20190701", 
-            "ins_per_swap": {"min":"5", "max":"5"}
+            "start_date":"20190729", 
+            "ins_per_swap": {"min":"1", "max":"1"}
         }
     },
     {
@@ -210,7 +210,7 @@
             {
                 "cashFlowType": "EQUITY_PN_L",
                 "cashFlowAccrual": "CHANCE_ACCRUAL",
-                "cashFlowAccrualProbability": 60,
+                "cashFlowAccrualProbability": 100,
                 "cashFlowPaydatePeriod": "END_OF_MONTH"
             }]
         }
