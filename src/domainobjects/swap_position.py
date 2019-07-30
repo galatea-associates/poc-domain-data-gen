@@ -13,7 +13,8 @@ class SwapPosition(Generatable):
         i = 1
         all_instruments = self.cache.retrieve_from_cache('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
-        date_range = pd.date_range(start_date, datetime.today(), freq='D')        
+        end_date = datetime.today() if custom_args.get('end_date', '') == '' else datetime.strptime(custom_args['end_date'], '%Y%m%d')
+        date_range = pd.date_range(start_date, end_date, freq='D')        
         
         for swap_contract in swap_contracts:                                    
             ins_count = random.randint(int(ins_per_swap_range['min']), int(ins_per_swap_range['max']))
