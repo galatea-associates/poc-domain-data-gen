@@ -8,6 +8,7 @@ from cache import Cache
 from memutil import MemUtil
 from output_data_assembler import OutputDataAssembler
 from compressor import Compressor
+import time
 
 def get_output_formatter_config(output_formatters, output_formatter_name):
     return list(filter(lambda output_formatter: output_formatter['name'] == output_formatter_name, output_formatters))[0]
@@ -77,25 +78,21 @@ def main():
         output_directory = domain_object_config['output_directory']
         file_extension = output_formatter_config['file_extension']
 
-        curr_process_mem = MemUtil.get_process_memory_MB()
-        if (curr_process_mem > assigned_RAM_MB):
-            print("Warning, RAM allocated exceeded")
-
         print(file_name)
         records_returned_as_list = str_to_bool(domain_object_config['returns_list'])
-        print("Records returned: ", records_returned_as_list)
+        print("Records returned as list: ", records_returned_as_list)
 
         sample_record = OutputDataAssembler.process_domain_object(domain_object_config, cache, 0)
-        if (records_returned_as_list == True):
+        if (records_returned_as_list == True): # This needs tidying
             sample_record = sample_record[0]
 
-        storage_used_for_single_record = OutputDataAssembler.get_predicted_mem_for_single_record(assigned_RAM_MB, sample_record, output_formatter, file_extension)
+        storage_used_for_single_record = OutputDataAssembler.get_predicted_mem_for_single_record(sample_record, output_formatter)
         
         remaining_num_records = num_records
         file_no = 1
         remainder = 0
         domain_obj_id = 1
-        while (True): 
+        while (True):# Loop to cover all files for a single domain object 
             file_name = get_file_name(domain_object_config, output_formatter_config, file_no) 
             setup_file_output(file_extension, sample_record, file_name, output_directory)
             
@@ -103,13 +100,14 @@ def main():
                 remainder = remaining_num_records - max_objects_per_file
                 remaining_num_records = max_objects_per_file
                 
-            while (True): # For each file
+            while (True): # Loop for each individual file of a single domain object
+                start_time = time.time()
                 print("Remaining num records: ", remaining_num_records, "/", num_records)
-                if (records_returned_as_list == False):
-                    curr_batch, remaining_num_records, domain_obj_id = OutputDataAssembler.fill_batch_with_single_records(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id)
-                else :
-                    curr_batch, remaining_num_records, domain_obj_id = OutputDataAssembler.fill_batch_with_list_of_records(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id)
-                Compressor.compress_batch(curr_batch, file_name, output_directory)
+                curr_batch, remaining_num_records, domain_obj_id = OutputDataAssembler.fill_batch(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id, records_returned_as_list)
+                Compressor.compress(curr_batch, file_name, output_directory)
+                end_time = time.time()
+                time_elapsed = end_time - start_time
+                print("Time to write batch: ", time_elapsed)
                 curr_batch.clear()
                 if remaining_num_records == 0: break
             
