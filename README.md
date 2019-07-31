@@ -72,6 +72,23 @@ Your custom config will need to contain at least one domain object configuration
 - Set up the python environment: ```pip install -r requirements.txt```
 - Run src/app.py: ```python src/app.py```
 
+#### Command Line Arguments
+
+
+| Argument Name         | Optional? | Default Value | Description   |
+| ---                   | ---       | ---           | ---           |
+| --config              | Yes       | src\config.json
+| --file-builder-name   | Yes       | JSON
+| --output-directory    | Yes       | root |
+| --upload-to-gdrive    | Yes       | 
+| --gdrive-root         | Yes       |
+
+- --config', default=os.path.join('src', 'config.json'), help='JSON config file location')    
+- --file-builder-name', default='JSON', help='Name of the file builder module to use')
+- --output-directory', default='out', help='Local output directory')
+- --upload-to-gdrive', default='false', help='Upload to Google Drive (true/false)')
+- --gdrive-root', default='root', help='Google Drive root folder ID')
+
 ### Common Data Generator   
 The common data generator class contains functions to generate data that is shared across domain objects.  Templates for domain objects should reference functions within the common data generator class.
 
