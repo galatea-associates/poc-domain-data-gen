@@ -6,7 +6,7 @@ import logging
 import pandas as pd
 from cache import Cache
 from memutil import MemUtil
-from output_data_assembler import OutputDataAssembler
+from data_assembler import DataAssembler
 from compressor import Compressor
 import time
 
@@ -39,9 +39,9 @@ def get_file_name(domain_object_config, output_formatter_config, file_no):
     return output_file_name
 
 def setup_file_output(file_extension, domain_obj_dict, file_name, output_directory):
-    OutputDataAssembler.create_output_file(file_name) 
+    DataAssembler.create_output_file(file_name) 
     if (file_extension == ".csv"): 
-        OutputDataAssembler.write_csv_header(domain_obj_dict, file_name, output_directory)
+        DataAssembler.write_csv_header(domain_obj_dict, file_name, output_directory)
 
 def str_to_bool(s):
     if s == 'True':
@@ -82,11 +82,11 @@ def main():
         records_returned_as_list = str_to_bool(domain_object_config['returns_list'])
         print("Records returned as list: ", records_returned_as_list)
 
-        sample_record = OutputDataAssembler.process_domain_object(domain_object_config, cache, 0)
+        sample_record = DataAssembler.process_domain_object(domain_object_config, cache, 0)
         if (records_returned_as_list == True): # This needs tidying
             sample_record = sample_record[0]
 
-        storage_used_for_single_record = OutputDataAssembler.get_predicted_mem_for_single_record(sample_record, output_formatter)
+        storage_used_for_single_record = DataAssembler.get_predicted_mem_for_single_record(sample_record, output_formatter)
         
         remaining_num_records = num_records
         file_no = 1
@@ -103,7 +103,7 @@ def main():
             while (True): # Loop for each individual file of a single domain object
                 start_time = time.time()
                 print("Remaining num records: ", remaining_num_records, "/", num_records)
-                curr_batch, remaining_num_records, domain_obj_id = OutputDataAssembler.fill_batch(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id, records_returned_as_list)
+                curr_batch, remaining_num_records, domain_obj_id = DataAssembler.fill_batch(cache, output_formatter, assigned_RAM_MB, remaining_num_records, storage_used_for_single_record, domain_object_config, domain_obj_id, records_returned_as_list)
                 Compressor.compress(curr_batch, file_name, output_directory)
                 end_time = time.time()
                 time_elapsed = end_time - start_time
