@@ -22,3 +22,5 @@ class JSONBuilder(FileBuilder):
             
             start += max_objects_per_file
         
+    def append_data(self, data):        
+        self.file.write(json.dumps(data, default=str) + ',')

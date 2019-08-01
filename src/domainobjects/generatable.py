@@ -5,8 +5,9 @@ import string
 
 class Generatable(ABC):   
 
-    def __init__(self, cache): 
+    def __init__(self, cache, file_builder): 
         self.cache = cache
+        self.file_builder = file_builder
 
     @abstractmethod
     def generate(self, record_count, custom_args):

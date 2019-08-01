@@ -6,9 +6,9 @@ import logging
 import pandas as pd
 from cache import Cache
 
-def process_domain_object(domain_obj_config, cache):
+def process_domain_object(domain_obj_config, cache, file_builder):
     domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
-    domain_obj = domain_obj_class(cache)
+    domain_obj = domain_obj_class(cache, file_builder)
     record_count = int(domain_obj_config['record_count'])
     custom_args = domain_obj_config['custom_args']
     return domain_obj.generate(record_count, custom_args)
@@ -17,8 +17,7 @@ def get_file_builder_config(file_builders, file_builder_name):
     return list(filter(lambda file_builder: file_builder['name'] == file_builder_name, file_builders))[0]
 
 def get_file_builder(file_builder_config):
-    file_builder_class = getattr(importlib.import_module('filebuilders.' + file_builder_config['module_name']), file_builder_config['class_name'])
-    return file_builder_class()
+    return getattr(importlib.import_module('filebuilders.' + file_builder_config['module_name']), file_builder_config['class_name'])    
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -45,9 +44,9 @@ def main():
     shared_domain_obj_args = config['shared_domain_object_args']
 
     for domain_object in domain_objects:                
-        domain_obj_result = process_domain_object(domain_object, cache)
         file_builder_config = get_file_builder_config(file_builders, domain_object['file_builder_name'])      
-        file_builder = get_file_builder(file_builder_config)      
+        file_builder = get_file_builder(file_builder_config)(None, domain_object['output_directory'], domain_object['file_name'], file_builder_config['file_extension']) 
+        domain_obj_result = process_domain_object(domain_object, cache, file_builder)     
         file_builder.build(file_builder_config['file_extension'], domain_obj_result, domain_object)    
 
 if __name__ == '__main__':   
