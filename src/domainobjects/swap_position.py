@@ -10,6 +10,7 @@ class SwapPosition(Generatable):
         swap_contracts = self.cache.retrieve_from_cache('swap_contracts')
         ins_per_swap_range = custom_args['ins_per_swap']
         records = []
+        persisting = [] # Store only the critical attributes required to generate other domain objects
         i = 1
         all_instruments = self.cache.retrieve_from_cache('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
@@ -38,9 +39,18 @@ class SwapPosition(Generatable):
                             'purpose': purpose,
                             'time_stamp': datetime.now(),
                         })
+
+                        persisting.append({
+                            'swap_contract_id':swap_contract['swap_contract_id'],
+                            'ric':instrument['ric'],
+                            'position_type': position_type,
+                            'effective_date':date.date(),
+                            'long_short':long_short
+                        })
+                        
                         i += 1
         
-        self.cache.persist_to_cache('swap_positions', records)
+        self.cache.persist_to_cache('swap_positions', persisting)
         return records
     
     def generate_account(self):
