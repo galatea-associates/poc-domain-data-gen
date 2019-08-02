@@ -5,11 +5,14 @@ import random
 
 class StockLoanPosition(Generatable):
 
-    def generate(self, record_count, custom_args):
+    def generate(self, record_count, custom_args, domain_config, file_builder):
+        records_per_file = domain_config['max_objects_per_file']
+        file_num = 1
+        file_extension = "."+str(domain_config['file_builder_name']).lower()
         records = []
         instruments = self.dependency_db.retrieve_from_database('instruments')
         
-        for i in range(0, record_count):   
+        for i in range(1, record_count+1):   
             instrument = random.choice(instruments)      
             position_type = self.generate_position_type()
             knowledge_date = self.generate_knowledge_date() 
@@ -33,9 +36,15 @@ class StockLoanPosition(Generatable):
                 'is_callable': self.generate_random_boolean(),
                 'return_type': self.generate_return_type(),
                 'time_stamp': datetime.now()
-            })        
-        
-        return records
+            })
+
+            if (i % int(records_per_file) == 0):
+                file_builder.build(file_extension, file_num, records, domain_config)
+                file_num += 1
+                records = []        
+
+        if records != []: 
+            file_builder.build(file_extension, file_num, records, domain_config)
     
     def generate_haircut(self, collateral_type):      
         return '2.00%' if collateral_type == 'Non Cash' else None

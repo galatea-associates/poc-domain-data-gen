@@ -4,12 +4,17 @@ from datetime import datetime, timedelta
 
 class SwapContract(Generatable):
     
-    def generate(self, record_count, custom_args):
+    def generate(self, record_count, custom_args, domain_config, file_builder):
+        
         # Get the existing swap contracts and the range of ins per swap counts
         # counterparties = self.cache.retrieve_from_cache('counterparties')
         counterparties = self.dependency_db.retrieve_from_database('counterparties')
         swap_per_counterparty_min = int(custom_args['swap_per_counterparty']['min'])
         swap_per_counterparty_max = int(custom_args['swap_per_counterparty']['max'])
+        
+        records_per_file = domain_config['max_objects_per_file']
+        file_num = 1
+        file_extension = "."+str(domain_config['file_builder_name']).lower()
         records = []
         i = 1
 
@@ -44,9 +49,15 @@ class SwapContract(Generatable):
                 # TODO: FIX HERE
                 self.dependency_db.persist_to_database("swap_contracts","('"+str(i)+"')")
 
+                if (i % int(records_per_file) == 0):
+                    file_builder.build(file_extension, file_num, records, domain_config)
+                    file_num += 1
+                    records = []
+                
                 i += 1
         
-        return records   
+        if records != []: 
+            file_builder.build(file_extension, file_num, records, domain_config)  
     
     def generate_swap_end_date(self, years_to_add=5, start_date=None, status=None):
         return None if status == 'Live' else start_date + timedelta(days=365 * years_to_add)

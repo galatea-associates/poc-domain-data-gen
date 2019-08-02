@@ -5,8 +5,8 @@ import os
 
 class JSONLBuilder(FileBuilder):
 
-    def build(self, file_extension, data, domain_object):                       
-        file_name = domain_object['file_name'] + '_{0}' + file_extension
+    def build(self, file_extension, file_number, data, domain_object):                   
+        file_name = domain_object['file_name'] + '_' + str(file_number) + file_extension
         output_dir = domain_object['output_directory']
 
         if not os.path.exists(output_dir):

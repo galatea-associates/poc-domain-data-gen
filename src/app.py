@@ -15,7 +15,7 @@ def process_domain_object(domain_obj_config, cache, dependency_db,file_builder):
     domain_obj = domain_obj_class(cache, dependency_db, file_builder)
     record_count = int(domain_obj_config['record_count'])
     custom_args = domain_obj_config['custom_args']
-    return domain_obj.generate(record_count, custom_args)
+    domain_obj.generate(record_count, custom_args, domain_obj_config, file_builder)
 
 def get_file_builder_config(file_builders, file_builder_name):
     return list(filter(lambda file_builder: file_builder['name'] == file_builder_name, file_builders))[0]
@@ -37,9 +37,9 @@ def initialise_cache(cache):
 
 
 def main():
+    start_time = timeit.default_timer()
     cache = Cache()
     initialise_cache(cache)
-    process = psutil.Process(os.getpid())
     dependency_db = Sqlite_Database()
     
     args = get_args()  
@@ -50,18 +50,13 @@ def main():
     domain_objects = config['domain_objects']
     file_builders = config['file_builders']
 
-    for domain_object in domain_objects:     
-        start = timeit.default_timer()
+    for domain_object in domain_objects:
         file_builder_config = get_file_builder_config(file_builders, domain_object['file_builder_name'])      
         file_builder = get_file_builder(file_builder_config)(None, domain_object['output_directory'], domain_object['file_name'], file_builder_config['file_extension']) 
-        domain_obj_result = process_domain_object(domain_object, cache, dependency_db, file_builder)     
-        print("Memory pre build of: "+domain_object['class_name']+" is: "+str(process.memory_info().rss))
-        file_builder.build(file_builder_config['file_extension'], domain_obj_result, domain_object)
-        print("Memory post build of: "+domain_object['class_name']+" is: "+str(process.memory_info().rss))
-        end = timeit.default_timer()
-        print("Time to generate "+domain_object['class_name']+": "+str(end-start))
-  
-    dependency_db.commit_changes()
+        process_domain_object(domain_object, cache, dependency_db, file_builder)
+        dependency_db.commit_changes()
+    end_time = timeit.default_timer()
+    print("Run time: ", end_time-start_time)
 
 if __name__ == '__main__':   
     main()

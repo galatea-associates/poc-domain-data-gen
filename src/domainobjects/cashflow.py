@@ -6,7 +6,7 @@ import calendar
 
 class Cashflow(Generatable):
     
-    def generate(self, record_count, custom_args):
+    def generate(self, record_count, custom_args, domain_config, file_builder):
         cashflow_gen_args = custom_args['cashflow_generation']          
         records = []
         i = 1

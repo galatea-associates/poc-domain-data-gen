@@ -6,10 +6,15 @@ import pandas as pd
 
 class SwapPosition(Generatable):
     
-    def generate(self, record_count, custom_args):        
+    def generate(self, record_count, custom_args, domain_config, file_builder):        
         swap_contracts = self.dependency_db.retrieve_from_database('swap_contracts')
         ins_per_swap_range = custom_args['ins_per_swap']
+        
+        records_per_file = domain_config['max_objects_per_file']
+        file_num = 1
+        file_extension = "."+str(domain_config['file_builder_name']).lower()
         records = []
+
         i = 1
         all_instruments = self.dependency_db.retrieve_from_database('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
@@ -42,9 +47,16 @@ class SwapPosition(Generatable):
                         # TODO: FIX HERE
                         row_to_add = "('"+str(swap_contract['id'])+"','"+instrument['ric']+"','"+position_type+"','"+datetime.strftime(date.date(), '%Y%m%d')+"','"+str(long_short)+"')"
                         self.dependency_db.persist_to_database('swap_positions', row_to_add)
+                        
+                        if (i % int(records_per_file) == 0):
+                            file_builder.build(file_extension, file_num, records, domain_config)
+                            file_num += 1
+                            records = []
+                        
                         i += 1
 
-        return records
+        if records != []: 
+            file_builder.build(file_extension, file_num, records, domain_config)
     
     def generate_account(self):
         account_type = random.choice(['ICP', 'ECP'])
