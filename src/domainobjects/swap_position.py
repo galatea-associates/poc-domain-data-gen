@@ -7,18 +7,17 @@ import pandas as pd
 class SwapPosition(Generatable):
     
     def generate(self, record_count, custom_args):        
-        swap_contracts = self.cache.retrieve_from_cache('swap_contracts')
+        swap_contracts = self.dependency_db.retrieve_from_database('swap_contracts')
         ins_per_swap_range = custom_args['ins_per_swap']
         records = []
-        persisting = [] # Store only the critical attributes required to generate other domain objects
         i = 1
-        all_instruments = self.cache.retrieve_from_cache('instruments')
+        all_instruments = self.dependency_db.retrieve_from_database('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')        
         
         for swap_contract in swap_contracts:                                    
             ins_count = random.randint(int(ins_per_swap_range['min']), int(ins_per_swap_range['max']))
-            instruments = random.sample(all_instruments, ins_count)              
+            instruments = random.sample(all_instruments, ins_count) 
 
             for instrument in instruments:                                 
                 long_short =  self.generate_long_short()  
@@ -29,7 +28,7 @@ class SwapPosition(Generatable):
                         records.append({
                             'swap_position_id': i,
                             'ric': instrument['ric'],
-                            'swap_contract_id': swap_contract['swap_contract_id'],           
+                            'swap_contract_id': swap_contract['id'],           
                             'position_type': position_type,
                             'knowledge_date': date.date(),
                             'effective_date': date.date(),
@@ -39,18 +38,12 @@ class SwapPosition(Generatable):
                             'purpose': purpose,
                             'time_stamp': datetime.now(),
                         })
-
-                        persisting.append({
-                            'swap_contract_id':swap_contract['swap_contract_id'],
-                            'ric':instrument['ric'],
-                            'position_type': position_type,
-                            'effective_date':date.date(),
-                            'long_short':long_short
-                        })
                         
+                        # TODO: FIX HERE
+                        row_to_add = "('"+str(swap_contract['id'])+"','"+instrument['ric']+"','"+position_type+"','"+datetime.strftime(date.date(), '%Y%m%d')+"','"+str(long_short)+"')"
+                        self.dependency_db.persist_to_database('swap_positions', row_to_add)
                         i += 1
-        
-        self.cache.persist_to_cache('swap_positions', persisting)
+
         return records
     
     def generate_account(self):

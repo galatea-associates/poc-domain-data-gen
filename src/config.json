@@ -2,7 +2,7 @@
     {
         "module_name":"instrument",
         "class_name":"Instrument",
-        "record_count":"10",
+        "record_count":"10000",
         "max_objects_per_file":"1000000",
         "file_name":"instruments",
         "root_element_name":"instruments",
@@ -19,7 +19,7 @@
     {
         "module_name":"counterparty",
         "class_name":"Counterparty",
-        "record_count":"10",
+        "record_count":"150",
         "max_objects_per_file":"10000",
         "file_name":"counterparties",
         "root_element_name":"counterparties",
@@ -36,7 +36,7 @@
     {
         "module_name":"back_office_position",
         "class_name":"BackOfficePosition",
-        "record_count":"100",
+        "record_count":"1",
         "max_objects_per_file":"10000",
         "file_name":"back_office_positions",
         "root_element_name":"back_office_positions",
@@ -163,7 +163,7 @@
         "file_builder_name":"JSONL",
         "output_directory":"out",
         "upload_to_google_drive":"false",        
-        "custom_args":{"swap_per_counterparty": {"min":"5", "max":"5"}},
+        "custom_args":{"swap_per_counterparty": {"min":"1", "max":"10"}},
         "dummy_fields":[
             { "data_type": "string", "field_count" : "50" },
             { "data_type": "numeric", "field_count" : "50" }
@@ -187,7 +187,7 @@
         ],   
         "custom_args": {
             "start_date":"20190701", 
-            "ins_per_swap": {"min":"5", "max":"5"}
+            "ins_per_swap": {"min":"1", "max":"50"}
         }
     },
     {

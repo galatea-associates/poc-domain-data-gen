@@ -6,11 +6,11 @@ class SwapContract(Generatable):
     
     def generate(self, record_count, custom_args):
         # Get the existing swap contracts and the range of ins per swap counts
-        counterparties = self.cache.retrieve_from_cache('counterparties')
+        # counterparties = self.cache.retrieve_from_cache('counterparties')
+        counterparties = self.dependency_db.retrieve_from_database('counterparties')
         swap_per_counterparty_min = int(custom_args['swap_per_counterparty']['min'])
         swap_per_counterparty_max = int(custom_args['swap_per_counterparty']['max'])
         records = []
-        persisting = [] # Store only the critical attributes required to generate other domain objects
         i = 1
 
         # For each existing swap contract, put the SC ID in the cache and then generate a random number of positions for that SC ID
@@ -21,7 +21,7 @@ class SwapContract(Generatable):
                 status = self.generate_status()
                 records.append({
                     'swap_contract_id': i,
-                    'counterparty_id': counterparty['counterparty_id'],
+                    'counterparty_id': counterparty['id'],
                     'swap_mnemonic': self.generate_random_string(10),
                     'is_short_mtm_financed': self.generate_random_boolean(),
                     'accounting_area': self.generate_random_string(10),
@@ -41,13 +41,11 @@ class SwapContract(Generatable):
                     'time_stamp': datetime.now(),
                 })
 
-                persisting.append({
-                    'swap_contract_id':i
-                })
+                # TODO: FIX HERE
+                self.dependency_db.persist_to_database("swap_contracts","('"+str(i)+"')")
 
                 i += 1
         
-        self.cache.persist_to_cache('swap_contracts', persisting)
         return records   
     
     def generate_swap_end_date(self, years_to_add=5, start_date=None, status=None):

@@ -5,7 +5,8 @@ import string
 
 class Generatable(ABC):   
 
-    def __init__(self, cache, file_builder): 
+    def __init__(self, cache, dependency_db, file_builder): 
+        self.dependency_db = dependency_db
         self.cache = cache
         self.file_builder = file_builder
 

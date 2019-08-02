@@ -24,12 +24,10 @@ class Counterparty(Generatable):
                 'counterparty_field9': self.generate_random_string(10),
                 'counterparty_field10': self.generate_random_string(10),
                 'time_stamp':datetime.now()})
+            
+            # TODO: FIX HERE
+            self.dependency_db.persist_to_database("counterparties","('"+str(i+1)+"')")
 
-            persisting.append({
-                'counterparty_id':i+1
-            })
-
-        self.cache.persist_to_cache('counterparties', persisting)
         return records
 
    

@@ -7,7 +7,7 @@ class StockLoanPosition(Generatable):
 
     def generate(self, record_count, custom_args):
         records = []
-        instruments = self.cache.retrieve_from_cache('instruments')
+        instruments = self.dependency_db.retrieve_from_database('instruments')
         
         for i in range(0, record_count):   
             instrument = random.choice(instruments)      

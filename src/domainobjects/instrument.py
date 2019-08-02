@@ -5,7 +5,6 @@ class Instrument(Generatable):
     
     def generate(self, record_count, custom_args):        
         records = []
-        persisting = [] # Store only the critical attributes required to generate other domain objects
 
         for i in range(0, record_count):            
             asset_class = self.generate_asset_class()         
@@ -28,13 +27,10 @@ class Instrument(Generatable):
                 'coi':coi,
                 'time_stamp':datetime.now()})
 
-            persisting.append({
-                'ric':ric,
-                'cusip':cusip,
-                'isin':isin
-            })
-        
-        self.cache.persist_to_cache('instruments', persisting)
+            
+            # TODO: FIX HERE
+            self.dependency_db.persist_to_database("instruments","('"+ric+"','"+cusip+"','"+isin+"')")
+
         return records
    
     def generate_asset_class(self):
