@@ -187,7 +187,7 @@
             { "data_type": "numeric", "field_count" : "50" }
         ],   
         "custom_args": {
-            "start_date":"20190803", 
+            "start_date":"20090731", 
             "ins_per_swap": {"min":"1", "max":"100"}
         }
     },
@@ -207,7 +207,7 @@
             { "data_type": "string", "field_count" : "50" },
             { "data_type": "numeric", "field_count" : "50" }
         ],       
-        "custom_args": { "start_date":"20190803", 
+        "custom_args": { "start_date":"20090731", 
             "cashflow_generation" : [
             {
                 "cashFlowType": "INT_1",
@@ -250,7 +250,7 @@
 
 ],
 "shared_domain_object_args" : [
-    { "start_date" : "20190803" }
+    { "start_date" : "20090731" }
 ],
 "file_builders" : [
     {
