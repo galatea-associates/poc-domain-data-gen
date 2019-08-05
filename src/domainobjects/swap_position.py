@@ -20,11 +20,10 @@ class SwapPosition(Generatable):
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')        
         
-        batch_size = int(records_per_file)
+        batch_size = domain_config['batch_size']
         offset = 0
 
         while True:
-            batch_start_time = timeit.default_timer()
             swap_contract_batch = self.dependency_db.retrieve_batch_from_database('swap_contracts', batch_size, offset)
             offset += batch_size
 
@@ -56,15 +55,13 @@ class SwapPosition(Generatable):
                             row_to_add = "('"+str(swap_contract['id'])+"','"+instrument['ric']+"','"+position_type+"','"+datetime.strftime(date.date(), '%Y%m%d')+"','"+str(long_short)+"')"
                             # TODO: Alter query to only persist those with position type "E", remove for loop from cashflow generation referencing the same
                             self.dependency_db.persist_to_database('swap_positions', row_to_add)
-                            
+
                             if (i % int(records_per_file) == 0):
                                 file_builder.build(file_extension, file_num, records, domain_config)
                                 file_num += 1
                                 records = []
                             
                             i += 1
-            batch_end_time = timeit.default_timer()
-            print ("Swap Position Batch: "+str(file_num)+" took "+str(batch_end_time-batch_start_time))
             if not swap_contract_batch:
                 break
 

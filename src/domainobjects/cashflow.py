@@ -16,11 +16,10 @@ class Cashflow(Generatable):
         records = []
         i = 1
 
-        batch_size = int(records_per_file)
+        batch_size = domain_config['batch_size']
         offset = 0
 
         while True: 
-            batch_start_time = timeit.default_timer()
             swap_position_batch = self.dependency_db.retrieve_batch_from_database('swap_positions', batch_size, offset)
             offset += batch_size
 
@@ -43,7 +42,7 @@ class Cashflow(Generatable):
                             'ric': swap_position['ric'],
                             'cashflow_type': cashflow_gen_arg['cashFlowType'],
                             'pay_date': pay_date_func(effective_date),
-                            'effective_date': effective_date,
+                            'effective_date': effective_date_,
                             'currency': self.generate_currency(),
                             'amount': self.generate_random_integer(),
                             'long_short': swap_position['long_short'] 
@@ -55,8 +54,6 @@ class Cashflow(Generatable):
                             records = []
 
                         i+=1 
-            batch_end_time = timeit.default_timer()
-            print ("Cashflow Batch: "+str(file_num)+" took "+str(batch_end_time-batch_start_time))
             if not swap_position_batch:
                 break
         
@@ -67,7 +64,7 @@ class Cashflow(Generatable):
         return date(d.year, d.month, calendar.monthrange(d.year, d.month)[-1])
     
     def calc_eoh(self, d):
-        return date(d.year, 6, 30) if d.month <= 6 else datetime.date(d.year, 12, 31)
+        return date(d.year, 6, 30) if d.month <= 6 else date(d.year, 12, 31)
     
     def get_pay_date_func(self, pay_date_period):
         return {
