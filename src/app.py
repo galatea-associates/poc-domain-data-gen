@@ -6,7 +6,6 @@ import timeit
 import sqlite3
 import logging
 import pandas as pd
-import psutil
 from cache import Cache
 from sqlite_database import Sqlite_Database
 
