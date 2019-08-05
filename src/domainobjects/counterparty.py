@@ -33,7 +33,7 @@ class Counterparty(Generatable):
                 file_num += 1
                 records = []
 
-            # TODO: FIX HERE
+            # TODO: FIX HERE: Add query construction to persisting function
             self.dependency_db.persist_to_database("counterparties","('"+str(i+1)+"')")
 
         if records != []: 

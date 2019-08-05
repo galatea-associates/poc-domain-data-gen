@@ -13,21 +13,21 @@ class Sqlite_Database:
         swap_contract_dict = {"id":"integer"}
         swap_position_dict = {"swap_contract_id":"integer", "ric":"text", "position_type":"text", "effective_date":"text","long_short":"text"}
         
-        table_dicts = {
+        tables_dict = {
             "instruments":instrument_dict,
             "counterparties":counterparty_dict,
             "swap_contracts":swap_contract_dict,
             "swap_positions":swap_position_dict            
         }
 
-        for table_name, table_dict in table_dicts.items():
+        for table_name, table_dict in tables_dict.items():
             self.drop_table(table_name)
             self.create_table_from_dict(table_name, table_dict)
         
         self.commit_changes()
 
     # Just table name and (PRE)formatted row as input, for an example of formatting see a persisted domain object
-    # (TODO?) Format in here instead??
+    # TODO: Format in here instead
     def persist_to_database(self, table_name, row):
         query = "INSERT INTO "+table_name+" VALUES "+row
         self.__connection.execute(query)
@@ -36,6 +36,13 @@ class Sqlite_Database:
     def retrieve_from_database(self, table_name):
         cur = self.__connection.cursor()
         cur.execute("SELECT * FROM "+table_name)
+        rows = cur.fetchall()
+        return rows
+
+    # Retrieve all records from a specified table to be iterated through X at a time
+    def retrieve_batch_from_database(self, table_name, batch_size, offset):
+        cur = self.__connection.cursor()
+        cur.execute("SELECT * FROM "+table_name+" LIMIT ? OFFSET ?",(batch_size, offset))
         rows = cur.fetchall()
         return rows
 
@@ -56,8 +63,8 @@ class Sqlite_Database:
         table_definition = ["CREATE TABLE "+table_name+" ("] # Build up query here
         attribute_list = [] # Add attributes here to later ",".join together
         
-        for key, value in attribute_dict.items():
-            attribute_list.append(key+" "+value)
+        for attribute, value in attribute_dict.items():
+            attribute_list.append(attribute+" "+value)    
         
         attribute_list = ",".join(attribute_list)
         table_definition.append(attribute_list)

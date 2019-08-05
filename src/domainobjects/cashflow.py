@@ -1,45 +1,67 @@
 from domainobjects.generatable import Generatable
 import random
 import pandas as pd
+import timeit
 from datetime import datetime, date
 import calendar
 
 class Cashflow(Generatable):
     
     def generate(self, record_count, custom_args, domain_config, file_builder):
-        cashflow_gen_args = custom_args['cashflow_generation']          
+        cashflow_gen_args = custom_args['cashflow_generation']   
+
+        records_per_file = domain_config['max_objects_per_file']
+        file_extension = "."+str(domain_config['file_builder_name']).lower()
+        file_num = 1
         records = []
         i = 1
-        swap_positions = self.dependency_db.retrieve_from_database('swap_positions')
 
-        for swap_position in swap_positions:
-            if swap_position['position_type'] != 'E':
-                continue
+        batch_size = int(records_per_file)
+        offset = 0
 
-            # Intermediary variable required as sqlite3.Row does not support assignment
-            effective_date_ = swap_position['effective_date']
-            effective_date = datetime.strptime(effective_date_, '%Y%m%d')
+        while True: 
+            batch_start_time = timeit.default_timer()
+            swap_position_batch = self.dependency_db.retrieve_batch_from_database('swap_positions', batch_size, offset)
+            offset += batch_size
 
-            for cashflow_gen_arg in cashflow_gen_args:
-                if self.generate_cashflow(effective_date, cashflow_gen_arg['cashFlowAccrual'], cashflow_gen_arg['cashFlowAccrualProbability']):
-                    
-                    pay_date_period = cashflow_gen_arg['cashFlowPaydatePeriod']                    
-                    pay_date_func = self.get_pay_date_func(pay_date_period) 
-                    records.append({
-                        'cashflow_id': i,
-                        'swap_contract_id': swap_position['swap_contract_id'],
-                        'ric': swap_position['ric'],
-                        'cashflow_type': cashflow_gen_arg['cashFlowType'],
-                        'pay_date': pay_date_func(effective_date),
-                        'effective_date': effective_date,
-                        'currency': self.generate_currency(),
-                        'amount': self.generate_random_integer(),
-                        'long_short': swap_position['long_short'] 
-                    })
+            for swap_position in swap_position_batch:
+                if swap_position['position_type'] != 'E':
+                    continue
 
-                    i+=1 
+                # Intermediary variable required as sqlite3.Row does not support assignment
+                effective_date_ = swap_position['effective_date']
+                effective_date = datetime.strptime(effective_date_, '%Y%m%d')
+
+                for cashflow_gen_arg in cashflow_gen_args:
+                    if self.generate_cashflow(effective_date, cashflow_gen_arg['cashFlowAccrual'], cashflow_gen_arg['cashFlowAccrualProbability']):
+                        
+                        pay_date_period = cashflow_gen_arg['cashFlowPaydatePeriod']                    
+                        pay_date_func = self.get_pay_date_func(pay_date_period) 
+                        records.append({
+                            'cashflow_id': i,
+                            'swap_contract_id': swap_position['swap_contract_id'],
+                            'ric': swap_position['ric'],
+                            'cashflow_type': cashflow_gen_arg['cashFlowType'],
+                            'pay_date': pay_date_func(effective_date),
+                            'effective_date': effective_date,
+                            'currency': self.generate_currency(),
+                            'amount': self.generate_random_integer(),
+                            'long_short': swap_position['long_short'] 
+                        })
+
+                        if (i % int(records_per_file) == 0):
+                            file_builder.build(file_extension, file_num, records, domain_config)
+                            file_num += 1
+                            records = []
+
+                        i+=1 
+            batch_end_time = timeit.default_timer()
+            print ("Cashflow Batch: "+str(file_num)+" took "+str(batch_end_time-batch_start_time))
+            if not swap_position_batch:
+                break
         
-        return records
+        if records != []: 
+            file_builder.build(file_extension, file_num, records, domain_config)
     
     def calc_eom(self, d):
         return date(d.year, d.month, calendar.monthrange(d.year, d.month)[-1])
