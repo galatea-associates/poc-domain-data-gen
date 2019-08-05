@@ -8,12 +8,13 @@ class Instrument(Generatable):
         file_num = 1
         file_extension = "."+str(domain_config['file_builder_name']).lower()
         records = []
+        current_tickers = {}
 
         for i in range(0, record_count):            
             asset_class = self.generate_asset_class()         
             ticker = self.generate_ticker()
             coi = self.generate_coi()
-            exchange_code = self.generate_exchange_code()
+            exchange_code = self.generate_sequential_exchange_code(current_tickers, ticker)
             cusip = str(self.generate_random_integer(length=9))
             isin = self.generate_isin(coi, cusip)
             ric = self.generate_ric(ticker, exchange_code)
@@ -41,7 +42,15 @@ class Instrument(Generatable):
         
         if records != []: 
             file_builder.build(file_extension, file_num, records, domain_config)
+        current_tickers = {}
    
     def generate_asset_class(self):
         return 'Stock'
-  
+
+    def generate_sequential_exchange_code(self, current_tickers, ticker):
+        if (ticker in current_tickers.keys()):
+            cur_val = current_tickers[ticker]
+            current_tickers[ticker] = cur_val+1
+        else:
+            current_tickers[ticker] = 0 
+        return current_tickers[ticker]

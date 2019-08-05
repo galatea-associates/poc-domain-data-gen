@@ -85,12 +85,12 @@ class Generatable(ABC):
     def generate_return_type(self):
         return random.choice(['Outstanding', 'Pending Return', 'Pending Recall',
                               'Partial Return', 'Partial Recall', 'Settled'])
-     
-    def generate_ticker(self):
-        return random.choice(self.cache.retrieve_from_cache('tickers'))
 
     def generate_coi(self):
         return random.choice(self.cache.retrieve_from_cache('cois'))
 
+    def generate_ticker(self):
+        return random.choice(self.cache.retrieve_from_cache('tickers'))
+
     def generate_exchange_code(self):
-        return random.choice(self.cache.retrieve_from_cache('exchange_codes'))            
+        return random.choice(self.cache.retrieve_from_cache('exchange_codes'))
