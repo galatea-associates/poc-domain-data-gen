@@ -51,10 +51,11 @@ class SwapPosition(Generatable):
                                 'time_stamp': datetime.now(),
                             })
                             
-                            # TODO: FIX HERE: Add query construction to persisting function
-                            row_to_add = "('"+str(swap_contract['id'])+"','"+instrument['ric']+"','"+position_type+"','"+datetime.strftime(date.date(), '%Y%m%d')+"','"+str(long_short)+"')"
-                            # TODO: Alter query to only persist those with position type "E", remove for loop from cashflow generation referencing the same
-                            self.dependency_db.persist_to_database('swap_positions', row_to_add)
+                            # Only positions of type 'E' are relevant for generating cashflows. 
+                            if (position_type == 'E'): 
+                                # TODO: FIX HERE: Add query construction to persisting function
+                                row_to_add = "('"+str(swap_contract['id'])+"','"+instrument['ric']+"','"+position_type+"','"+datetime.strftime(date.date(), '%Y%m%d')+"','"+str(long_short)+"')"
+                                self.dependency_db.persist_to_database('swap_positions', row_to_add)
 
                             if (i % int(records_per_file) == 0):
                                 file_builder.build(file_extension, file_num, records, domain_config)
