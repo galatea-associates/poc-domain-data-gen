@@ -8,11 +8,21 @@ import logging
 from cache import Cache
 from sqlite_database import Sqlite_Database
 
+# Return a specified class from package.module
+def get_class(package_name, module_name, class_name):
+    return getattr(importlib.import_module(package_name+'.'+module_name), class_name)
+
+# Create a list comprehension of the file builder configuration which matches the provided name
 def get_file_builder_config(file_builders, file_builder_name):
     return list(filter(lambda file_builder: file_builder['name'] == file_builder_name, file_builders))[0]
 
-def get_file_builder(file_builder_config):
-    return getattr(importlib.import_module('filebuilders.' + file_builder_config['module_name']), file_builder_config['class_name'])    
+# Facillitate the domain object generation procedure
+def process_domain_object(domain_obj_config, cache, dependency_db,file_builder):
+    domain_obj_class = get_class('domainobjects', domain_obj_config['module_name'], domain_obj_config['class_name'])
+    domain_obj = domain_obj_class(cache, dependency_db, file_builder)
+    record_count = int(domain_obj_config['record_count'])
+    custom_args = domain_obj_config['custom_args']
+    domain_obj.generate(record_count, custom_args, domain_obj_config, file_builder)
 
 # Configure a parser for command line argument retrieval, and retrieve said arguments 
 def get_args():
@@ -21,16 +31,8 @@ def get_args():
     cl_args = parser.parse_args()
     return cl_args
 
-def process_domain_object(domain_obj_config, cache, dependency_db,file_builder):
-    domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
-    domain_obj = domain_obj_class(cache, dependency_db, file_builder)
-    record_count = int(domain_obj_config['record_count'])
-    custom_args = domain_obj_config['custom_args']
-    domain_obj.generate(record_count, custom_args, domain_obj_config, file_builder)
-
 def main():
     start_time = timeit.default_timer()
-    
     
     cache = Cache()                     # Stores global generation attributes, i.e: tickers, countries of issuance, exchange codes etc.
     dependency_db = Sqlite_Database()   # Stores global generation dependencies, i.e instrument RICs. 
@@ -44,9 +46,8 @@ def main():
 
     for domain_object_config in domain_object_configs:
         file_builder_config = get_file_builder_config(file_builder_configs, domain_object_config['file_builder_name'])      
-        file_builder = get_file_builder(file_builder_config)(None, domain_object_config['output_directory'], domain_object_config['file_name'], file_builder_config['file_extension']) 
+        file_builder = get_class('filebuilders', file_builder_config['module_name'], file_builder_config['class_name']) 
         process_domain_object(domain_object_config, cache, dependency_db, file_builder)
-        dependency_db.commit_changes()
     
     end_time = timeit.default_timer()
     print("Run time: ", end_time-start_time)

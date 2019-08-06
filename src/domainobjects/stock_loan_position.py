@@ -39,12 +39,12 @@ class StockLoanPosition(Generatable):
             })
 
             if (i % int(records_per_file) == 0):
-                file_builder.build(file_extension, file_num, records, domain_config)
+                file_builder.build(None, file_extension, file_num, records, domain_config)
                 file_num += 1
                 records = []        
 
         if records != []: 
-            file_builder.build(file_extension, file_num, records, domain_config)
+            file_builder.build(None, file_extension, file_num, records, domain_config)
     
     def generate_haircut(self, collateral_type):      
         return '2.00%' if collateral_type == 'Non Cash' else None

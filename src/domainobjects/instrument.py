@@ -36,14 +36,16 @@ class Instrument(Generatable):
             self.dependency_db.persist_to_database("instruments","('"+ric+"','"+cusip+"','"+isin+"')")
 
             if (j % int(records_per_file) == 0):
-                file_builder.build(file_extension, file_num, records, domain_config)
+                file_builder.build(None, file_extension, file_num, records, domain_config)
                 file_num += 1
                 records = []
         
         if records != []: 
-            file_builder.build(file_extension, file_num, records, domain_config)
+            file_builder.build(None, file_extension, file_num, records, domain_config)
         current_tickers = {}
-   
+
+        self.dependency_db.commit_changes()
+
     def generate_asset_class(self):
         return 'Stock'
 

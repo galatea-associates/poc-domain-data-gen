@@ -58,7 +58,7 @@ class SwapPosition(Generatable):
                                 self.dependency_db.persist_to_database('swap_positions', row_to_add)
 
                             if (i % int(records_per_file) == 0):
-                                file_builder.build(file_extension, file_num, records, domain_config)
+                                file_builder.build(None, file_extension, file_num, records, domain_config)
                                 file_num += 1
                                 records = []
                             
@@ -67,7 +67,9 @@ class SwapPosition(Generatable):
                 break
 
         if records != []: 
-            file_builder.build(file_extension, file_num, records, domain_config)
+            file_builder.build(None, file_extension, file_num, records, domain_config)
+
+        self.dependency_db.commit_changes()
     
     def generate_account(self):
         account_type = random.choice(['ICP', 'ECP'])

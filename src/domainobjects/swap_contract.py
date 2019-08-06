@@ -50,14 +50,16 @@ class SwapContract(Generatable):
                 self.dependency_db.persist_to_database("swap_contracts","('"+str(i)+"')")
 
                 if (i % int(records_per_file) == 0):
-                    file_builder.build(file_extension, file_num, records, domain_config)
+                    file_builder.build(None, file_extension, file_num, records, domain_config)
                     file_num += 1
                     records = []
                 
                 i += 1
         
         if records != []: 
-            file_builder.build(file_extension, file_num, records, domain_config)  
+            file_builder.build(None, file_extension, file_num, records, domain_config)  
+        
+        self.dependency_db.commit_changes()
     
     def generate_swap_end_date(self, years_to_add=5, start_date=None, status=None):
         return None if status == 'Live' else start_date + timedelta(days=365 * years_to_add)
