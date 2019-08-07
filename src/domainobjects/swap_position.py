@@ -4,6 +4,7 @@ import random
 import timeit
 import string
 import pandas as pd
+import logging
 
 class SwapPosition(Generatable):
     
@@ -23,10 +24,12 @@ class SwapPosition(Generatable):
         batch_size = domain_config['batch_size']
         offset = 0
 
+        prior_date = ""
+
         while True:
             swap_contract_batch = self.dependency_db.retrieve_batch_from_database('swap_contracts', batch_size, offset)
             offset += batch_size
-
+    
             for swap_contract in swap_contract_batch:                                    
                 ins_count = random.randint(int(ins_per_swap_range['min']), int(ins_per_swap_range['max']))
                 instruments = random.sample(all_instruments, ins_count) 
@@ -51,10 +54,13 @@ class SwapPosition(Generatable):
                                 'time_stamp': datetime.now(),
                             })
                             
+                            effective_date_string = datetime.strftime(date.date(), '%Y%m%d')
+                            self.check_date_change(prior_date, effective_date_string)
+                            
                             # Only positions of type 'E' are relevant for generating cashflows. 
                             if (position_type == 'E'): 
                                 # TODO: FIX HERE: Add query construction to persisting function
-                                row_to_add = "('"+str(swap_contract['id'])+"','"+instrument['ric']+"','"+position_type+"','"+datetime.strftime(date.date(), '%Y%m%d')+"','"+str(long_short)+"')"
+                                row_to_add = "('"+str(swap_contract['id'])+"','"+instrument['ric']+"','"+position_type+"','"+effective_date_string+"','"+str(long_short)+"')"
                                 self.dependency_db.persist_to_database('swap_positions', row_to_add)
 
                             if (i % int(records_per_file) == 0):
@@ -80,3 +86,8 @@ class SwapPosition(Generatable):
     
     def generate_purpose(self):
         return 'Outright'
+
+    def check_date_change(self, prior_date, current_date):
+        if (current_date != prior_date):
+            logging.info("\tNow generating for date: "+current_date)
+            return current_date

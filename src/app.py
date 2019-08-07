@@ -32,25 +32,27 @@ def get_args():
     return cl_args
 
 def main():
-    start_time = timeit.default_timer()
     
+    logging.basicConfig(filename='generator.log', filemode='w', format='%(levelname)s : %(message)s', level=logging.INFO)
+
     cache = Cache()                     # Stores global generation attributes, i.e: tickers, countries of issuance, exchange codes etc.
     dependency_db = Sqlite_Database()   # Stores global generation dependencies, i.e instrument RICs. 
     args = get_args()                   # Stores command line arguments TODO: CHECK THIS IS RIGHT
 
     with open(args.config) as config_file:
         config = json.load(config_file)
-
+    
     domain_object_configs = config['domain_objects']
     file_builder_configs = config['file_builders']
 
     for domain_object_config in domain_object_configs:
+        logging.info("Now Generating Domain Object: "+domain_object_config['class_name'])
+        gen_start_time = timeit.default_timer()
         file_builder_config = get_file_builder_config(file_builder_configs, domain_object_config['file_builder_name'])      
         file_builder = get_class('filebuilders', file_builder_config['module_name'], file_builder_config['class_name']) 
         process_domain_object(domain_object_config, cache, dependency_db, file_builder)
-    
-    end_time = timeit.default_timer()
-    print("Run time: ", end_time-start_time)
+        gen_end_time = timeit.default_timer()
+        logging.info("Domain Object: "+domain_object_config['class_name']+" took "+str(gen_end_time-gen_start_time)+" seconds to generate.")
 
 if __name__ == '__main__':   
     main()
