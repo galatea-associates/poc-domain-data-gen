@@ -32,7 +32,7 @@ def get_args():
     return cl_args
 
 def main():
-    
+    start_time = timeit.default_timer()
     logging.basicConfig(filename='generator.log', filemode='w', format='%(levelname)s : %(message)s', level=logging.INFO)
 
     cache = Cache()                     # Stores global generation attributes, i.e: tickers, countries of issuance, exchange codes etc.
@@ -53,6 +53,9 @@ def main():
         process_domain_object(domain_object_config, cache, dependency_db, file_builder)
         gen_end_time = timeit.default_timer()
         logging.info("Domain Object: "+domain_object_config['class_name']+" took "+str(gen_end_time-gen_start_time)+" seconds to generate.")
+
+    end_time = timeit.default_timer()
+    logging.info("Overall runtime: "+str(end_time-start_time))
 
 if __name__ == '__main__':   
     main()

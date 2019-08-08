@@ -46,8 +46,7 @@ class SwapContract(Generatable):
                     'time_stamp': datetime.now(),
                 })
 
-                # TODO: FIX HERE: Add query construction to persisting function
-                self.dependency_db.persist_to_database("swap_contracts","('"+str(i)+"')")
+                self.dependency_db.persist_to_database("swap_contracts",[str(i)])
 
                 if (i % int(records_per_file) == 0):
                     file_builder.build(None, file_extension, file_num, records, domain_config)

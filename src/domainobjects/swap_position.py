@@ -17,6 +17,8 @@ class SwapPosition(Generatable):
         records = []
         i = 1
         
+
+
         all_instruments = self.dependency_db.retrieve_from_database('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')        
@@ -30,7 +32,8 @@ class SwapPosition(Generatable):
             swap_contract_batch = self.dependency_db.retrieve_batch_from_database('swap_contracts', batch_size, offset)
             offset += batch_size
     
-            for swap_contract in swap_contract_batch:                                    
+            for swap_contract in swap_contract_batch:
+                logging.info("Generating data for Swap Contract: "+str(swap_contract['id']))                                 
                 ins_count = random.randint(int(ins_per_swap_range['min']), int(ins_per_swap_range['max']))
                 instruments = random.sample(all_instruments, ins_count) 
 
@@ -54,15 +57,12 @@ class SwapPosition(Generatable):
                                 'time_stamp': datetime.now(),
                             })
                             
-                            effective_date_string = datetime.strftime(date.date(), '%Y%m%d')
-                            self.check_date_change(prior_date, effective_date_string)
+                            effective_date = datetime.strftime(date.date(), '%Y%m%d')
                             
-                            # Only positions of type 'E' are relevant for generating cashflows. 
                             if (position_type == 'E'): 
-                                # TODO: FIX HERE: Add query construction to persisting function
-                                row_to_add = "('"+str(swap_contract['id'])+"','"+instrument['ric']+"','"+position_type+"','"+effective_date_string+"','"+str(long_short)+"')"
-                                self.dependency_db.persist_to_database('swap_positions', row_to_add)
-
+                                persisting_values = [str(swap_contract['id']), instrument['ric'], position_type, effective_date, str(long_short)]
+                                self.dependency_db.persist_to_database("swap_positions", persisting_values)
+                            
                             if (i % int(records_per_file) == 0):
                                 file_builder.build(None, file_extension, file_num, records, domain_config)
                                 file_num += 1
@@ -86,8 +86,3 @@ class SwapPosition(Generatable):
     
     def generate_purpose(self):
         return 'Outright'
-
-    def check_date_change(self, prior_date, current_date):
-        if (current_date != prior_date):
-            logging.info("\tNow generating for date: "+current_date)
-            return current_date

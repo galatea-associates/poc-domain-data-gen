@@ -32,8 +32,7 @@ class Instrument(Generatable):
                 'coi':coi,
                 'time_stamp':datetime.now()})
             
-            # TODO: FIX HERE: Add query construction to persisting function
-            self.dependency_db.persist_to_database("instruments","('"+ric+"','"+cusip+"','"+isin+"')")
+            self.dependency_db.persist_to_database("instruments",[ric, cusip, isin])
 
             if (j % int(records_per_file) == 0):
                 file_builder.build(None, file_extension, file_num, records, domain_config)

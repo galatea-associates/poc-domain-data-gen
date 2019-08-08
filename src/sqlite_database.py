@@ -9,9 +9,9 @@ class Sqlite_Database:
         
         # Define list of database table dictionaries for data requiring persistence#
         instrument_dict = {"ric":"text", "cusip":"text","isin":"text"}
-        counterparty_dict = {"id":"integer"}
-        swap_contract_dict = {"id":"integer"}
-        swap_position_dict = {"swap_contract_id":"integer", "ric":"text", "position_type":"text", "effective_date":"text","long_short":"text"}
+        counterparty_dict = {"id":"text"}
+        swap_contract_dict = {"id":"text"}
+        swap_position_dict = {"swap_contract_id":"text", "ric":"text", "position_type":"text", "effective_date":"text","long_short":"text"}
         
         tables_dict = {
             "instruments":instrument_dict,
@@ -26,10 +26,10 @@ class Sqlite_Database:
         
         self.commit_changes()
 
-    # Just table name and (PRE)formatted row as input, for an example of formatting see a persisted domain object
-    # TODO: Format in here instead
-    def persist_to_database(self, table_name, row):
-        query = "INSERT INTO "+table_name+" VALUES "+row
+    def persist_to_database(self, table_name, value_list):
+        values = "','".join(value_list)
+        formatted_values = "".join(("('",values,"')"))
+        query = " ".join(("INSERT INTO",table_name,"VALUES",formatted_values))
         self.__connection.execute(query)
 
     # Retrieve all records from a specified table
