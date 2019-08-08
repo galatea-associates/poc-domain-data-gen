@@ -27,13 +27,13 @@ def process_domain_object(domain_obj_config, cache, dependency_db,file_builder):
 # Configure a parser for command line argument retrieval, and retrieve said arguments 
 def get_args():
     parser = argparse.ArgumentParser(description='Generate Random Data for Various Domain Objects')
-    parser.add_argument('--config', default='src/config.json', help='JSON Config File Location')
+    parser.add_argument('--config', default='config.json', help='JSON Config File Location')
     cl_args = parser.parse_args()
     return cl_args
 
 def main():
     start_time = timeit.default_timer()
-    logging.basicConfig(filename='generator.log', filemode='w', format='%(levelname)s : %(message)s', level=logging.INFO)
+    logging.basicConfig(filename='../out/generator.log', filemode='w', format='%(levelname)s : %(message)s', level=logging.INFO)
 
     cache = Cache()                     # Stores global generation attributes, i.e: tickers, countries of issuance, exchange codes etc.
     dependency_db = Sqlite_Database()   # Stores global generation dependencies, i.e instrument RICs. 

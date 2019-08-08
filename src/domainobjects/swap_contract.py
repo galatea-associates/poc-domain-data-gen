@@ -1,11 +1,13 @@
 from domainobjects.generatable import Generatable
 import random
+import timeit
+import logging
 from datetime import datetime, timedelta
 
 class SwapContract(Generatable):
     
     def generate(self, record_count, custom_args, domain_config, file_builder):
-        
+
         # Get the existing swap contracts and the range of ins per swap counts
         # counterparties = self.cache.retrieve_from_cache('counterparties')
         counterparties = self.dependency_db.retrieve_from_database('counterparties')
@@ -45,7 +47,7 @@ class SwapContract(Generatable):
                     'swap_contract_field8': self.generate_random_string(10),
                     'time_stamp': datetime.now(),
                 })
-
+                
                 self.dependency_db.persist_to_database("swap_contracts",[str(i)])
 
                 if (i % int(records_per_file) == 0):
@@ -56,7 +58,7 @@ class SwapContract(Generatable):
                 i += 1
         
         if records != []: 
-            file_builder.build(None, file_extension, file_num, records, domain_config)  
+            file_builder.build(None, file_extension, file_num, records, domain_config)
         
         self.dependency_db.commit_changes()
     

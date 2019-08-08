@@ -1,7 +1,6 @@
 from domainobjects.generatable import Generatable
 from datetime import datetime, timedelta
 import random
-import timeit
 import string
 import pandas as pd
 import logging
@@ -14,26 +13,23 @@ class SwapPosition(Generatable):
         records_per_file = domain_config['max_objects_per_file']
         file_extension = "."+str(domain_config['file_builder_name']).lower()
         file_num = 1
-        records = []
         i = 1
-        
-
+        records = [] 
+        persisting_records = []
 
         all_instruments = self.dependency_db.retrieve_from_database('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
-        date_range = pd.date_range(start_date, datetime.today(), freq='D')        
-        
-        batch_size = domain_config['batch_size']
-        offset = 0
+        date_range = pd.date_range(start_date, datetime.today(), freq='D')
 
-        prior_date = ""
+        batch_size = domain_config['batch_size']
+        logging.warning("Batch size for Swap Positions are: "+str(batch_size))
+        offset = 0
 
         while True:
             swap_contract_batch = self.dependency_db.retrieve_batch_from_database('swap_contracts', batch_size, offset)
             offset += batch_size
     
-            for swap_contract in swap_contract_batch:
-                logging.info("Generating data for Swap Contract: "+str(swap_contract['id']))                                 
+            for swap_contract in swap_contract_batch:                             
                 ins_count = random.randint(int(ins_per_swap_range['min']), int(ins_per_swap_range['max']))
                 instruments = random.sample(all_instruments, ins_count) 
 
@@ -42,14 +38,15 @@ class SwapPosition(Generatable):
                     purpose = self.generate_purpose()  
                     for position_type in ['S', 'I', 'E']:
                         quantity = self.generate_random_integer(negative=long_short.upper() == "SHORT")
-                        for date in date_range:                        
+                        for date in date_range:
+                            current_date = date.date()
                             records.append({
                                 'swap_position_id': i,
                                 'ric': instrument['ric'],
                                 'swap_contract_id': swap_contract['id'],           
                                 'position_type': position_type,
-                                'knowledge_date': date.date(),
-                                'effective_date': date.date(),
+                                'knowledge_date': current_date,
+                                'effective_date': current_date,
                                 'account': self.generate_account(),
                                 'long_short': long_short,
                                 'td_quantity': quantity,
@@ -57,12 +54,15 @@ class SwapPosition(Generatable):
                                 'time_stamp': datetime.now(),
                             })
                             
-                            effective_date = datetime.strftime(date.date(), '%Y%m%d')
+                            effective_date = datetime.strftime(current_date, '%Y%m%d')
                             
                             if (position_type == 'E'): 
-                                persisting_values = [str(swap_contract['id']), instrument['ric'], position_type, effective_date, str(long_short)]
-                                self.dependency_db.persist_to_database("swap_positions", persisting_values)
+                                persisting_records.append([str(swap_contract['id']), instrument['ric'], position_type, effective_date, str(long_short)])
                             
+                            if (i % int(batch_size) == 0):
+                                self.dependency_db.persist_batch_to_database("swap_positions", persisting_records)
+                                persisting_records = []
+
                             if (i % int(records_per_file) == 0):
                                 file_builder.build(None, file_extension, file_num, records, domain_config)
                                 file_num += 1
@@ -74,6 +74,11 @@ class SwapPosition(Generatable):
 
         if records != []: 
             file_builder.build(None, file_extension, file_num, records, domain_config)
+            records = []
+        
+        if persisting_records != []:
+            self.dependency_db.persist_batch_to_database("swap_positions", persisting_records)
+            persisting_records = []
 
         self.dependency_db.commit_changes()
     

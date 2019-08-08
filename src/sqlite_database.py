@@ -1,5 +1,4 @@
 import sqlite3
-
 class Sqlite_Database:
 
     def __init__(self):
@@ -26,11 +25,25 @@ class Sqlite_Database:
         
         self.commit_changes()
 
+    # Takes table with N attributes & X rows for insertion formatted as:
+    # [[attr1_1, attr2_1, ... , attN_1], [attr1_2, attr2_2, ... , attN_2], ... , [att1_X, att2_X, ... , arrN_X]]
+    # And inserts them into the table in a single query
+    def persist_batch_to_database(self, table_name, value_lists):
+        formatted_lists = []
+        for list in value_lists:
+            formatted_lists.append(self.format_list_for_insertion(list))
+        prepared_rows = ",".join(formatted_lists)
+        query = " ".join(("INSERT INTO",table_name,"VALUES",prepared_rows))
+        self.__connection.execute(query)
+
     def persist_to_database(self, table_name, value_list):
-        values = "','".join(value_list)
-        formatted_values = "".join(("('",values,"')"))
+        formatted_values = self.format_list_for_insertion(value_list)
         query = " ".join(("INSERT INTO",table_name,"VALUES",formatted_values))
         self.__connection.execute(query)
+
+    def format_list_for_insertion(self, value_list):
+        values = "','".join(value_list)
+        return "".join(("('",values,"')"))
 
     # Retrieve all records from a specified table
     def retrieve_from_database(self, table_name):

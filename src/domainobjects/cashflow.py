@@ -1,7 +1,6 @@
 from domainobjects.generatable import Generatable
 import random
 import pandas as pd
-import timeit
 from datetime import datetime, date
 import calendar
 
@@ -59,7 +58,7 @@ class Cashflow(Generatable):
         
         if records != []: 
             file_builder.build(None, file_extension, file_num, records, domain_config)
-    
+
     def calc_eom(self, d):
         return date(d.year, d.month, calendar.monthrange(d.year, d.month)[-1])
     
