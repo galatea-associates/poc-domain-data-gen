@@ -54,7 +54,7 @@ class SwapPosition(Generatable):
                                 'time_stamp': datetime.now(),
                             })
                             
-                            effective_date = datetime.strftime(current_date, '%Y%m%d')
+                            effective_date = str(current_date)
                             
                             if (position_type == 'E'): 
                                 persisting_records.append([str(swap_contract['id']), instrument['ric'], position_type, effective_date, str(long_short)])

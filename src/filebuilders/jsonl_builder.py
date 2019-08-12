@@ -1,6 +1,5 @@
 from filebuilders.file_builder import FileBuilder
-from json.encoder import JSONEncoder
-import jsonlines
+import json
 import os
 
 class JSONLBuilder(FileBuilder):
@@ -11,6 +10,7 @@ class JSONLBuilder(FileBuilder):
         if not os.path.exists(output_dir): 
             os.mkdir(output_dir)
 
-        encoder = JSONEncoder(default = str)
-        with jsonlines.open(os.path.join(output_dir, file_name.format(f'{file_number:03}')), mode='w', dumps=encoder.encode) as output_file:
-            output_file.write_all(data)
+        with open(os.path.join(output_dir, file_name.format(f'{file_number:03}')), 'w') as output_file:
+            to_output = [json.dumps(record, default=str) for record in data]
+            formatted_output = "\n".join(to_output)
+            output_file.write(formatted_output)

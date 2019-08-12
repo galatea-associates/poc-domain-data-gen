@@ -28,7 +28,7 @@ class Cashflow(Generatable):
 
                 # Intermediary variable required as sqlite3.Row does not support assignment
                 effective_date_ = swap_position['effective_date']
-                effective_date = datetime.strptime(effective_date_, '%Y%m%d')
+                effective_date = datetime.strptime(effective_date_, '%Y-%m-%d')
 
                 for cashflow_gen_arg in cashflow_gen_args:
                     if self.generate_cashflow(effective_date, cashflow_gen_arg['cashFlowAccrual'], cashflow_gen_arg['cashFlowAccrualProbability']):
