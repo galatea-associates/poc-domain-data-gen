@@ -5,11 +5,13 @@ from datetime import datetime
 
 class Counterparty(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config, file_builder):        
+    def generate(self, record_count, custom_args, domain_config):        
         records_per_file = domain_config['max_objects_per_file']
         file_num = 1
         file_extension = "."+str(domain_config['file_builder_name']).lower()
         
+        database = self.get_database()
+        file_builder = self.get_file_builder()
         records = []
 
         for i in range(1, record_count+1):                 
@@ -33,11 +35,11 @@ class Counterparty(Generatable):
                 file_num += 1
                 records = []
 
-            self.dependency_db.persist_to_database("counterparties",[str(i+1)])
+            database.persist("counterparties",[str(i+1)])
 
         if records != []: 
             file_builder.build(None, file_extension, file_num, records, domain_config)
 
-        self.dependency_db.commit_changes()
+        database.commit_changes()
 
    

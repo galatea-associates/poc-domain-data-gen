@@ -6,7 +6,7 @@ import calendar
 
 class Cashflow(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config, file_builder):
+    def generate(self, record_count, custom_args, domain_config):
         cashflow_gen_args = custom_args['cashflow_generation']   
 
         records_per_file = domain_config['max_objects_per_file']
@@ -15,11 +15,14 @@ class Cashflow(Generatable):
         records = []
         i = 1
 
+        database = self.get_database()
+        file_builder = self.get_file_builder()
+
         batch_size = domain_config['batch_size']
         offset = 0
 
         while True: 
-            swap_position_batch = self.dependency_db.retrieve_batch_from_database('swap_positions', batch_size, offset)
+            swap_position_batch = database.retrieve_batch('swap_positions', batch_size, offset)
             offset += batch_size
 
             for swap_position in swap_position_batch:

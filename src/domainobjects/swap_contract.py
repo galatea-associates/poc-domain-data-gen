@@ -6,21 +6,22 @@ from datetime import datetime, timedelta
 
 class SwapContract(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config, file_builder):
+    def generate(self, record_count, custom_args, domain_config):
 
-        # Get the existing swap contracts and the range of ins per swap counts
-        # counterparties = self.cache.retrieve_from_cache('counterparties')
-        counterparties = self.dependency_db.retrieve_from_database('counterparties')
         swap_per_counterparty_min = int(custom_args['swap_per_counterparty']['min'])
         swap_per_counterparty_max = int(custom_args['swap_per_counterparty']['max'])
-        
+    
         records_per_file = domain_config['max_objects_per_file']
         file_num = 1
         file_extension = "."+str(domain_config['file_builder_name']).lower()
         records = []
         i = 1
 
-        # For each existing swap contract, put the SC ID in the cache and then generate a random number of positions for that SC ID
+        database = self.get_database()
+        file_builder = self.get_file_builder()
+
+        counterparties = database.retrieve('counterparties')
+
         for counterparty in counterparties:            
             swap_count = random.randint(swap_per_counterparty_min, swap_per_counterparty_max)
             for _ in range(0, swap_count):
@@ -48,7 +49,7 @@ class SwapContract(Generatable):
                     'time_stamp': datetime.now(),
                 })
                 
-                self.dependency_db.persist_to_database("swap_contracts",[str(i)])
+                database.persist("swap_contracts",[str(i)])
 
                 if (i % int(records_per_file) == 0):
                     file_builder.build(None, file_extension, file_num, records, domain_config)
@@ -60,7 +61,7 @@ class SwapContract(Generatable):
         if records != []: 
             file_builder.build(None, file_extension, file_num, records, domain_config)
         
-        self.dependency_db.commit_changes()
+        database.commit_changes()
     
     def generate_swap_end_date(self, years_to_add=5, start_date=None, status=None):
         return None if status == 'Live' else start_date + timedelta(days=365 * years_to_add)

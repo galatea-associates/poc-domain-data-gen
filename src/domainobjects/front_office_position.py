@@ -4,12 +4,15 @@ import random
 
 class FrontOfficePosition(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config, file_builder):
+    def generate(self, record_count, custom_args, domain_config):
         records_per_file = domain_config['max_objects_per_file']
         file_num = 1
         file_extension = "."+str(domain_config['file_builder_name']).lower()
         records = []    
-        instruments = self.dependency_db.retrieve_from_database('instruments')    
+        
+        file_builder = self.get_file_builder()
+        database = self.get_database()
+        instruments = database.retrieve('instruments')    
         
         for j in range(1, record_count+1):  
             instrument = random.choice(instruments)                    

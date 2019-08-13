@@ -30,7 +30,7 @@ class Sqlite_Database:
     # Takes table with N attributes & X rows for insertion formatted as:
     # [[attr1_1, attr2_1, ... , attN_1], [attr1_2, attr2_2, ... , attN_2], ... , [att1_X, att2_X, ... , arrN_X]]
     # And inserts them into the table in a single query
-    def persist_batch_to_database(self, table_name, value_lists):
+    def persist_batch(self, table_name, value_lists):
         formatted_lists = []
         for list in value_lists:
             formatted_lists.append(self.format_list_for_insertion(list))
@@ -39,7 +39,7 @@ class Sqlite_Database:
         self.__connection.execute(query)
 
     # Persist a single row to a given table with a list of given attributes as above #
-    def persist_to_database(self, table_name, value_list):
+    def persist(self, table_name, value_list):
         formatted_values = self.format_list_for_insertion(value_list)
         query = " ".join(("INSERT INTO",table_name,"VALUES",formatted_values))
         self.__connection.execute(query)
@@ -50,14 +50,14 @@ class Sqlite_Database:
         return "".join(("('",values,"')"))
 
     # Retrieve all records from a specified table
-    def retrieve_from_database(self, table_name):
+    def retrieve(self, table_name):
         cur = self.__connection.cursor()
         cur.execute("SELECT * FROM "+table_name)
         rows = cur.fetchall()
         return rows
 
     # Retrieve a batch of records from specified table. Batch size is specified, as is the offset to start from #
-    def retrieve_batch_from_database(self, table_name, batch_size, offset):
+    def retrieve_batch(self, table_name, batch_size, offset):
         cur = self.__connection.cursor()
         cur.execute("SELECT * FROM "+table_name+" LIMIT ? OFFSET ?",(batch_size, offset))
         rows = cur.fetchall()
@@ -65,7 +65,7 @@ class Sqlite_Database:
 
     # Retrieve a specified, randomly sampled, amount of records from a specified table #
     # Currently Unused #
-    def retrieve_sample_from_database(self, table_name, amount):
+    def retrieve_sample(self, table_name, amount):
         cur = self.__connection.cursor()
         cur.execute("SELECT * FROM "+table_name+""" WHERE id IN 
                     (SELECT id FROM """+table_name+" ORDER BY RANDOM() LIMIT "+amount)

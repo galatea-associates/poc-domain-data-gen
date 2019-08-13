@@ -4,11 +4,12 @@ import random
 
 class CashBalance(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config, file_builder):
+    def generate(self, record_count, custom_args, domain_config):
         records_per_file = domain_config['max_objects_per_file']
         file_num = 1
         file_extension = "."+str(domain_config['file_builder_name']).lower()
 
+        file_builder = self.get_file_builder()
         records = []        
 
         for i in range(1, record_count+1):                  

@@ -3,10 +3,14 @@ from datetime import datetime
 
 class Instrument(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config, file_builder):        
+    def generate(self, record_count, custom_args, domain_config):  
         records_per_file = domain_config['max_objects_per_file']
         file_num = 1
         file_extension = "."+str(domain_config['file_builder_name']).lower()
+
+        database = self.get_database()
+        file_builder = self.get_file_builder()
+        
         records = []
         current_tickers = {}
 
@@ -32,7 +36,7 @@ class Instrument(Generatable):
                 'coi':coi,
                 'time_stamp':datetime.now()})
             
-            self.dependency_db.persist_to_database("instruments",[ric, cusip, isin])
+            database.persist("instruments",[ric, cusip, isin])
 
             if (j % int(records_per_file) == 0):
                 file_builder.build(None, file_extension, file_num, records, domain_config)
@@ -43,7 +47,7 @@ class Instrument(Generatable):
             file_builder.build(None, file_extension, file_num, records, domain_config)
         current_tickers = {}
 
-        self.dependency_db.commit_changes()
+        database.commit_changes()
 
     def generate_asset_class(self):
         return 'Stock'

@@ -4,16 +4,18 @@ import random
 
 class BackOfficePosition(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config, file_builder):
+    def generate(self, record_count, custom_args, domain_config):
         records_per_file = domain_config['max_objects_per_file']
         file_num = 1
         file_extension = "."+str(domain_config['file_builder_name']).lower() 
         records = []
 
-        instruments = self.dependency_db.retrieve_from_database('instruments')
+        database = self.get_database()
+        file_builder = self.get_file_builder()
         
-        # 1 to record_count+1 preserves requested amount but reduces
-        # computation for repeated modulo calculation
+        instruments = database.retrieve('instruments')
+        
+        # 1 to record_count+1 preserves requested amount but reduces computation for repeated modulo calculation
         for i in range(1, record_count+1):  
             instrument = random.choice(instruments) 
             position_type = self.generate_position_type()

@@ -7,17 +7,21 @@ import logging
 
 class SwapPosition(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config, file_builder):        
+    def generate(self, record_count, custom_args, domain_config):        
         ins_per_swap_range = custom_args['ins_per_swap']
         
         records_per_file = domain_config['max_objects_per_file']
         file_extension = "."+str(domain_config['file_builder_name']).lower()
         file_num = 1
         i = 1
+
+        database = self.get_database()
+        file_builder = self.get_file_builder()
+
         records = [] 
         persisting_records = []
 
-        all_instruments = self.dependency_db.retrieve_from_database('instruments')
+        all_instruments = database.retrieve('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
 
@@ -26,7 +30,7 @@ class SwapPosition(Generatable):
         offset = 0
 
         while True:
-            swap_contract_batch = self.dependency_db.retrieve_batch_from_database('swap_contracts', batch_size, offset)
+            swap_contract_batch = database.retrieve_batch('swap_contracts', batch_size, offset)
             offset += batch_size
     
             for swap_contract in swap_contract_batch:                             
@@ -60,7 +64,7 @@ class SwapPosition(Generatable):
                                 persisting_records.append([str(swap_contract['id']), instrument['ric'], position_type, effective_date, str(long_short)])
                             
                             if (i % int(batch_size) == 0):
-                                self.dependency_db.persist_batch_to_database("swap_positions", persisting_records)
+                                database.persist_batch("swap_positions", persisting_records)
                                 persisting_records = []
 
                             if (i % int(records_per_file) == 0):
@@ -77,10 +81,10 @@ class SwapPosition(Generatable):
             records = []
         
         if persisting_records != []:
-            self.dependency_db.persist_batch_to_database("swap_positions", persisting_records)
+            database.persist_batch("swap_positions", persisting_records)
             persisting_records = []
 
-        self.dependency_db.commit_changes()
+        database.commit_changes()
     
     def generate_account(self):
         account_type = random.choice(['ICP', 'ECP'])

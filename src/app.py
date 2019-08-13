@@ -22,7 +22,7 @@ def process_domain_object(domain_obj_config, cache, dependency_db,file_builder):
     domain_obj = domain_obj_class(cache, dependency_db, file_builder)
     record_count = int(domain_obj_config['record_count'])
     custom_args = domain_obj_config['custom_args']
-    domain_obj.generate(record_count, custom_args, domain_obj_config, file_builder)
+    domain_obj.generate(record_count, custom_args, domain_obj_config)
 
 # Configure a parser for command line argument retrieval, and retrieve said arguments 
 def get_args():
