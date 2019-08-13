@@ -17,12 +17,12 @@ def get_file_builder_config(file_builders, file_builder_name):
     return list(filter(lambda file_builder: file_builder['name'] == file_builder_name, file_builders))[0]
 
 # Facillitate the domain object generation procedure
-def process_domain_object(domain_obj_config, cache, dependency_db,file_builder):
+def process_domain_object(domain_obj_config, cache, dependency_db, file_builder):
     domain_obj_class = get_class('domainobjects', domain_obj_config['module_name'], domain_obj_config['class_name'])
-    domain_obj = domain_obj_class(cache, dependency_db, file_builder)
+    domain_obj = domain_obj_class(cache, dependency_db, file_builder, domain_obj_config)
     record_count = int(domain_obj_config['record_count'])
     custom_args = domain_obj_config['custom_args']
-    domain_obj.generate(record_count, custom_args, domain_obj_config)
+    domain_obj.generate(record_count, custom_args)
 
 # Configure a parser for command line argument retrieval, and retrieve said arguments 
 def get_args():

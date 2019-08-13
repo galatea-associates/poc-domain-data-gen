@@ -6,14 +6,14 @@ from datetime import datetime, timedelta
 
 class SwapContract(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config):
-
+    def generate(self, record_count, custom_args):
+        config = self.get_object_config()
         swap_per_counterparty_min = int(custom_args['swap_per_counterparty']['min'])
         swap_per_counterparty_max = int(custom_args['swap_per_counterparty']['max'])
     
-        records_per_file = domain_config['max_objects_per_file']
+        records_per_file = config['max_objects_per_file']
         file_num = 1
-        file_extension = "."+str(domain_config['file_builder_name']).lower()
+        file_extension = "."+str(config['file_builder_name']).lower()
         records = []
         i = 1
 
@@ -52,14 +52,14 @@ class SwapContract(Generatable):
                 database.persist("swap_contracts",[str(i)])
 
                 if (i % int(records_per_file) == 0):
-                    file_builder.build(None, file_extension, file_num, records, domain_config)
+                    file_builder.build(None, file_extension, file_num, records, config)
                     file_num += 1
                     records = []
                 
                 i += 1
         
         if records != []: 
-            file_builder.build(None, file_extension, file_num, records, domain_config)
+            file_builder.build(None, file_extension, file_num, records, config)
         
         database.commit_changes()
     

@@ -6,11 +6,12 @@ import calendar
 
 class Cashflow(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config):
+    def generate(self, record_count, custom_args, ):
+        config = self.get_object_config()
         cashflow_gen_args = custom_args['cashflow_generation']   
 
-        records_per_file = domain_config['max_objects_per_file']
-        file_extension = "."+str(domain_config['file_builder_name']).lower()
+        records_per_file = config['max_objects_per_file']
+        file_extension = "."+str(config['file_builder_name']).lower()
         file_num = 1
         records = []
         i = 1
@@ -18,7 +19,7 @@ class Cashflow(Generatable):
         database = self.get_database()
         file_builder = self.get_file_builder()
 
-        batch_size = domain_config['batch_size']
+        batch_size = config['batch_size']
         offset = 0
 
         while True: 
@@ -51,7 +52,7 @@ class Cashflow(Generatable):
                         })
 
                         if (i % int(records_per_file) == 0):
-                            file_builder.build(None, file_extension, file_num, records, domain_config)
+                            file_builder.build(None, file_extension, file_num, records, config)
                             file_num += 1
                             records = []
 
@@ -60,7 +61,7 @@ class Cashflow(Generatable):
                 break
         
         if records != []: 
-            file_builder.build(None, file_extension, file_num, records, domain_config)
+            file_builder.build(None, file_extension, file_num, records, config)
 
     def calc_eom(self, d):
         return date(d.year, d.month, calendar.monthrange(d.year, d.month)[-1])

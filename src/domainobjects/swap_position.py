@@ -7,11 +7,12 @@ import logging
 
 class SwapPosition(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config):        
+    def generate(self, record_count, custom_args):        
+        config = self.get_object_config()
         ins_per_swap_range = custom_args['ins_per_swap']
         
-        records_per_file = domain_config['max_objects_per_file']
-        file_extension = "."+str(domain_config['file_builder_name']).lower()
+        records_per_file = config['max_objects_per_file']
+        file_extension = "."+str(config['file_builder_name']).lower()
         file_num = 1
         i = 1
 
@@ -25,7 +26,7 @@ class SwapPosition(Generatable):
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
 
-        batch_size = domain_config['batch_size']
+        batch_size = config['batch_size']
         logging.warning("Batch size for Swap Positions are: "+str(batch_size))
         offset = 0
 
@@ -68,7 +69,7 @@ class SwapPosition(Generatable):
                                 persisting_records = []
 
                             if (i % int(records_per_file) == 0):
-                                file_builder.build(None, file_extension, file_num, records, domain_config)
+                                file_builder.build(None, file_extension, file_num, records, config)
                                 file_num += 1
                                 records = []
                             
@@ -77,7 +78,7 @@ class SwapPosition(Generatable):
                 break
 
         if records != []: 
-            file_builder.build(None, file_extension, file_num, records, domain_config)
+            file_builder.build(None, file_extension, file_num, records, config)
             records = []
         
         if persisting_records != []:

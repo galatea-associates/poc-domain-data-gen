@@ -5,10 +5,11 @@ import string
 
 class Generatable(ABC):   
 
-    def __init__(self, cache, dependency_db, file_builder): 
-        self.__dependency_db = dependency_db
+    def __init__(self, cache, database, file_builder, domain_object_config): 
+        self.__database = database
         self.__cache = cache
         self.__file_builder = file_builder
+        self.__config = domain_object_config
 
     @abstractmethod
     def generate(self, record_count, custom_args):
@@ -99,7 +100,10 @@ class Generatable(ABC):
         return self.__cache
 
     def get_database(self):
-        return self.__dependency_db
+        return self.__database
 
     def get_file_builder(self):
         return self.__file_builder
+    
+    def get_object_config(self):
+        return self.__config

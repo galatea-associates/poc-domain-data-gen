@@ -4,10 +4,11 @@ import random
 
 class OrderExecution(Generatable):
     
-    def generate(self, record_count, custom_args, domain_config):
-        records_per_file = domain_config['max_objects_per_file']
+    def generate(self, record_count, custom_args):
+        config = self.get_object_config()
+        records_per_file = config['max_objects_per_file']
         file_num = 1
-        file_extension = "."+str(domain_config['file_builder_name']).lower()
+        file_extension = "."+str(config['file_builder_name']).lower()
         records = []
 
         database = self.get_database()
@@ -32,9 +33,9 @@ class OrderExecution(Generatable):
             })     
 
             if (i % int(records_per_file) == 0):
-                file_builder.build(None, file_extension, file_num, records, domain_config)
+                file_builder.build(None, file_extension, file_num, records, config)
                 file_num += 1
                 records = []
         
         if records != []: 
-            file_builder.build(None, file_extension, file_num, records, domain_config)
+            file_builder.build(None, file_extension, file_num, records, config)
