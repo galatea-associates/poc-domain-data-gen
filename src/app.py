@@ -7,6 +7,7 @@ import sqlite3
 import logging
 from cache import Cache
 from sqlite_database import Sqlite_Database
+from GoogleDriveAccessor import GoogleDriveAccessor
 
 # Return a specified class from package.module
 def get_class(package_name, module_name, class_name):
@@ -38,6 +39,7 @@ def main():
     cache = Cache()                     # Stores global generation attributes, i.e: tickers, countries of issuance, exchange codes etc.
     dependency_db = Sqlite_Database()   # Stores global generation dependencies, i.e instrument RICs. 
     args = get_args()                   # Stores command line arguments TODO: CHECK THIS IS RIGHT
+    google_drive_accessor = GoogleDriveAccessor(args.g_drive_root)
 
     with open(args.config) as config_file:
         config = json.load(config_file)
@@ -45,12 +47,15 @@ def main():
     domain_object_configs = config['domain_objects']
     file_builder_configs = config['file_builders']
 
-    for domain_object_config in domain_object_configs:
+    for domain_object_config in domain_object_configs:  
         logging.info("Now Generating Domain Object: "+domain_object_config['class_name'])
-        gen_start_time = timeit.default_timer()
+        gen_start_time = timeit.default_timer()      
+        
         file_builder_config = get_file_builder_config(file_builder_configs, domain_object_config['file_builder_name'])      
-        file_builder = get_class('filebuilders', file_builder_config['module_name'], file_builder_config['class_name']) 
+        file_builder_class = get_class('filebuilders', file_builder_config['module_name'], file_builder_config['class_name']) 
+        file_builder = file_builder_class(google_drive_accessor, domain_object_config)
         process_domain_object(domain_object_config, cache, dependency_db, file_builder)
+        
         gen_end_time = timeit.default_timer()
         logging.info("Domain Object: "+domain_object_config['class_name']+" took "+str(gen_end_time-gen_start_time)+" seconds to generate.")
 

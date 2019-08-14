@@ -4,9 +4,9 @@ import os
 
 class CSVBuilder(FileBuilder):
 
-    def build(self, file_extension, file_number, data, domain_object):                      
-        file_name = domain_object['file_name'] + '_{}' + file_extension
-        output_dir = domain_object['output_directory']
+    def build(self, file_number, data):                      
+        output_dir = self.get_output_directory()
+        file_name = self.get_file_name() 
 
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
