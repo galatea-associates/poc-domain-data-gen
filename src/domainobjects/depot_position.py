@@ -9,7 +9,6 @@ class DepotPosition(Generatable):
         config = self.get_object_config()
         records_per_file = config['max_objects_per_file']
         file_num = 1
-        file_extension = "."+str(config['file_builder_name']).lower()
         
         records = []     
         file_builder = self.get_file_builder()
@@ -33,12 +32,12 @@ class DepotPosition(Generatable):
             })        
 
             if (i % int(records_per_file) == 0):
-                file_builder.build(None, file_extension, file_num, records, config)
+                file_builder.build(file_num, records)
                 file_num += 1
                 records = []
         
         if records != []: 
-            file_builder.build(None, file_extension, file_num, records, config)
+            file_builder.build(file_num, records)
     
     def generate_purpose(self):
         return random.choice(['Holdings', 'Seg'])

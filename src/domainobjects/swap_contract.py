@@ -13,7 +13,6 @@ class SwapContract(Generatable):
     
         records_per_file = config['max_objects_per_file']
         file_num = 1
-        file_extension = "."+str(config['file_builder_name']).lower()
         records = []
         i = 1
 
@@ -52,14 +51,14 @@ class SwapContract(Generatable):
                 database.persist("swap_contracts",[str(i)])
 
                 if (i % int(records_per_file) == 0):
-                    file_builder.build(None, file_extension, file_num, records, config)
+                    file_builder.build(file_num, records)
                     file_num += 1
                     records = []
                 
                 i += 1
         
         if records != []: 
-            file_builder.build(None, file_extension, file_num, records, config)
+            file_builder.build(file_num, records)
         
         database.commit_changes()
     

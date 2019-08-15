@@ -11,7 +11,6 @@ class Cashflow(Generatable):
         cashflow_gen_args = custom_args['cashflow_generation']   
 
         records_per_file = config['max_objects_per_file']
-        file_extension = "."+str(config['file_builder_name']).lower()
         file_num = 1
         records = []
         i = 1
@@ -52,7 +51,7 @@ class Cashflow(Generatable):
                         })
 
                         if (i % int(records_per_file) == 0):
-                            file_builder.build(None, file_extension, file_num, records, config)
+                            file_builder.build(file_num, records)
                             file_num += 1
                             records = []
 
@@ -61,7 +60,7 @@ class Cashflow(Generatable):
                 break
         
         if records != []: 
-            file_builder.build(None, file_extension, file_num, records, config)
+            file_builder.build(file_num, records)
 
     def calc_eom(self, d):
         return date(d.year, d.month, calendar.monthrange(d.year, d.month)[-1])

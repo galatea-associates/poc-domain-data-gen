@@ -1,5 +1,3 @@
-from Runnable import Runnable
-
 from googleapiclient.http import MediaIoBaseDownload
 from googleapiclient.discovery import build
 from httplib2 import Http

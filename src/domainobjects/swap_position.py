@@ -12,7 +12,6 @@ class SwapPosition(Generatable):
         ins_per_swap_range = custom_args['ins_per_swap']
         
         records_per_file = config['max_objects_per_file']
-        file_extension = "."+str(config['file_builder_name']).lower()
         file_num = 1
         i = 1
 
@@ -69,7 +68,7 @@ class SwapPosition(Generatable):
                                 persisting_records = []
 
                             if (i % int(records_per_file) == 0):
-                                file_builder.build(None, file_extension, file_num, records, config)
+                                file_builder.build(file_num, records)
                                 file_num += 1
                                 records = []
                             
@@ -78,7 +77,7 @@ class SwapPosition(Generatable):
                 break
 
         if records != []: 
-            file_builder.build(None, file_extension, file_num, records, config)
+            file_builder.build(file_num, records)
             records = []
         
         if persisting_records != []:
@@ -89,7 +88,8 @@ class SwapPosition(Generatable):
     
     def generate_account(self):
         account_type = random.choice(['ICP', 'ECP'])
-        return account_type + ''.join([random.choice(string.digits) for _ in range(4)])   
+        random_string = [random.choice(string.digits) for _ in range(4)]
+        return account_type.join(random_string)   
     
     def generate_long_short(self):       
         return random.choice(['Long', 'Short'])  

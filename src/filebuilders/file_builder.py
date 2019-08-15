@@ -10,7 +10,7 @@ class FileBuilder(abc.ABC):
         file_extension = domain_object_config['file_builder_name'].lower()
 
         self.__google_drive_connector = google_drive_connector
-        self.__file_name = file_name + '_{}' + file_extension  
+        self.__file_name = file_name + '_{}.' + file_extension  
         self.__output_dir = domain_object_config['output_directory']     
         self.__root_element_name = domain_object_config['root_element_name']   
         self.__item_name = domain_object_config['item_name']
