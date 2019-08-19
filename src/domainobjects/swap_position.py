@@ -23,7 +23,10 @@ class SwapPosition(Generatable):
 
         all_instruments = database.retrieve('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
-        date_range = pd.date_range(start_date, datetime.today(), freq='D')
+        pd_date_range = pd.date_range(start_date, datetime.today(), freq='D')
+        date_range = []
+        for date in pd_date_range:
+            date_range.append(datetime.strftime(date, '%Y-%m-%d'))
 
         batch_size = config['batch_size']
         logging.warning("Batch size for Swap Positions are: "+str(batch_size))
@@ -43,7 +46,7 @@ class SwapPosition(Generatable):
                     for position_type in ['S', 'I', 'E']:
                         quantity = self.generate_random_integer(negative=long_short.upper() == "SHORT")
                         for date in date_range:
-                            current_date = date.date()
+                            current_date = date
                             records.append({
                                 'swap_position_id': i,
                                 'ric': instrument['ric'],
@@ -87,12 +90,13 @@ class SwapPosition(Generatable):
         database.commit_changes()
     
     def generate_account(self):
-        account_type = random.choice(['ICP', 'ECP'])
-        random_string = [random.choice(string.digits) for _ in range(4)]
-        return account_type.join(random_string)   
+        account_type = random.choice(self.ACCOUNT_TYPES)
+        random_string = ''.join(random.choices(string.digits, k=4))
+        #random_string = [random.choice(string.digits) for _ in range(4)]
+        return ''.join([account_type, random_string])   
     
     def generate_long_short(self):       
-        return random.choice(['Long', 'Short'])  
+        return random.choice(self.LONG_SHORT)  
     
     def generate_purpose(self):
         return 'Outright'

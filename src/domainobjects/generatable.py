@@ -5,6 +5,16 @@ import string
 
 class Generatable(ABC):   
 
+    LONG_SHORT = ['Long', 'Short']
+    ACCOUNT_TYPES = ['ICP', 'ECP']
+    TRUE_FALSE = [True, False]
+    CURRENCIES = ['USD', 'CAD', 'EUR', 'GBP']
+    ASSET_CLASSES = ['Stock', 'Cash']
+    CREDIT_DEBIT = ['Credit', 'Debit']
+    POSITION_TYPES = ['SD', 'TD']
+    RETURN_TYPES = ['Outstanding', 'Pending Return', 'Pending Recall',
+                    'Partial Return', 'Partial Recall', 'Settled']
+
     def __init__(self, cache, database, file_builder, domain_object_config): 
         self.__database = database
         self.__cache = cache
@@ -26,7 +36,7 @@ class Generatable(ABC):
         return ''.join(random.choices(choices, k=length))
      
     def generate_random_boolean(self):
-        return random.choice([True, False])
+        return random.choice(self.TRUE_FALSE)
     
     def generate_random_date(self, from_year=2016, to_year=2017,
                                  from_month=1, to_month=12,
@@ -48,25 +58,25 @@ class Generatable(ABC):
         return round(random.uniform(min, max), dp)
 
     def generate_currency(self):
-        return random.choice(['USD', 'CAD', 'EUR', 'GBP'])
+        return random.choice(self.CURRENCIES)
     
     def generate_asset_class(self):
-        return random.choice(['Stock', 'Cash'])
+        return random.choice(self.ASSET_CLASSES)
     
     def generate_ric(self, ticker, exchange_code):
         return '{0}.{1}'.format(ticker, exchange_code)
     
     def generate_isin(self, coi, cusip):
-        return coi + cusip + '4'
+        return ''.join([coi, cusip, '4'])
     
     def generate_credit_debit(self):
-        return random.choice(['Credit', 'Debit'])
+        return random.choice(self.CREDIT_DEBIT)
     
     def generate_long_short(self):
-        return random.choice(['Long', 'Short'])
+        return random.choice(self.LONG_SHORT)
     
     def generate_position_type(self, no_sd=False, no_td=False):
-        choices = ['SD', 'TD']
+        choices = self.POSITION_TYPES
         if no_sd:
             choices.remove('SD')
         if no_td:
@@ -79,13 +89,14 @@ class Generatable(ABC):
     def generate_effective_date(self, n_days_to_add=3, knowledge_date=None, position_type=None):
         return knowledge_date if position_type == 'SD' else knowledge_date + timedelta(days=n_days_to_add)
 
-    def generate_account(self, account_types=['ICP, ECP']):
+    def generate_account(self, account_types = ACCOUNT_TYPES):
         account_type = random.choice(account_types)
-        return account_type + ''.join([random.choice(string.digits) for _ in range(4)])      
+        random_string = ''.join(random.choices(string.digits, k=4)) 
+        return ''.join([account_type, random_string])
+        #return account_type + ''.join([random.choice(string.digits) for _ in range(4)])      
        
     def generate_return_type(self):
-        return random.choice(['Outstanding', 'Pending Return', 'Pending Recall',
-                              'Partial Return', 'Partial Recall', 'Settled'])
+        return random.choice(self.RETURN_TYPES)
 
     def generate_coi(self):
         return random.choice(self.__cache.retrieve_from_cache('cois'))
