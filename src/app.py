@@ -1,8 +1,9 @@
 import argparse
 import importlib
-import json
+import ujson
 import timeit
 import logging
+import random
 from cache import Cache
 from sqlite_database import Sqlite_Database
 #from GoogleDriveAccessor import GoogleDriveAccessor
@@ -31,6 +32,10 @@ def get_args():
     return cl_args
 
 def main():
+
+    # TODO: Random seeding for consistency in tests, REMOVE THIS IN RELEASES
+    random.seed(100)
+
     start_time = timeit.default_timer()
     logging.basicConfig(filename='generator.log', filemode='w', format='%(levelname)s : %(message)s', level=logging.INFO)
 
@@ -40,7 +45,7 @@ def main():
     #google_drive_accessor = GoogleDriveAccessor(args.g_drive_root)
 
     with open(args.config) as config_file:
-        config = json.load(config_file)
+        config = ujson.load(config_file)
     
     domain_object_configs = config['domain_objects']
     file_builder_configs = config['file_builders']
