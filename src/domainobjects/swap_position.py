@@ -43,7 +43,7 @@ class SwapPosition(Generatable):
                     for position_type in ['S', 'I', 'E']:
                         quantity = self.generate_random_integer(negative=long_short.upper() == "SHORT")
                         for date in date_range:
-                            current_date = date.date()
+                            current_date = datetime.strftime(date, '%Y-%m-%d')
                             records.append({
                                 'swap_position_id': i,
                                 'ric': instrument['ric'],
@@ -55,7 +55,7 @@ class SwapPosition(Generatable):
                                 'long_short': long_short,
                                 'td_quantity': quantity,
                                 'purpose': purpose,
-                                'time_stamp': datetime.now(),
+                                'time_stamp': str(datetime.now())
                             })
                             
                             effective_date = str(current_date)

@@ -43,7 +43,7 @@ class Cashflow(Generatable):
                             'swap_contract_id': swap_position['swap_contract_id'],
                             'ric': swap_position['ric'],
                             'cashflow_type': cashflow_gen_arg['cashFlowType'],
-                            'pay_date': pay_date_func(effective_date),
+                            'pay_date': datetime.strftime(pay_date_func(effective_date), '%Y-%m-%d'),
                             'effective_date': effective_date_,
                             'currency': self.generate_currency(),
                             'amount': self.generate_random_integer(),
