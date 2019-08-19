@@ -23,10 +23,7 @@ class SwapPosition(Generatable):
 
         all_instruments = database.retrieve('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
-        pd_date_range = pd.date_range(start_date, datetime.today(), freq='D')
-        date_range = []
-        for date in pd_date_range:
-            date_range.append(datetime.strftime(date, '%Y-%m-%d'))
+        date_range = pd.date_range(start_date, datetime.today(), freq='D')
 
         batch_size = config['batch_size']
         logging.warning("Batch size for Swap Positions are: "+str(batch_size))
@@ -46,7 +43,7 @@ class SwapPosition(Generatable):
                     for position_type in ['S', 'I', 'E']:
                         quantity = self.generate_random_integer(negative=long_short.upper() == "SHORT")
                         for date in date_range:
-                            current_date = date
+                            current_date = date.date()
                             records.append({
                                 'swap_position_id': i,
                                 'ric': instrument['ric'],
