@@ -1,11 +1,13 @@
 from domainobjects.generatable import Generatable
 import random
+import timeit
+import logging
 import pandas as pd
 from datetime import datetime, date
 import calendar
 
 class Cashflow(Generatable):
-    
+
     def generate(self, record_count, custom_args, ):
         config = self.get_object_config()
         cashflow_gen_args = custom_args['cashflow_generation']   
@@ -17,9 +19,11 @@ class Cashflow(Generatable):
 
         database = self.get_database()
         file_builder = self.get_file_builder()
-
+        
         batch_size = config['batch_size']
         offset = 0
+
+        start_generation = timeit.default_timer()
 
         while True: 
             swap_position_batch = database.retrieve_batch('swap_positions', batch_size, offset)
@@ -52,6 +56,12 @@ class Cashflow(Generatable):
 
                         if (i % int(records_per_file) == 0):
                             file_builder.build(file_num, records)
+
+                            end_generation = timeit.default_timer()
+                            generation_throughput = records_per_file/(end_generation-start_generation)
+                            logging.info("Cashflow generation throughput: "+str(generation_throughput))
+                            start_generation = timeit.default_timer()
+
                             file_num += 1
                             records = []
 
@@ -61,6 +71,9 @@ class Cashflow(Generatable):
         
         if records != []: 
             file_builder.build(file_num, records)
+            end_generation = timeit.default_timer()
+            generation_throughput = len(records)/(end_generation-start_generation)
+            logging.info("Cashflow generation throughput: "+str(generation_throughput))
 
     def calc_eom(self, d):
         return date(d.year, d.month, calendar.monthrange(d.year, d.month)[-1])
@@ -81,7 +94,6 @@ class Cashflow(Generatable):
             return True
         elif accrual == "CHANCE_ACCRUAL" and random.random() < (int(probability) / 100):
             return True
-        
 
 
     

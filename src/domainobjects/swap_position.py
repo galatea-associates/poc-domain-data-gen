@@ -2,6 +2,7 @@ from domainobjects.generatable import Generatable
 from datetime import datetime, timedelta
 import random
 import string
+import timeit
 import pandas as pd
 import logging
 
@@ -28,6 +29,9 @@ class SwapPosition(Generatable):
         batch_size = config['batch_size']
         logging.warning("Batch size for Swap Positions are: "+str(batch_size))
         offset = 0
+
+        # Throughput timer
+        start_generation = timeit.default_timer()
 
         while True:
             swap_contract_batch = database.retrieve_batch('swap_contracts', batch_size, offset)
@@ -69,6 +73,12 @@ class SwapPosition(Generatable):
 
                             if (i % int(records_per_file) == 0):
                                 file_builder.build(file_num, records)
+                                
+                                end_generation = timeit.default_timer()
+                                generation_throughput = records_per_file/(end_generation-start_generation)
+                                logging.info("Swap Position generation throughput: "+str(generation_throughput))
+                                start_generation = timeit.default_timer()
+                                
                                 file_num += 1
                                 records = []
                             
@@ -78,6 +88,9 @@ class SwapPosition(Generatable):
 
         if records != []: 
             file_builder.build(file_num, records)
+            end_generation = timeit.default_timer()
+            generation_throughput = len(records)/(end_generation-start_generation)
+            logging.info("Swap Position generation throughput: "+str(generation_throughput))
             records = []
         
         if persisting_records != []:
@@ -85,7 +98,7 @@ class SwapPosition(Generatable):
             persisting_records = []
 
         database.commit_changes()
-    
+
     def generate_account(self):
         account_type = random.choice(self.ACCOUNT_TYPES)
         random_string = ''.join(random.choices(string.digits, k=4))
