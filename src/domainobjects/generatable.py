@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from ProcessSpawner import spawn_write
 import random
 import string
 
@@ -25,6 +26,9 @@ class Generatable(ABC):
     def generate(self, record_count, custom_args):
        pass
     
+    def write_to_file(self, file_num, records):
+        spawn_write(file_num, records, self.get_file_builder())
+
     def generate_random_string(self, length, include_letters=True, include_numbers=True):
         choices = ''
         if include_letters:

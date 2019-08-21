@@ -11,7 +11,6 @@ class Counterparty(Generatable):
         file_num = 1
         
         database = self.get_database()
-        file_builder = self.get_file_builder()
         records = []
 
         for i in range(1, record_count+1):                 
@@ -31,14 +30,14 @@ class Counterparty(Generatable):
                 'time_stamp':datetime.now()})
             
             if (i % int(records_per_file) == 0):
-                file_builder.build(file_num, records)
+                self.write_to_file(file_num, records)
                 file_num += 1
                 records = []
 
             database.persist("counterparties",[str(i+1)])
 
         if records != []: 
-            file_builder.build(file_num, records)
+            self.write_to_file(file_num, records)
 
         database.commit_changes()
 

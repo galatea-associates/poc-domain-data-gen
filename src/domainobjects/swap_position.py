@@ -12,21 +12,19 @@ class SwapPosition(Generatable):
         config = self.get_object_config()
         ins_per_swap_range = custom_args['ins_per_swap']
         
-        records_per_file = config['max_objects_per_file']
+        records_per_file = int(config['max_objects_per_file'])
         file_num = 1
         i = 1
 
-        database = self.get_database()
-        file_builder = self.get_file_builder()
-
         records = [] 
         persisting_records = []
+        database = self.get_database()
 
         all_instruments = database.retrieve('instruments')
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
 
-        batch_size = config['batch_size']
+        batch_size = int(config['batch_size'])
         logging.warning("Batch size for Swap Positions are: "+str(batch_size))
         offset = 0
 
@@ -59,21 +57,18 @@ class SwapPosition(Generatable):
                                 'long_short': long_short,
                                 'td_quantity': quantity,
                                 'purpose': purpose,
-                                'time_stamp': str(datetime.now())
+                                'time_stamp': datetime.now()
                             })
                             
-                            effective_date = str(current_date)
-                            
                             if (position_type == 'E'): 
-                                persisting_records.append([str(swap_contract['id']), instrument['ric'], position_type, effective_date, str(long_short)])
+                                persisting_records.append([str(swap_contract['id']), instrument['ric'], position_type, current_date, str(long_short)])
                             
                             if (i % int(batch_size) == 0):
                                 database.persist_batch("swap_positions", persisting_records)
                                 persisting_records = []
 
-                            if (i % int(records_per_file) == 0):
-                                file_builder.build(file_num, records)
-                                
+                            if (i % records_per_file == 0):
+                                self.write_to_file(file_num, records)
                                 end_generation = timeit.default_timer()
                                 generation_throughput = records_per_file/(end_generation-start_generation)
                                 logging.info("Swap Position generation throughput: "+str(generation_throughput))
@@ -87,7 +82,7 @@ class SwapPosition(Generatable):
                 break
 
         if records != []: 
-            file_builder.build(file_num, records)
+            self.write_to_file(file_num, records)
             end_generation = timeit.default_timer()
             generation_throughput = len(records)/(end_generation-start_generation)
             logging.info("Swap Position generation throughput: "+str(generation_throughput))
@@ -110,3 +105,7 @@ class SwapPosition(Generatable):
     
     def generate_purpose(self):
         return 'Outright'
+
+    def write_to_file(self, file_num, records):
+        file_builder = self.get_new_file_builder()
+        spawn_write(file_num, records, file_builder)

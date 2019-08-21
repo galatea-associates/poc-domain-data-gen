@@ -9,7 +9,6 @@ class CashBalance(Generatable):
         records_per_file = config['max_objects_per_file']
         file_num = 1
 
-        file_builder = self.get_file_builder()
         records = []        
 
         for i in range(1, record_count+1):                  
@@ -22,12 +21,12 @@ class CashBalance(Generatable):
             })
         
             if (i % int(records_per_file) == 0):
-                file_builder.build(file_num, records)
+                self.write_to_file(file_num, records)
                 file_num += 1
                 records = []
         
         if records != []: 
-            file_builder.build(file_num, records)
+            self.write_to_file(file_num, records)
     
     def generate_purpose(self):
         return random.choice(['Cash Balance', 'P&L', 'Fees'])

@@ -1,4 +1,5 @@
 from domainobjects.generatable import Generatable
+from ProcessSpawner import spawn_write
 import random
 import timeit
 import logging
@@ -12,14 +13,13 @@ class Cashflow(Generatable):
         config = self.get_object_config()
         cashflow_gen_args = custom_args['cashflow_generation']   
 
-        records_per_file = config['max_objects_per_file']
+        records_per_file = int(config['max_objects_per_file'])
         file_num = 1
         records = []
         i = 1
 
         database = self.get_database()
-        file_builder = self.get_file_builder()
-        
+
         batch_size = config['batch_size']
         offset = 0
 
@@ -54,9 +54,8 @@ class Cashflow(Generatable):
                             'long_short': swap_position['long_short'] 
                         })
 
-                        if (i % int(records_per_file) == 0):
-                            file_builder.build(file_num, records)
-
+                        if (i % records_per_file == 0):
+                            self.write_to_file(file_num, records)
                             end_generation = timeit.default_timer()
                             generation_throughput = records_per_file/(end_generation-start_generation)
                             logging.info("Cashflow generation throughput: "+str(generation_throughput))
@@ -70,7 +69,7 @@ class Cashflow(Generatable):
                 break
         
         if records != []: 
-            file_builder.build(file_num, records)
+            self.write_to_file(file_num, records)
             end_generation = timeit.default_timer()
             generation_throughput = len(records)/(end_generation-start_generation)
             logging.info("Cashflow generation throughput: "+str(generation_throughput))
@@ -95,5 +94,6 @@ class Cashflow(Generatable):
         elif accrual == "CHANCE_ACCRUAL" and random.random() < (int(probability) / 100):
             return True
 
-
-    
+    def write_to_file(self, file_num, records):
+        file_builder = self.get_new_file_builder()
+        spawn_write(file_num, records, file_builder)

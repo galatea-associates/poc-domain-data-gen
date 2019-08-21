@@ -11,7 +11,6 @@ class Price(Generatable):
         records = []
         
         database = self.get_database()
-        file_builder = self.get_file_builder()
         instruments = database.retrieve('instruments')
                 
         for i in range(1, record_count+1): 
@@ -24,9 +23,9 @@ class Price(Generatable):
             })
 
             if (i % int(records_per_file) == 0):
-                file_builder.build(file_num, records)
+                self.write_to_file(file_num, records)
                 file_num += 1
                 records = []
 
         if records != []: 
-            file_builder.build(file_num, records)
+            self.write_to_file(file_num, records)

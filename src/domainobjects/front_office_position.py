@@ -10,7 +10,6 @@ class FrontOfficePosition(Generatable):
         file_num = 1
         records = []    
         
-        file_builder = self.get_file_builder()
         database = self.get_database()
         instruments = database.retrieve('instruments')    
         
@@ -32,12 +31,12 @@ class FrontOfficePosition(Generatable):
             })       
 
             if (j % int(records_per_file) == 0):
-                file_builder.build(file_num, records)
+                self.write_to_file(file_num, records)
                 file_num += 1
                 records = []
 
         if records != []: 
-            file_builder.build(file_num, records)
+            self.write_to_file(file_num, records)
 
     def generate_purpose(self):
         return 'Outright'

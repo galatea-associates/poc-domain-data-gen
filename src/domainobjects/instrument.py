@@ -9,7 +9,6 @@ class Instrument(Generatable):
         file_num = 1
 
         database = self.get_database()
-        file_builder = self.get_file_builder()
         
         records = []
         current_tickers = {}
@@ -39,12 +38,12 @@ class Instrument(Generatable):
             database.persist("instruments",[ric, cusip, isin])
 
             if (j % int(records_per_file) == 0):
-                file_builder.build(file_num, records)
+                self.write_to_file(file_num, records)
                 file_num += 1
                 records = []
         
         if records != []: 
-            file_builder.build(file_num, records)
+            self.write_to_file(file_num, records)
         current_tickers = {}
 
         database.commit_changes()
