@@ -33,7 +33,7 @@ class Cashflow(Generatable):
                 if swap_position['position_type'] != 'E':
                     continue
 
-                # Intermediary variable required 
+                # Intermediary variable required
                 # sqlite3.Row does not support assignment
                 effective_date_ = swap_position['effective_date']
                 effective_date = datetime.strptime(effective_date_, '%Y-%m-%d')
@@ -45,7 +45,7 @@ class Cashflow(Generatable):
                                               accrual,
                                               probability):
 
-                        pay_date_period = cf_arg['cashFlowPaydatePeriod']                    
+                        pay_date_period = cf_arg['cashFlowPaydatePeriod']
                         p_date_func = self.get_pay_date_func(pay_date_period)
                         swap_contract_id = swap_position['swap_contract_id']
                         records.append({
