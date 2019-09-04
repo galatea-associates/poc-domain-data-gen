@@ -12,7 +12,7 @@ class JSONBuilder(FileBuilder):
             os.mkdir(output_dir)
 
         with open(os.path.join(output_dir, file_name.format(f'{file_number:03}')), 'w') as output_file:
-            ujson.dump(data, output_file, default=str)
+            ujson.dump(data, output_file)
         
     def append_data(self, data):        
-        self.file.write(ujson.dumps(data, default=str) + ',')
+        self.file.write(ujson.dumps(data) + ',')
