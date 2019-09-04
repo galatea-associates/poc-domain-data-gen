@@ -93,3 +93,6 @@ class Sqlite_Database:
 
     def commit_changes(self):
         self.__connection.commit()
+
+    def close_connection(self):
+        self.__connection.close()
