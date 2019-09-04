@@ -11,7 +11,7 @@ class SwapPosition(Generatable):
     def generate(self, record_count, custom_args):        
         config = self.get_object_config()
         ins_per_swap_range = custom_args['ins_per_swap']
-        
+
         records_per_file = int(config['max_objects_per_file'])
         file_num = 1
         i = 1
@@ -34,7 +34,7 @@ class SwapPosition(Generatable):
         while True:
             swap_contract_batch = database.retrieve_batch('swap_contracts', batch_size, offset)
             offset += batch_size
-    
+
             for swap_contract in swap_contract_batch:                             
                 ins_count = random.randint(int(ins_per_swap_range['min']), int(ins_per_swap_range['max']))
                 instruments = random.sample(all_instruments, ins_count) 
@@ -59,10 +59,10 @@ class SwapPosition(Generatable):
                                 'purpose': purpose,
                                 'time_stamp': datetime.now()
                             })
-                            
+
                             if (position_type == 'E'): 
                                 persisting_records.append([str(swap_contract['id']), instrument['ric'], position_type, current_date, str(long_short)])
-                            
+
                             if (i % int(batch_size) == 0):
                                 database.persist_batch("swap_positions", persisting_records)
                                 persisting_records = []
@@ -73,21 +73,23 @@ class SwapPosition(Generatable):
                                 generation_throughput = records_per_file/(end_generation-start_generation)
                                 logging.info("Swap Position generation throughput: "+str(generation_throughput))
                                 start_generation = timeit.default_timer()
-                                
+
                                 file_num += 1
                                 records = []
-                            
+
                             i += 1
             if not swap_contract_batch:
                 break
 
-        if records != []: 
+        if records != []:
             self.write_to_file(file_num, records)
             end_generation = timeit.default_timer()
-            generation_throughput = len(records)/(end_generation-start_generation)
-            logging.info("Swap Position generation throughput: "+str(generation_throughput))
+            generation_throughput = \
+                len(records)/(end_generation-start_generation)
+            logging.info("Swap Position generation throughput: "
+                +str(generation_throughput))
             records = []
-        
+
         if persisting_records != []:
             database.persist_batch("swap_positions", persisting_records)
             persisting_records = []
@@ -97,11 +99,10 @@ class SwapPosition(Generatable):
     def generate_account(self):
         account_type = random.choice(self.ACCOUNT_TYPES)
         random_string = ''.join(random.choices(string.digits, k=4))
-        #random_string = [random.choice(string.digits) for _ in range(4)]
-        return ''.join([account_type, random_string])   
-    
-    def generate_long_short(self):       
+        return ''.join([account_type, random_string])
+
+    def generate_long_short(self):
         return random.choice(self.LONG_SHORT)  
-    
+
     def generate_purpose(self):
         return 'Outright'

@@ -28,7 +28,7 @@ class FileBuilder(abc.ABC):
             .get_folder_id(todays_date, root_folder_id)
         if folder_id == None:
             folder_id = self.__google_drive_connector\
-                .create_folder(todays_date, root_folder_id)    
+                .create_folder(todays_date, root_folder_id)
 
         # Check if the file already exists, create if it doesn't, update if it does
         file_id = self.__google_drive_connector\

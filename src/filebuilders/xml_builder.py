@@ -15,10 +15,17 @@ class XMLBuilder(FileBuilder):
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
-        with open(\
-            os.path.join(output_dir, file_name.format(f'{file_number:03}')),\
-                 'w', newline='') as output_file:
-            xml = dicttoxml.dicttoxml(data, custom_root=root_element_name, ids=False)  # Convert to Bytes
-            xml = str(xml, 'utf-8')  # Bytes to String
-            xml = xml.replace(' type=\"str\"', '').replace(' type=\"dict\"', '').replace(' type=\"int\"', '')
+        with open(os.path.join(output_dir, 
+                  file_name.format(f'{file_number:03}')),
+                  'w', newline='') as output_file:
+
+            # convert data to bytes
+            xml = dicttoxml.dicttoxml(data, 
+                custom_root=root_element_name, ids=False)
+
+            # convert from bytes into string
+            xml = str(xml, 'utf-8')
+            xml = xml.replace(' type=\"str\"', '')\
+                        .replace(' type=\"dict\"', '')\
+                            .replace(' type=\"int\"', '')
             output_file.write(xml)
