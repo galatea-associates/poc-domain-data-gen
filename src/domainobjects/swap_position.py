@@ -66,13 +66,13 @@ class SwapPosition(Generatable):
                             })
 
                             if (position_type == 'E'):
-                                persisting_records\
-                                    .append(
-                                        [str(swap_contract['id']),
-                                        instrument['ric'],
-                                        position_type,
-                                        current_date,
-                                        str(long_short)])
+                                persisting_records.append(
+                                    [str(swap_contract['id']),
+                                     instrument['ric'],
+                                     position_type,
+                                     current_date,
+                                     str(long_short)]
+                                )
 
                             if (i % int(batch_size) == 0):
                                 database.persist_batch(

@@ -11,7 +11,9 @@ class JSONBuilder(FileBuilder):
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
-        with open(os.path.join(output_dir, file_name.format(f'{file_number:03}')), 'w') as output_file:
+        with open(os.path.join(output_dir,
+                  file_name.format(f'{file_number:03}')),
+                  'w') as output_file:
             ujson.dump(data, output_file)
 
     def append_data(self, data):
