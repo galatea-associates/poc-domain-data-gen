@@ -14,7 +14,8 @@ class CSVBuilder(FileBuilder):
         with open(os.path.join(output_dir, 
                   file_name.format(f'{file_number:03}')),
                   'w+', newline='') as output_file:
-            dict_writer = csv.DictWriter(output_file, restval="-", fieldnames=data[0].keys(), delimiter=',')
+            dict_writer = csv.DictWriter(output_file, restval="-",
+                                         fieldnames=data[0].keys(), 
+                                         delimiter=',')
             dict_writer.writeheader()
             dict_writer.writerows(data)
-            

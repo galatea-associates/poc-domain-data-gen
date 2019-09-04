@@ -11,7 +11,7 @@ from sqlite_database import Sqlite_Database
 
 def get_class(package_name, module_name, class_name):
     return getattr(importlib.import_module(package_name+'.'+module_name),
-            class_name)
+                   class_name)
 
 
 # Create list comprehension of the file builder config which matches a name
@@ -96,6 +96,7 @@ def main():
 
     end_time = timeit.default_timer()
     logging.info("Overall runtime: "+str(end_time-start_time))
+
 
 if __name__ == '__main__':
     main()
