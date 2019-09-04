@@ -1,16 +1,14 @@
 from domainobjects.generatable import Generatable
 import random
-import timeit
-import logging
 from datetime import datetime, timedelta
 
 class SwapContract(Generatable):
-    
+
     def generate(self, record_count, custom_args):
         config = self.get_object_config()
         swap_per_counterparty_min = int(custom_args['swap_per_counterparty']['min'])
         swap_per_counterparty_max = int(custom_args['swap_per_counterparty']['max'])
-    
+
         records_per_file = config['max_objects_per_file']
         file_num = 1
         records = []
@@ -47,29 +45,29 @@ class SwapContract(Generatable):
                     'swap_contract_field8': self.generate_random_string(10),
                     'time_stamp': datetime.now(),
                 })
-                
-                database.persist("swap_contracts",[str(i)])
+
+                database.persist("swap_contracts", [str(i)])
 
                 if (i % int(records_per_file) == 0):
                     file_builder.build(file_num, records)
                     file_num += 1
                     records = []
-                
+
                 i += 1
-        
-        if records != []: 
+
+        if records != []:
             file_builder.build(file_num, records)
-        
+
         database.commit_changes()
-    
+
     def generate_swap_end_date(self, years_to_add=5, start_date=None, status=None):
         return None if status == 'Live' else start_date + timedelta(days=365 * years_to_add)
-    
+
     def generate_swap_type(self):      
         return random.choice(['Equity', 'Portfolio'])
-    
+
     def generate_reference_rate(self):
         return random.choice(['LIBOR'])
-    
+
     def generate_status(self):      
         return random.choice(['Live', 'Dead'])

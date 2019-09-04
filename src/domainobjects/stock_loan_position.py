@@ -44,7 +44,7 @@ class StockLoanPosition(Generatable):
             if (i % int(records_per_file) == 0):
                 self.write_to_file(file_num, records)
                 file_num += 1
-                records = []        
+                records = []
 
         if records != []: 
             self.write_to_file(file_num, records)

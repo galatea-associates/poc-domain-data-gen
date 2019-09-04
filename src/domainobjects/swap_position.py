@@ -29,14 +29,17 @@ class SwapPosition(Generatable):
         offset = 0
 
         # Throughput timer
-        start_generation = timeit.default_timer()
+        start_gen = timeit.default_timer()
 
         while True:
-            swap_contract_batch = database.retrieve_batch('swap_contracts', batch_size, offset)
+            swap_contract_batch = database\
+                .retrieve_batch('swap_contracts', batch_size, offset)
             offset += batch_size
 
             for swap_contract in swap_contract_batch:
-                ins_count = random.randint(int(ins_per_swap_range['min']), int(ins_per_swap_range['max']))
+                ins_count = random.randint(
+                    int(ins_per_swap_range['min']), 
+                    int(ins_per_swap_range['max']))
                 instruments = random.sample(all_instruments, ins_count)
 
                 for instrument in instruments:
@@ -51,7 +54,7 @@ class SwapPosition(Generatable):
                             records.append({
                                 'swap_position_id': i,
                                 'ric': instrument['ric'],
-                                'swap_contract_id': swap_contract['id'],   
+                                'swap_contract_id': swap_contract['id'],
                                 'position_type': position_type,
                                 'knowledge_date': current_date,
                                 'effective_date': current_date,
@@ -64,8 +67,11 @@ class SwapPosition(Generatable):
 
                             if (position_type == 'E'):
                                 persisting_records.append(
-                                    [str(swap_contract['id']), instrument['ric'], 
-                                    position_type, current_date, str(long_short)]
+                                    [str(swap_contract['id']),
+                                    instrument['ric'],
+                                    position_type,
+                                    current_date,
+                                    str(long_short)]
                                 )
 
                             if (i % int(batch_size) == 0):
@@ -76,12 +82,13 @@ class SwapPosition(Generatable):
 
                             if (i % records_per_file == 0):
                                 self.write_to_file(file_num, records)
-                                end_generation = timeit.default_timer()
+                                end_gen = timeit.default_timer()
                                 generation_throughput = \
-                                    records_per_file/(end_generation-start_generation)
-                                logging.info("Swap Position generation throughput: "
+                                    records_per_file/(end_gen-start_gen)
+                                logging.info('''Swap Position 
+                                             generation throughput: '''
                                              + str(generation_throughput))
-                                start_generation = timeit.default_timer()
+                                start_gen = timeit.default_timer()
 
                                 file_num += 1
                                 records = []
@@ -92,9 +99,9 @@ class SwapPosition(Generatable):
 
         if records != []:
             self.write_to_file(file_num, records)
-            end_generation = timeit.default_timer()
+            end_gen = timeit.default_timer()
             generation_throughput = \
-                len(records)/(end_generation-start_generation)
+                len(records)/(end_gen-start_gen)
             logging.info("Swap Position generation throughput: "
                          + str(generation_throughput))
             records = []
