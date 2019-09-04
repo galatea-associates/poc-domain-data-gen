@@ -51,28 +51,32 @@ class Cashflow(Generatable):
                             'effective_date': effective_date_,
                             'currency': self.generate_currency(),
                             'amount': self.generate_random_integer(),
-                            'long_short': swap_position['long_short'] 
+                            'long_short': swap_position['long_short']
                         })
 
                         if (i % records_per_file == 0):
                             self.write_to_file(file_num, records)
                             end_generation = timeit.default_timer()
-                            generation_throughput = records_per_file/(end_generation-start_generation)
-                            logging.info("Cashflow generation throughput: "+str(generation_throughput))
+                            generation_throughput =\
+                                records_per_file/(end_generation-start_generation)
+                            logging.info("Cashflow generation throughput: "
+                                         + str(generation_throughput))
                             start_generation = timeit.default_timer()
 
                             file_num += 1
                             records = []
 
-                        i+=1 
+                        i += 1 
             if not swap_position_batch:
                 break
-        
-        if records != []: 
+
+        if records != []:
             self.write_to_file(file_num, records)
             end_generation = timeit.default_timer()
-            generation_throughput = len(records)/(end_generation-start_generation)
-            logging.info("Cashflow generation throughput: "+str(generation_throughput))
+            generation_throughput =\
+                len(records)/(end_generation-start_generation)
+            logging.info("Cashflow generation throughput: "
+                         + str(generation_throughput))
 
     def calc_eom(self, d):
         return date(d.year, d.month, calendar.monthrange(d.year, d.month)[-1])

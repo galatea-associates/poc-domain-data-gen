@@ -29,7 +29,7 @@ class Generatable(ABC):
     def write_to_file(self, file_num, records):
         spawn_write(file_num, records, self.get_file_builder())
 
-    def generate_random_string(self, length, 
+    def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
         choices = ''
         if include_letters:
@@ -51,7 +51,7 @@ class Generatable(ABC):
         day = random.randint(from_day, to_day)
         return datetime(year, month, day).date()
     
-    def generate_random_integer(self, min=1, max=10000, 
+    def generate_random_integer(self, min=1, max=10000,
                                 length=None, negative=False):
         if length is not None:
             min = 10**(length-1)
@@ -104,16 +104,16 @@ class Generatable(ABC):
         return random.choice(self.RETURN_TYPES)
 
     def generate_coi(self):
-        return random.choice(self.__cache.\
-            retrieve_from_cache('cois'))
+        return random.choice(self.__cache.
+                             retrieve_from_cache('cois'))
 
     def generate_ticker(self):
-        return random.choice(self.__cache.\
-            retrieve_from_cache('tickers'))
+        return random.choice(self.__cache.
+                             retrieve_from_cache('tickers'))
 
     def generate_exchange_code(self):
-        return random.choice(self.__cache.\
-            retrieve_from_cache('exchange_codes'))
+        return random.choice(self.__cache.
+                             retrieve_from_cache('exchange_codes'))
 
     def get_cache(self):
         return self.__cache

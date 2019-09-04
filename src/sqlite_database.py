@@ -53,7 +53,7 @@ class Sqlite_Database:
     # Persist single record to table
     def persist(self, table_name, value_list):
         formatted_values = self.format_list_for_insertion(value_list)
-        query = " ".join(("INSERT INTO", table_name, 
+        query = " ".join(("INSERT INTO", table_name,
                           "VALUES", formatted_values))
         self.__connection.execute(query)
 
