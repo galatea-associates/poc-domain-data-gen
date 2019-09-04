@@ -14,7 +14,7 @@ class OrderExecution(Generatable):
 
         instruments = database.retrieve('instruments')
         
-        for i in range(1, record_count+1):    
+        for i in range(1, record_count+1):
             instrument = random.choice(instruments)
                 
             records.append({
@@ -35,5 +35,5 @@ class OrderExecution(Generatable):
                 file_num += 1
                 records = []
         
-        if records != []: 
+        if records != []:
             self.write_to_file(file_num, records)
