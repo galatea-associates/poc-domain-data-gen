@@ -105,7 +105,3 @@ class SwapPosition(Generatable):
     
     def generate_purpose(self):
         return 'Outright'
-
-    def write_to_file(self, file_num, records):
-        file_builder = self.get_new_file_builder()
-        spawn_write(file_num, records, file_builder)

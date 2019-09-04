@@ -93,7 +93,3 @@ class Cashflow(Generatable):
             return True
         elif accrual == "CHANCE_ACCRUAL" and random.random() < (int(probability) / 100):
             return True
-
-    def write_to_file(self, file_num, records):
-        file_builder = self.get_new_file_builder()
-        spawn_write(file_num, records, file_builder)
