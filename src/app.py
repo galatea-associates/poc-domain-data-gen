@@ -9,10 +9,10 @@ from sqlite_database import Sqlite_Database
 # from GoogleDriveAccessor import GoogleDriveAccessor
 
 
-# Return a specified class from package.module
 def get_class(package_name, module_name, class_name):
     return getattr(importlib.import_module(package_name+'.'+module_name),
             class_name)
+
 
 # Create list comprehension of the file builder config which matches a name
 def get_file_builder_config(file_builders, file_builder_name):
@@ -20,6 +20,7 @@ def get_file_builder_config(file_builders, file_builder_name):
             lambda file_builder: file_builder['name'] == file_builder_name,
             file_builders
             ))[0]
+
 
 # Facillitate the domain object generation procedure
 def process_domain_object(domain_obj_config, cache,
@@ -36,6 +37,7 @@ def process_domain_object(domain_obj_config, cache,
     custom_args = domain_obj_config['custom_args']
     domain_obj.generate(record_count, custom_args)
 
+
 # Configure a parser for CL argument retrieval, and retrieve arguments
 def get_args():
     parser = argparse.ArgumentParser(description='''Generate Random Data for
@@ -44,6 +46,7 @@ def get_args():
                         help='JSON Config File Location')
     cl_args = parser.parse_args()
     return cl_args
+
 
 def main():
 
@@ -74,7 +77,7 @@ def main():
         gen_start_time = timeit.default_timer()
 
         file_builder_name = domain_object_config['file_builder_name']
-        file_builder_config = get_file_builder_config(file_builder_configs, 
+        file_builder_config = get_file_builder_config(file_builder_configs,
                                                       file_builder_name)
 
         file_builder_class =\
@@ -94,5 +97,5 @@ def main():
     end_time = timeit.default_timer()
     logging.info("Overall runtime: "+str(end_time-start_time))
 
-if __name__ == '__main__':   
+if __name__ == '__main__':
     main()

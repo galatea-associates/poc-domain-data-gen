@@ -126,3 +126,4 @@ class Generatable(ABC):
 
     def get_object_config(self):
         return self.__config
+        

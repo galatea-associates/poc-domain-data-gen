@@ -17,3 +17,4 @@ class CSVBuilder(FileBuilder):
             dict_writer = csv.DictWriter(output_file, restval="-", fieldnames=data[0].keys(), delimiter=',')
             dict_writer.writeheader()
             dict_writer.writerows(data)
+            

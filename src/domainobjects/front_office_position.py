@@ -11,7 +11,7 @@ class FrontOfficePosition(Generatable):
         records = []    
 
         database = self.get_database()
-        instruments = database.retrieve('instruments')    
+        instruments = database.retrieve('instruments')
 
         for j in range(1, record_count+1):
             instrument = random.choice(instruments)                    

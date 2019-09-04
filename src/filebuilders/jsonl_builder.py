@@ -17,3 +17,4 @@ class JSONLBuilder(FileBuilder):
             to_output = [ujson.dumps(record) for record in data]
             formatted_output = "\n".join(to_output)
             output_file.write(formatted_output)
+            
