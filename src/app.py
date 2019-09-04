@@ -50,17 +50,27 @@ def main():
     domain_object_configs = config['domain_objects']
     file_builder_configs = config['file_builders']
 
-    for domain_object_config in domain_object_configs:  
-        logging.info("Now Generating Domain Object: "+domain_object_config['class_name'])
-        gen_start_time = timeit.default_timer()      
-        
-        file_builder_config = get_file_builder_config(file_builder_configs, domain_object_config['file_builder_name'])      
-        file_builder_class = get_class('filebuilders', file_builder_config['module_name'], file_builder_config['class_name']) 
+    for domain_object_config in domain_object_configs:
+        logging.info("Now Generating Domain Object: "
+                     + domain_object_config['class_name'])
+        gen_start_time = timeit.default_timer()
+
+        file_builder_config = get_file_builder_config(file_builder_configs, 
+                                domain_object_config['file_builder_name'])  
+    
+        file_builder_class =\
+            get_class('filebuilders', file_builder_config['module_name'],
+                      file_builder_config['class_name']) 
+
         file_builder = file_builder_class(None, domain_object_config)
-        process_domain_object(domain_object_config, cache, dependency_db, file_builder)
-        
+
+        process_domain_object(domain_object_config, cache,
+                              dependency_db, file_builder)
+
         gen_end_time = timeit.default_timer()
-        logging.info("Domain Object: "+domain_object_config['class_name']+" took "+str(gen_end_time-gen_start_time)+" seconds to generate.")
+        logging.info("Domain Object: " + domain_object_config['class_name']
+                     + " took " + str(gen_end_time-gen_start_time)
+                     + " seconds to generate.")
 
     end_time = timeit.default_timer()
     logging.info("Overall runtime: "+str(end_time-start_time))

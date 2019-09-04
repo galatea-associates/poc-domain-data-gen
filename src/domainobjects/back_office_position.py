@@ -12,15 +12,16 @@ class BackOfficePosition(Generatable):
         records = []
 
         database = self.get_database()
-        
+
         instruments = database.retrieve('instruments')
-        
-        # 1 to record_count+1 preserves requested amount but reduces computation for repeated modulo calculation
-        for i in range(1, record_count+1):  
+
+        # 1 to record_count+1 preserves required amount 
+        # but reduces computation for repeated modulo calculation
+        for i in range(1, record_count+1):
             instrument = random.choice(instruments) 
             position_type = self.generate_position_type()
             knowledge_date = self.generate_knowledge_date()
-                
+
             records.append({
                 'cusip': instrument['cusip'],
                 'position_type': position_type,
@@ -31,8 +32,8 @@ class BackOfficePosition(Generatable):
                 'qty': self.generate_random_integer(),
                 'purpose': self.generate_purpose(),
                 'time_stamp': datetime.now(),
-            })      
-            
+            })
+
             if (i % int(records_per_file) == 0):
                 self.write_to_file(file_num, records)
                 file_num += 1

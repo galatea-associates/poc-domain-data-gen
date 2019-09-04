@@ -1,5 +1,4 @@
 from domainobjects.generatable import Generatable
-from ProcessSpawner import spawn_write
 import random
 import timeit
 import logging
@@ -9,9 +8,9 @@ import calendar
 
 class Cashflow(Generatable):
 
-    def generate(self, record_count, custom_args, ):
+    def generate(self, record_count, custom_args):
         config = self.get_object_config()
-        cashflow_gen_args = custom_args['cashflow_generation']   
+        cashflow_gen_args = custom_args['cashflow_generation']
 
         records_per_file = int(config['max_objects_per_file'])
         file_num = 1
@@ -23,31 +22,39 @@ class Cashflow(Generatable):
         batch_size = config['batch_size']
         offset = 0
 
-        start_generation = timeit.default_timer()
+        start_gen = timeit.default_timer()
 
-        while True: 
-            swap_position_batch = database.retrieve_batch('swap_positions', batch_size, offset)
+        while True:
+            swap_position_batch =\
+                database.retrieve_batch('swap_positions', batch_size, offset)
             offset += batch_size
 
             for swap_position in swap_position_batch:
                 if swap_position['position_type'] != 'E':
                     continue
 
-                # Intermediary variable required as sqlite3.Row does not support assignment
+                # Intermediary variable required 
+                # sqlite3.Row does not support assignment
                 effective_date_ = swap_position['effective_date']
                 effective_date = datetime.strptime(effective_date_, '%Y-%m-%d')
 
-                for cashflow_gen_arg in cashflow_gen_args:
-                    if self.generate_cashflow(effective_date, cashflow_gen_arg['cashFlowAccrual'], cashflow_gen_arg['cashFlowAccrualProbability']):
-                        
-                        pay_date_period = cashflow_gen_arg['cashFlowPaydatePeriod']                    
-                        pay_date_func = self.get_pay_date_func(pay_date_period) 
+                for cf_arg in cashflow_gen_args:
+                    accrual = cf_arg['cashFlowAccrual']
+                    probability = cf_arg['cashFlowAccrualProbability']
+                    if self.generate_cashflow(effective_date,
+                                              accrual,
+                                              probability):
+
+                        pay_date_period = cf_arg['cashFlowPaydatePeriod']                    
+                        p_date_func = self.get_pay_date_func(pay_date_period)
+                        swap_contract_id = swap_position['swap_contract_id']
                         records.append({
                             'cashflow_id': i,
-                            'swap_contract_id': swap_position['swap_contract_id'],
+                            'swap_contract_id': swap_contract_id,
                             'ric': swap_position['ric'],
-                            'cashflow_type': cashflow_gen_arg['cashFlowType'],
-                            'pay_date': datetime.strftime(pay_date_func(effective_date), '%Y-%m-%d'),
+                            'cashflow_type': cf_arg['cashFlowType'],
+                            'pay_date': datetime.strftime(
+                                p_date_func(effective_date), '%Y-%m-%d'),
                             'effective_date': effective_date_,
                             'currency': self.generate_currency(),
                             'amount': self.generate_random_integer(),
@@ -56,25 +63,25 @@ class Cashflow(Generatable):
 
                         if (i % records_per_file == 0):
                             self.write_to_file(file_num, records)
-                            end_generation = timeit.default_timer()
+                            end_gen = timeit.default_timer()
                             generation_throughput =\
-                                records_per_file/(end_generation-start_generation)
+                                records_per_file/(end_gen-start_gen)
                             logging.info("Cashflow generation throughput: "
                                          + str(generation_throughput))
-                            start_generation = timeit.default_timer()
+                            start_gen = timeit.default_timer()
 
                             file_num += 1
                             records = []
 
-                        i += 1 
+                        i += 1
             if not swap_position_batch:
                 break
 
         if records != []:
             self.write_to_file(file_num, records)
-            end_generation = timeit.default_timer()
+            end_gen = timeit.default_timer()
             generation_throughput =\
-                len(records)/(end_generation-start_generation)
+                len(records)/(end_gen-start_gen)
             logging.info("Cashflow generation throughput: "
                          + str(generation_throughput))
 
