@@ -3,7 +3,7 @@ from datetime import datetime
 
 class Instrument(Generatable):
     
-    def generate(self, record_count, custom_args):  
+    def generate(self, record_count, custom_args):
         config = self.get_object_config()
         records_per_file = config['max_objects_per_file']
         file_num = 1
@@ -17,25 +17,26 @@ class Instrument(Generatable):
             asset_class = self.generate_asset_class()         
             ticker = self.generate_ticker()
             coi = self.generate_coi()
-            exchange_code = self.generate_sequential_exchange_code(current_tickers, ticker)
+            exchange_code = self.\
+                generate_sequential_exchange_code(current_tickers, ticker)
             cusip = str(self.generate_random_integer(length=9))
             isin = self.generate_isin(coi, cusip)
             ric = self.generate_ric(ticker, exchange_code)
             sedol = self.generate_random_integer(length=7)
-            j = i+1    
+            j = i+1
 
             records.append({
-                'instrument_id':j,
-                'ric':ric,
-                'isin':isin,
-                'sedol':sedol,
-                'ticker':ticker,
-                'cusip':cusip,
-                'asset_class':asset_class,
-                'coi':coi,
-                'time_stamp':datetime.now()})
-            
-            database.persist("instruments",[ric, cusip, isin])
+                'instrument_id': j,
+                'ric': ric,
+                'isin': isin,
+                'sedol': sedol,
+                'ticker': ticker,
+                'cusip': cusip,
+                'asset_class': asset_class,
+                'coi': coi,
+                'time_stamp': datetime.now()})
+
+            database.persist("instruments", [ric, cusip, isin])
 
             if (j % int(records_per_file) == 0):
                 self.write_to_file(file_num, records)
@@ -56,5 +57,5 @@ class Instrument(Generatable):
             cur_val = current_tickers[ticker]
             current_tickers[ticker] = cur_val+1
         else:
-            current_tickers[ticker] = 0 
+            current_tickers[ticker] = 0
         return current_tickers[ticker]

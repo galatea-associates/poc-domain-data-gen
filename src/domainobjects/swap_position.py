@@ -25,7 +25,7 @@ class SwapPosition(Generatable):
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
 
         batch_size = int(config['batch_size'])
-        logging.warning("Batch size for Swap Positions are: "+str(batch_size))
+        logging.info("Batch size for Swap Positions are: "+str(batch_size))
         offset = 0
 
         # Throughput timer
@@ -66,13 +66,13 @@ class SwapPosition(Generatable):
                             })
 
                             if (position_type == 'E'):
-                                persisting_records.append(
-                                    [str(swap_contract['id']),
-                                    instrument['ric'],
-                                    position_type,
-                                    current_date,
-                                    str(long_short)]
-                                )
+                                persisting_records\
+                                    .append(
+                                        [str(swap_contract['id']),
+                                        instrument['ric'],
+                                        position_type,
+                                        current_date,
+                                        str(long_short)])
 
                             if (i % int(batch_size) == 0):
                                 database.persist_batch(
@@ -85,7 +85,7 @@ class SwapPosition(Generatable):
                                 end_gen = timeit.default_timer()
                                 generation_throughput = \
                                     records_per_file/(end_gen-start_gen)
-                                logging.info('''Swap Position 
+                                logging.info('''Swap Position
                                              generation throughput: '''
                                              + str(generation_throughput))
                                 start_gen = timeit.default_timer()
@@ -118,7 +118,7 @@ class SwapPosition(Generatable):
         return ''.join([account_type, random_string])
 
     def generate_long_short(self):
-        return random.choice(self.LONG_SHORT)  
+        return random.choice(self.LONG_SHORT)
 
     def generate_purpose(self):
         return 'Outright'

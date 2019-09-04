@@ -15,7 +15,7 @@ class StockLoanPosition(Generatable):
 
         instruments = database.retrieve('instruments')
         
-        for i in range(1, record_count+1):   
+        for i in range(1, record_count+1):
             instrument = random.choice(instruments)      
             position_type = self.generate_position_type()
             knowledge_date = self.generate_knowledge_date() 
@@ -46,7 +46,7 @@ class StockLoanPosition(Generatable):
                 file_num += 1
                 records = []
 
-        if records != []: 
+        if records != []:
             self.write_to_file(file_num, records)
     
     def generate_haircut(self, collateral_type):      
