@@ -41,7 +41,8 @@ class FileBuilder(abc.ABC):
                 .update_file(local_folder_name, file_name, file_id)
 
     def open_file(self):
-        self.file = open(os.path.join(self.__output_dir, self.__file_name), 'a+')
+        self.file = open(os.path.join(self.__output_dir,
+                                      self.__file_name), 'a+')
 
     def close_file(self):
         self.file.close()

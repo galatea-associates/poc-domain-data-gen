@@ -38,7 +38,7 @@ class SwapPosition(Generatable):
 
             for swap_contract in swap_contract_batch:
                 ins_count = random.randint(
-                    int(ins_per_swap_range['min']), 
+                    int(ins_per_swap_range['min']),
                     int(ins_per_swap_range['max']))
                 instruments = random.sample(all_instruments, ins_count)
 

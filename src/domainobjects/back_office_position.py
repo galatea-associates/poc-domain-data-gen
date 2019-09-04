@@ -15,7 +15,7 @@ class BackOfficePosition(Generatable):
 
         instruments = database.retrieve('instruments')
 
-        # 1 to record_count+1 preserves required amount 
+        # 1 to record_count+1 preserves required amount
         # but reduces computation for repeated modulo calculation
         for i in range(1, record_count+1):
             instrument = random.choice(instruments) 
