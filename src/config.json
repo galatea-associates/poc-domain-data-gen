@@ -9,7 +9,7 @@
         "item_name":"instrument",
         "file_builder_name":"JSONL",
         "output_directory":"out",
-        "upload_to_google_drive":"false",
+        "upload_to_google_drive":"true",
         "dummy_fields":[
             { "data_type": "string", "field_count" : "50" },
             { "data_type": "numeric", "field_count" : "50" }

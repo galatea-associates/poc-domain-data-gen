@@ -2,6 +2,7 @@ from filebuilders.file_builder import FileBuilder
 import csv
 import os
 import dicttoxml
+import logging
 from xml.dom.minidom import parseString
 
 class XMLBuilder(FileBuilder):
