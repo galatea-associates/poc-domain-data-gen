@@ -3,7 +3,7 @@ import importlib
 import ujson
 import timeit
 import logging
-import random
+# import random # uncomment for seeded behaviour
 from cache import Cache
 from sqlite_database import Sqlite_Database
 # from GoogleDriveAccessor import GoogleDriveAccessor
@@ -12,7 +12,7 @@ from sqlite_database import Sqlite_Database
 # Return a specified class from package.module
 def get_class(package_name, module_name, class_name):
     return getattr(importlib.import_module(package_name+'.'+module_name),
-           class_name)
+            class_name)
 
 # Create list comprehension of the file builder config which matches a name
 def get_file_builder_config(file_builders, file_builder_name):
@@ -36,7 +36,7 @@ def process_domain_object(domain_obj_config, cache,
     custom_args = domain_obj_config['custom_args']
     domain_obj.generate(record_count, custom_args)
 
-# Configure a parser for command line argument retrieval, and retrieve arguments
+# Configure a parser for CL argument retrieval, and retrieve arguments
 def get_args():
     parser = argparse.ArgumentParser(description='''Generate Random Data for
                                       various Domain Objects''')

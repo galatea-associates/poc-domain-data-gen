@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from ProcessSpawner import spawn_write
+from process_spawner import spawn_write
 import random
 import string
 
