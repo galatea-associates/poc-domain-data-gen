@@ -73,7 +73,7 @@ class SwapPosition(Generatable):
                                     current_date,
                                     str(long_short)])
 
-                            if (i % 1000 == 0):
+                            if (i % 250 == 0):
                                 database.persist_batch(
                                     "swap_positions", persisting_records
                                 )
