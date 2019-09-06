@@ -48,7 +48,7 @@ class Sqlite_Database:
             formatted_lists.append(self.format_list_for_insertion(list))
         prepared_rows = ",".join(formatted_lists)
         query = " ".join(("INSERT INTO", table_name, "VALUES", prepared_rows))
-        #print(query)
+        # print(query)
         self.__connection.execute(query)
 
     # Persist single record to table
