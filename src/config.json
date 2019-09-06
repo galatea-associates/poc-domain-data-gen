@@ -2,14 +2,14 @@
     {
         "module_name":"instrument",
         "class_name":"Instrument",
-        "record_count":"1000000",
+        "record_count":"100",
         "max_objects_per_file":"5000000",
         "file_name":"instruments",
         "root_element_name":"instruments",
         "item_name":"instrument",
         "file_builder_name":"JSONL",
         "output_directory":"out",
-        "upload_to_google_drive":"true",
+        "upload_to_google_drive":"false",
         "dummy_fields":[
             { "data_type": "string", "field_count" : "50" },
             { "data_type": "numeric", "field_count" : "50" }
@@ -180,14 +180,14 @@
         "item_name":"swap_position",
         "file_builder_name":"JSONL",
         "output_directory":"out",
-        "batch_size":1000000,
+        "batch_size":10,
         "upload_to_google_drive":"false",     
         "dummy_fields":[
             { "data_type": "string", "field_count" : "50" },
             { "data_type": "numeric", "field_count" : "50" }
         ],   
         "custom_args": {
-            "start_date":"20190712", 
+            "start_date":"20190906", 
             "ins_per_swap": {"min":"1", "max":"100"}
         }
     },
@@ -202,12 +202,12 @@
         "file_builder_name":"JSONL",
         "output_directory":"out",
         "upload_to_google_drive":"false",
-        "batch_size":1000000,    
+        "batch_size":10,    
         "dummy_fields":[
             { "data_type": "string", "field_count" : "50" },
             { "data_type": "numeric", "field_count" : "50" }
         ],       
-        "custom_args": { "start_date":"20190712", 
+        "custom_args": { "start_date":"20190906", 
             "cashflow_generation" : [
             {
                 "cashFlowType": "INT_1",
@@ -250,7 +250,7 @@
 
 ],
 "shared_domain_object_args" : [
-    { "start_date" : "20190712" }
+    { "start_date" : "20190906" }
 ],
 "file_builders" : [
     {
