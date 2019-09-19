@@ -31,9 +31,9 @@ def main():
         process_domain_object(obj_config, file_builder, shared_config)
 
 
-# Given an objects configuration and all file_builder descriptions,
-# return an instantiated file builder as per spec in object config
 def get_file_builder(obj_config, file_builder_configs):
+    # Given an objects configuration and all file_builder descriptions,
+    # return an instantiated file builder as per spec in object config
     fb_name = obj_config['file_builder_name']
     fb_config = get_fb_config(file_builder_configs, fb_name)
     file_builder = get_class('filebuilders', fb_config['module_name'],
@@ -41,10 +41,10 @@ def get_file_builder(obj_config, file_builder_configs):
     return file_builder(None, obj_config)
 
 
-# Starts both data generating and file writing processes & populates the job
-# queue of the coordinator to get both processes underway. Post population of
-# jobs, awaits both generator and writer to terminate before continuing
 def process_domain_object(obj_config, file_builder, shared_config):
+    # Starts both data generating and file writing processes & populates the job
+    # queue of the coordinator to get both processes underway. Post population of
+    # jobs, awaits both generator and writer to terminate before continuing
 
     obj_class = get_class('domainobjects', obj_config['module_name'],
                           obj_config['class_name'])
@@ -69,9 +69,9 @@ def process_domain_object(obj_config, file_builder, shared_config):
     coordinator.await_termination()
 
 
-# Get number of records required to generate OR the size of an objects
-# dependency table from the DB, used to create jobs in queue
 def get_record_count(obj_config):
+    # Get number of records required to generate OR the size of an objects
+    # dependency table from the DB, used to create jobs in queue
     nondeterministic_objects = ['swap_contract', 'swap_position', 'cashflow']
     object_module = obj_config['module_name']
 
@@ -87,8 +87,8 @@ def get_record_count(obj_config):
             return db.get_table_size('swap_positions')
 
 
-# Configure expected command line args & default values thereof
 def get_args():
+    # Configure expected command line args & default values thereof
     parser = ArgumentParser(description='''Random financial data
                                         generation. For more information,
                                         see the README''')
@@ -97,15 +97,15 @@ def get_args():
     return parser.parse_args()
 
 
-# Get file_builder configuration for a given file extension
 def get_fb_config(file_builders, file_extension):
+    # Get file_builder configuration for a given file extension
     return list(filter(
             lambda file_builder: file_builder['name'] == file_extension,
             file_builders))[0]
 
 
-# Return a specified class in given package/module heirarchy
 def get_class(package_name, module_name, class_name):
+    # Return a specified class in given package/module heirarchy
     return getattr(importlib.import_module(package_name+'.'+module_name),
                    class_name)
 
