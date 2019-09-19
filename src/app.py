@@ -1,10 +1,8 @@
 import importlib
 import ujson
 import os
-
 from argparse import ArgumentParser
 from sqlite_database import Sqlite_Database
-
 from multi_processing.coordinator import Coordinator
 import multi_processing.batch_size_calc as batch_size_calc
 
