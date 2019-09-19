@@ -40,7 +40,7 @@ class Sqlite_Database:
             self.commit_changes()
         else:
             self.__connection = sqlite3.connect("dependencies.db",
-                                               timeout=30.0)
+                                                timeout=30.0)
         self.__connection.row_factory = sqlite3.Row
 
     # Takes table with N attributes & X rows for insertion formatted as:

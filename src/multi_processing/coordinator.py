@@ -6,7 +6,7 @@ from multi_processing.writer import Writer
 # required to abstract the multiprocessing logic from any unpickleable
 # objects, such as the database connection.
 
-# Create jobs for generation queue, start generation and writing processes
+
 class Coordinator():
 
     def __init__(self, max_file_size, file_builder):
@@ -34,14 +34,14 @@ class Coordinator():
         while quantity > 0:
             if quantity > job_size:
                 job = {'domain_object': domain_obj,
-                      'amount': job_size,
-                      'start_id': start_id}
+                       'amount': job_size,
+                       'start_id': start_id}
                 quantity = quantity - job_size
                 start_id = start_id + job_size
             else:
                 job = {'domain_object': domain_obj,
-                      'amount': quantity,
-                      'start_id': start_id}
+                       'amount': quantity,
+                       'start_id': start_id}
                 quantity = 0
             self.__generation_job_queue.put(job)
 
@@ -49,13 +49,13 @@ class Coordinator():
 
     def start_generator(self, obj_class, custom_obj_args, pool_size):
         generator_p = Process(target=self.get_generation_coordinator().start,
-                                args=(obj_class, custom_obj_args, pool_size,))
+                              args=(obj_class, custom_obj_args, pool_size,))
         generator_p.start()
         self.processes.append(generator_p)
 
     def start_writer(self, pool_size):
         writer_p = Process(target=self.get_write_coordinator().start,
-                            args=(pool_size,))
+                           args=(pool_size,))
         writer_p.start()
         self.processes.append(writer_p)
 
