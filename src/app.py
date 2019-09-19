@@ -8,6 +8,7 @@ from sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
 import multi_processing.batch_size_calc as batch_size_calc
 
+
 def main():
     # Delete db if one already exists
     if os.path.exists('dependencies.db'):
@@ -29,6 +30,7 @@ def main():
         file_builder = get_file_builder(obj_config, file_builder_configs)
         process_domain_object(obj_config, file_builder, shared_config)
 
+
 # Given an objects configuration and all file_builder descriptions,
 # return an instantiated file builder as per spec in object config
 def get_file_builder(obj_config, file_builder_configs):
@@ -37,6 +39,7 @@ def get_file_builder(obj_config, file_builder_configs):
     file_builder = get_class('filebuilders', fb_config['module_name'],
                              fb_config['class_name'])
     return file_builder(None, obj_config)
+
 
 # Starts both data generating and file writing processes & populates the job
 # queue of the coordinator to get both processes underway. Post population of
@@ -65,6 +68,7 @@ def process_domain_object(obj_config, file_builder, shared_config):
     coordinator.create_jobs(obj_name, record_count, job_size)
     coordinator.await_termination()
 
+
 # Get number of records required to generate OR the size of an objects
 # dependency table from the DB, used to create jobs in queue
 def get_record_count(obj_config):
@@ -82,6 +86,7 @@ def get_record_count(obj_config):
         elif object_module == 'cashflow':
             return db.get_table_size('swap_positions')
 
+
 # Configure expected command line args & default values thereof
 def get_args():
     parser = ArgumentParser(description='''Random financial data
@@ -91,11 +96,13 @@ def get_args():
                         help='JSON Configuration File Location')
     return parser.parse_args()
 
+
 # Get file_builder configuration for a given file extension
 def get_fb_config(file_builders, file_extension):
     return list(filter(
             lambda file_builder: file_builder['name'] == file_extension,
             file_builders))[0]
+
 
 # Return a specified class in given package/module heirarchy
 def get_class(package_name, module_name, class_name):

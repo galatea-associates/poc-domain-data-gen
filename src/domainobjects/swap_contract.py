@@ -36,8 +36,8 @@ class SwapContract(Generatable):
                     'status': status,
                     'start_date': start_date,
                     'end_date': self.generate_swap_end_date(
-                                            start_date = start_date,
-                                            status = status),
+                                            start_date=start_date,
+                                            status=status),
                     'swap_type': self.generate_swap_type(),
                     'reference_rate': self.generate_reference_rate(),
                     'swap_contract_field1': self.generate_random_string(10),
@@ -58,7 +58,7 @@ class SwapContract(Generatable):
         return records
 
     def generate_swap_end_date(self, years_to_add=5,
-                                start_date=None, status=None):
+                               start_date=None, status=None):
         return None if status == 'Live' else start_date +\
                              timedelta(days=365 * years_to_add)
 

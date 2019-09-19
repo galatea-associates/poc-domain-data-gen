@@ -1,7 +1,5 @@
 from domainobjects.generatable import Generatable
 import random
-import timeit
-import logging
 import pandas as pd
 from datetime import datetime, date
 import calendar
@@ -38,7 +36,7 @@ class Cashflow(Generatable):
                     p_date_func = self.get_pay_date_func(pay_date_period)
                     swap_contract_id = swap_position['swap_contract_id']
                     records.append({
-                        #'cashflow_id': i,
+                        # 'cashflow_id': i,
                         'swap_contract_id': swap_contract_id,
                         'ric': swap_position['ric'],
                         'cashflow_type': cf_arg['cashFlowType'],
@@ -62,15 +60,14 @@ class Cashflow(Generatable):
         return {
             "END_OF_MONTH":self.calc_eom,
             "END_OF_HALF":self.calc_eoh
-        }.get(pay_date_period, lambda:"Invalid pay date period")
+        }.get(pay_date_period, lambda: "Invalid pay date period")
 
     def generate_cashflow(self, effective_date, accrual, probability):
         if accrual == "DAILY":
             return True
         elif accrual == "QUARTERLY" and (effective_date.day,
-                                         effective_date.month)\
-                            in [(31, 3), (30, 6), (30, 9), (31, 12)]:
+             effective_date.month) in [(31, 3), (30, 6), (30, 9), (31, 12)]:
             return True
         elif accrual == "CHANCE_ACCRUAL" and random.random() \
-                                            < (int(probability) / 100):
+             < (int(probability) / 100):
             return True

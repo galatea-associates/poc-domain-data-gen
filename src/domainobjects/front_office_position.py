@@ -13,7 +13,7 @@ class FrontOfficePosition(Generatable):
         instruments = database.retrieve('instruments')
 
         for _ in range(start_id, start_id+record_count):
-            instrument = random.choice(instruments) 
+            instrument = random.choice(instruments)
             position_type = self.generate_position_type()
             knowledge_date = self.generate_knowledge_date()
 

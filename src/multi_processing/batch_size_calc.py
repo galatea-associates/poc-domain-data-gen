@@ -50,7 +50,7 @@ def swap_position_size(custom_args, target_num_records):
     ins_min = int(ins_per_swap['min'])
     ins_max = int(ins_per_swap['max'])
 
-    batch_size = math.ceil((2*target_num_records) / 
+    batch_size = math.ceil((2*target_num_records) /
                            (3*num_dates*(ins_min+ins_max)))
     return batch_size
 
