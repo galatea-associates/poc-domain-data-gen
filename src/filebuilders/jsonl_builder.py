@@ -13,11 +13,11 @@ class JSONLBuilder(FileBuilder):
 
         file_path = os.path.join(output_dir, file_name.format(f'{file_number:03}'))
 
-        with open(file_path) as output_file:
+        with open(file_path, 'w') as output_file:
             to_output = [ujson.dumps(record) for record in data]
             formatted_output = "\n".join(to_output)
             output_file.write(formatted_output)
-        
-        #TODO: REMOVE THIS 
-        # This line is for testing on AWS without needed increased space to write
+
+        # TODO: REMOVE THIS LINE
+        # Only here to save space requirements on AWS        
         os.unlink(file_path)
