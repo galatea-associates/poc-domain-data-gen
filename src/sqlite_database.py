@@ -1,5 +1,5 @@
 import sqlite3
-
+import os.path
 
 class Sqlite_Database:
 
@@ -7,34 +7,38 @@ class Sqlite_Database:
         # Establish connection #
         # Can connect to ::memory:: if using an in-memory database #
         # TODO: Configuration options for in-memory databases #
-        self.__connection = sqlite3.connect("dependencies.db")
-        self.__connection.row_factory = sqlite3.Row
+        if (not os.path.isfile("dependencies.db")): 
+            self.__connection = sqlite3.connect("dependencies.db", timeout=30.0)
+            self.__connection.row_factory = sqlite3.Row
 
-        # Define list of database table dictionaries
-        # These are for domain objects requiring persistence
-        instrument_def = {"ric": "text",
-                          "cusip": "text",
-                          "isin": "text"}
-        counterparty_def = {"id": "text"}
-        swap_contract_def = {"id": "text"}
-        swap_position_def = {"swap_contract_id": "text",
-                             "ric": "text",
-                             "position_type": "text",
-                             "effective_date": "text",
-                             "long_short": "text"}
+            # Define list of database table dictionaries
+            # These are for domain objects requiring persistence
+            instrument_def = {"ric": "text",
+                            "cusip": "text",
+                            "isin": "text"}
+            counterparty_def = {"id": "text"}
+            swap_contract_def = {"id": "text"}
+            swap_position_def = {"swap_contract_id": "text",
+                                "ric": "text",
+                                "position_type": "text",
+                                "effective_date": "text",
+                                "long_short": "text"}
 
-        tables_dict = {
-            "instruments": instrument_def,
-            "counterparties": counterparty_def,
-            "swap_contracts": swap_contract_def,
-            "swap_positions": swap_position_def
-        }
+            tables_dict = {
+                "instruments": instrument_def,
+                "counterparties": counterparty_def,
+                "swap_contracts": swap_contract_def,
+                "swap_positions": swap_position_def
+            }
 
-        for table_name, table_def in tables_dict.items():
-            self.drop_table(table_name)
-            self.create_table_from_dict(table_name, table_def)
+            for table_name, table_def in tables_dict.items():
+                self.drop_table(table_name)
+                self.create_table_from_dict(table_name, table_def)
 
-        self.commit_changes()
+            self.commit_changes()
+        else:
+           self.__connection = sqlite3.connect("dependencies.db", timeout=30.0)
+        self.__connection.row_factory = sqlite3.Row 
 
     # Takes table with N attributes & X rows for insertion formatted as:
         # [[attr1_1, attr2_1, ... , attN_1],
@@ -82,11 +86,15 @@ class Sqlite_Database:
     # Currently Unused #
     def retrieve_sample(self, table_name, amount):
         cur = self.__connection.cursor()
-        cur.execute("SELECT * FROM "+table_name+""" WHERE id IN
-                    (SELECT id FROM """+table_name+"""
-                     ORDER BY RANDOM() LIMIT """+amount)
+        cur.execute("SELECT * FROM "+table_name+""" ORDER BY
+                     RANDOM() LIMIT"""+amount)
         rows = cur.fetchall()
         return rows
+
+    def get_table_size(self, table_name):
+        cur = self.__connection.cursor()
+        cur.execute("SELECT max(ROWID) from "+table_name)
+        return cur.fetchone()[0]
 
     # Delete specified table from the database
     def drop_table(self, table_name):
@@ -95,7 +103,7 @@ class Sqlite_Database:
     # Create table 'table_name' with attributes in 'attribute_dict'
     def create_table_from_dict(self, table_name, attribute_dict):
         # Build query in table_definition
-        table_definition = ["CREATE TABLE "+table_name+" ("]
+        table_definition = ["CREATE TABLE IF NOT EXISTS "+table_name+" ("]
         # Build list of attributes here
         attribute_list = []
 

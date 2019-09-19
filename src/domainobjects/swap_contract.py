@@ -1,31 +1,33 @@
-from domainobjects.generatable import Generatable
 import random
+import uuid
+
 from datetime import datetime, timedelta
+from domainobjects.generatable import Generatable
 
 class SwapContract(Generatable):
 
-    def generate(self, record_count, custom_args):
-        config = self.get_object_config()
+    def generate(self, record_count, custom_args, start_id):
+        # Here record_count indicates the number of records to pull from the database
+        # Start_ID is the offset within the database to start pulling records from
         swap_per_counterparty_min = int(custom_args['swap_per_counterparty']['min'])
         swap_per_counterparty_max = int(custom_args['swap_per_counterparty']['max'])
 
-        records_per_file = config['max_objects_per_file']
-        file_num = 1
         records = []
-        i = 1
+        persisting_records = []
 
+        self.establish_db_connection()
         database = self.get_database()
-        file_builder = self.get_file_builder()
 
-        counterparties = database.retrieve('counterparties')
+        counterparties = database.retrieve_batch('counterparties', record_count, start_id)
 
         for counterparty in counterparties:            
             swap_count = random.randint(swap_per_counterparty_min, swap_per_counterparty_max)
             for _ in range(0, swap_count):
                 start_date = self.generate_random_date()
                 status = self.generate_status()
+                id = str(uuid.uuid1())
                 records.append({
-                    'swap_contract_id': i,
+                    'swap_contract_id': id,
                     'counterparty_id': counterparty['id'],
                     'swap_mnemonic': self.generate_random_string(10),
                     'is_short_mtm_financed': self.generate_random_boolean(),
@@ -46,19 +48,11 @@ class SwapContract(Generatable):
                     'time_stamp': datetime.now(),
                 })
 
-                database.persist("swap_contracts", [str(i)])
+                persisting_records.append([id])
 
-                if (i % int(records_per_file) == 0):
-                    file_builder.build(file_num, records)
-                    file_num += 1
-                    records = []
-
-                i += 1
-
-        if records != []:
-            file_builder.build(file_num, records)
-
+        database.persist_batch("swap_contracts", persisting_records)
         database.commit_changes()
+        return records
 
     def generate_swap_end_date(self, years_to_add=5, start_date=None, status=None):
         return None if status == 'Live' else start_date + timedelta(days=365 * years_to_add)

@@ -4,16 +4,15 @@ import random
 
 class Price(Generatable):
 
-    def generate(self, record_count, custom_args):
-        config = self.get_object_config()
-        records_per_file = config['max_objects_per_file']
-        file_num = 1
+    def generate(self, record_count, custom_args, start_id):
+
         records = []
 
+        self.establish_db_connection()
         database = self.get_database()
         instruments = database.retrieve('instruments')
                 
-        for i in range(1, record_count+1):
+        for _ in range(start_id, start_id+record_count):
             instrument = random.choice(instruments)      
             records.append({
                 'ric': instrument['ric'],
@@ -22,10 +21,4 @@ class Price(Generatable):
                 'time_stamp': datetime.now()
             })
 
-            if (i % int(records_per_file) == 0):
-                self.write_to_file(file_num, records)
-                file_num += 1
-                records = []
-
-        if records != []:
-            self.write_to_file(file_num, records)
+        return records

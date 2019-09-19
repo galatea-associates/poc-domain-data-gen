@@ -3,21 +3,16 @@ from datetime import datetime
 import random
 
 class BackOfficePosition(Generatable):
-    
-    def generate(self, record_count, custom_args):
-        config = self.get_object_config()
 
-        records_per_file = config['max_objects_per_file']
-        file_num = 1
-        records = []
+    def generate(self, record_count, custom_args, start_id):
 
+        self.establish_db_connection()
         database = self.get_database()
 
+        records = []
         instruments = database.retrieve('instruments')
 
-        # 1 to record_count+1 preserves required amount
-        # but reduces computation for repeated modulo calculation
-        for i in range(1, record_count+1):
+        for i in range(start_id, start_id+record_count):
             instrument = random.choice(instruments) 
             position_type = self.generate_position_type()
             knowledge_date = self.generate_knowledge_date()
@@ -34,13 +29,7 @@ class BackOfficePosition(Generatable):
                 'time_stamp': datetime.now(),
             })
 
-            if (i % int(records_per_file) == 0):
-                self.write_to_file(file_num, records)
-                file_num += 1
-                records = []
+        return records
 
-        if records != []:
-            self.write_to_file(file_num, records)
-    
     def generate_purpose(self):
         return 'Outright'

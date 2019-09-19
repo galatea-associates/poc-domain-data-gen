@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from sqlite_database import Sqlite_Database
 from process_spawner import spawn_write
 import random
 import string
@@ -16,15 +17,21 @@ class Generatable(ABC):
     RETURN_TYPES = ['Outstanding', 'Pending Return', 'Pending Recall',
                     'Partial Return', 'Partial Recall', 'Settled']
 
-    def __init__(self, cache, database, file_builder, domain_object_config):
-        self.__database = database
-        self.__cache = cache
+    def __init__(self, file_builder, domain_object_config):
         self.__file_builder = file_builder
         self.__config = domain_object_config
+        self.__database = None
 
+    #@abstractmethod
+    #def generate(self, record_count, custom_args):
+    #   pass
+    
     @abstractmethod
-    def generate(self, record_count, custom_args):
+    def generate(self, record_count, custom_args, start_id):
        pass
+
+    def establish_db_connection(self):
+        self.__database = Sqlite_Database()
 
     def write_to_file(self, file_num, records):
         spawn_write(file_num, records, self.get_file_builder())
@@ -102,21 +109,6 @@ class Generatable(ABC):
        
     def generate_return_type(self):
         return random.choice(self.RETURN_TYPES)
-
-    def generate_coi(self):
-        return random.choice(self.__cache.
-                             retrieve_from_cache('cois'))
-
-    def generate_ticker(self):
-        return random.choice(self.__cache.
-                             retrieve_from_cache('tickers'))
-
-    def generate_exchange_code(self):
-        return random.choice(self.__cache.
-                             retrieve_from_cache('exchange_codes'))
-
-    def get_cache(self):
-        return self.__cache
 
     def get_database(self):
         return self.__database

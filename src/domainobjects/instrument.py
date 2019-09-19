@@ -1,29 +1,29 @@
 from domainobjects.generatable import Generatable
 from datetime import datetime
+from cache import Cache
+import random
 
 class Instrument(Generatable):
-    
-    def generate(self, record_count, custom_args):
-        config = self.get_object_config()
-        records_per_file = config['max_objects_per_file']
-        file_num = 1
 
-        database = self.get_database()
+    def generate(self, record_count, custom_args, start_id):
         
-        records = []
-        current_tickers = {}
+        self.establish_db_connection()
+        database = self.get_database()
+        cache = Cache()
 
-        for i in range(0, record_count):            
+        records = []
+        persisting_records = []
+
+        for i in range(start_id, start_id+record_count):            
             asset_class = self.generate_asset_class()         
-            ticker = self.generate_ticker()
-            coi = self.generate_coi()
-            exchange_code = self.\
-                generate_sequential_exchange_code(current_tickers, ticker)
+            ticker = self.generate_ticker(cache)
+            coi = self.generate_coi(cache)
+            exchange_code = i
             cusip = str(self.generate_random_integer(length=9))
             isin = self.generate_isin(coi, cusip)
             ric = self.generate_ric(ticker, exchange_code)
             sedol = self.generate_random_integer(length=7)
-            j = i+1
+            j = i
 
             records.append({
                 'instrument_id': j,
@@ -36,18 +36,11 @@ class Instrument(Generatable):
                 'coi': coi,
                 'time_stamp': datetime.now()})
 
-            database.persist("instruments", [ric, cusip, isin])
+            persisting_records.append([ric, cusip, isin])
 
-            if (j % int(records_per_file) == 0):
-                self.write_to_file(file_num, records)
-                file_num += 1
-                records = []
-        
-        if records != []: 
-            self.write_to_file(file_num, records)
-        current_tickers = {}
-
+        database.persist_batch("instruments", persisting_records)
         database.commit_changes()
+        return records
 
     def generate_asset_class(self):
         return 'Stock'
@@ -59,3 +52,12 @@ class Instrument(Generatable):
         else:
             current_tickers[ticker] = 0
         return current_tickers[ticker]
+
+    def generate_coi(self, cache):
+        return random.choice(cache.retrieve_from_cache('cois'))
+
+    def generate_ticker(self, cache):
+        return random.choice(cache.retrieve_from_cache('tickers'))
+
+    def generate_exchange_code(self, cache):
+        return random.choice(cache.retrieve_from_cache('exchange_codes'))
