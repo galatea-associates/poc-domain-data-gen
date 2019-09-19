@@ -1,5 +1,4 @@
 from multiprocessing import Pool
-import os
 
 def generate(job_list, pool_size):
     pool = Pool(pool_size)
@@ -29,7 +28,6 @@ def write(job_list, pool_size):
     pool.join()
 
 def write_data(job):
-    domain_object= job['domain_object']
     file_number = job['file_number']
     file_builder = job['file_builder']
     records = job['records']

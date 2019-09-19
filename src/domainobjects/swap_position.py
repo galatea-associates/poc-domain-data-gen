@@ -2,9 +2,7 @@ from domainobjects.generatable import Generatable
 from datetime import datetime, timedelta
 import random
 import string
-import timeit
 import pandas as pd
-import logging
 
 class SwapPosition(Generatable):
 
@@ -21,7 +19,8 @@ class SwapPosition(Generatable):
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
 
-        swap_contract_batch = database.retrieve_batch('swap_contracts', record_count, start_id)
+        swap_contract_batch = database.retrieve_batch('swap_contracts',
+                                                      record_count, start_id)
 
         for swap_contract in swap_contract_batch:
             ins_count = random.randint(

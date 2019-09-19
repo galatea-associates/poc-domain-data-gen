@@ -52,24 +52,25 @@ class Cashflow(Generatable):
 
         return records
 
-
-
     def calc_eom(self, d):
         return date(d.year, d.month, calendar.monthrange(d.year, d.month)[-1])
-    
+
     def calc_eoh(self, d):
         return date(d.year, 6, 30) if d.month <= 6 else date(d.year, 12, 31)
-    
+
     def get_pay_date_func(self, pay_date_period):
         return {
             "END_OF_MONTH":self.calc_eom,
             "END_OF_HALF":self.calc_eoh
-        }.get(pay_date_period, lambda:"Invalid pay date period")  
-    
+        }.get(pay_date_period, lambda:"Invalid pay date period")
+
     def generate_cashflow(self, effective_date, accrual, probability):
         if accrual == "DAILY":
             return True
-        elif accrual == "QUARTERLY" and (effective_date.day, effective_date.month) in [(31, 3), (30, 6), (30, 9), (31, 12)]:
+        elif accrual == "QUARTERLY" and (effective_date.day,
+                                         effective_date.month)\
+                            in [(31, 3), (30, 6), (30, 9), (31, 12)]:
             return True
-        elif accrual == "CHANCE_ACCRUAL" and random.random() < (int(probability) / 100):
+        elif accrual == "CHANCE_ACCRUAL" and random.random() \
+                                            < (int(probability) / 100):
             return True

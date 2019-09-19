@@ -3,7 +3,7 @@ from datetime import datetime
 import random
 
 class OrderExecution(Generatable):
-    
+
     def generate(self, record_count, custom_args, start_id):
 
         records = []
@@ -12,10 +12,10 @@ class OrderExecution(Generatable):
         database = self.get_database()
 
         instruments = database.retrieve('instruments')
-        
+
         for i in range(start_id, start_id+record_count):
             instrument = random.choice(instruments)
-                
+
             records.append({
                 'order_id': i,
                 'account_num': self.generate_random_integer(length=8),
@@ -28,5 +28,5 @@ class OrderExecution(Generatable):
                 'qty': self.generate_random_integer(),
                 'time_stamp': datetime.now(),
             })
-        
+
         return records

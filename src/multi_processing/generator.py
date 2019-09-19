@@ -4,19 +4,19 @@ from multiprocessing import Manager
 import multi_processing.pool_tasks as mp_p
 
 class Generator():
-    
+
     def __init__(self, generate_queue, write_queue):
         self.generate_queue = generate_queue
         self.write_queue = write_queue
         self.terminate = False
 
     def start(self, obj_class, custom_obj_args, pool_size):
-        
+
         while not self.terminate:
             self.wait_for_jobs()
             job_list = self.format_jobs(obj_class, custom_obj_args, pool_size)
             self.run_jobs(job_list, pool_size)
-        
+
         self.write_queue.put("terminate")
 
     def wait_for_jobs(self):

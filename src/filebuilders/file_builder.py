@@ -2,7 +2,6 @@ import abc
 import os
 from datetime import datetime
 
-
 class FileBuilder(abc.ABC):
 
     def __init__(self, google_drive_connector, domain_object_config):
@@ -19,7 +18,7 @@ class FileBuilder(abc.ABC):
     def build(self, file_number, data, upload_to_google_drive):
         pass
 
-    def upload_to_google_drive(self, local_folder_name, file_name):        
+    def upload_to_google_drive(self, local_folder_name, file_name):
         root_folder_id = self.__google_drive_connector.root_folder_id
         todays_date = datetime.today().strftime('%Y-%m-%d')
 
@@ -30,7 +29,7 @@ class FileBuilder(abc.ABC):
             folder_id = self.__google_drive_connector\
                 .create_folder(todays_date, root_folder_id)
 
-        # Check if the file already exists, create if it doesn't, update if it does
+        # Check if the file already exists, create it if not
         file_id = self.__google_drive_connector\
             .get_file_id(file_name, folder_id)
         if file_id == None:
@@ -46,7 +45,7 @@ class FileBuilder(abc.ABC):
 
     def close_file(self):
         self.file.close()
-   
+
     def get_output_directory(self):
         return self.__output_dir
 

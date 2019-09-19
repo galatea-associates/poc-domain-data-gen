@@ -1,8 +1,6 @@
 import importlib
 import ujson
 import os
-import timeit
-import random
 
 from argparse import ArgumentParser
 from sqlite_database import Sqlite_Database
@@ -11,13 +9,10 @@ from multi_processing.coordinator import Coordinator
 import multi_processing.batch_size_calc as batch_size_calc
 
 def main():
-    random.seed(100)
-    #start_time = timeit.default_timer()
-
     # Delete db if one already exists
-    if os.path.exists('dependencies.db'): 
+    if os.path.exists('dependencies.db'):
         os.unlink('dependencies.db')
-    
+
     args = get_args()
 
     # Open and retrieve configurations
@@ -29,13 +24,10 @@ def main():
 
     for obj_config in domain_object_configs:
         # Skip object where no records required
-        if (int(obj_config['record_count']) < 1): 
-            continue 
+        if (int(obj_config['record_count']) < 1):
+            continue
         file_builder = get_file_builder(obj_config, file_builder_configs)
         process_domain_object(obj_config, file_builder, shared_config)
-    
-    #run_time = timeit.default_timer()-start_time
-    #print("total run time:",run_time)
 
 # Given an objects configuration and all file_builder descriptions,
 # return an instantiated file builder as per spec in object config
@@ -46,12 +38,13 @@ def get_file_builder(obj_config, file_builder_configs):
                              fb_config['class_name'])
     return file_builder(None, obj_config)
 
-# Starts both data generating and file writing processes, and populates the job
+# Starts both data generating and file writing processes & populates the job
 # queue of the coordinator to get both processes underway. Post population of
 # jobs, awaits both generator and writer to terminate before continuing 
 def process_domain_object(obj_config, file_builder, shared_config):
 
-    obj_class = get_class('domainobjects', obj_config['module_name'], obj_config['class_name'])
+    obj_class = get_class('domainobjects', obj_config['module_name'],
+                            obj_config['class_name'])
     domain_obj = obj_class(file_builder, obj_config)
     custom_args = obj_config['custom_args']
 
@@ -69,11 +62,8 @@ def process_domain_object(obj_config, file_builder, shared_config):
     record_count = get_record_count(obj_config)
     job_size = batch_size_calc.get(obj_name, custom_args, default_job_size)
     
-    coordinator.create_jobs(obj_name, record_count, job_size)    
-    start_time = timeit.default_timer()
+    coordinator.create_jobs(obj_name, record_count, job_size)
     coordinator.await_termination()
-    object_time = timeit.default_timer()-start_time
-    print("Time to Generate: ",domain_obj," was:",object_time)
 
 # Get number of records required to generate OR the size of an objects
 # dependency table from the DB, used to create jobs in queue

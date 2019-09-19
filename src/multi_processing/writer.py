@@ -1,6 +1,4 @@
 import time
-import cProfile, pstats, io
-
 import multi_processing.pool_tasks as mp_p
 
 class Writer():
@@ -8,8 +6,8 @@ class Writer():
     def __init__(self, write_queue, max_file_size, file_builder):
         self.write_queue = write_queue
 
-        self.all_records = {}       # Dictionary of {'Domain_Object':ALL RECORDS} that jobs are built FROM
-        self.file_numbers = {}      # Tracker of current file num for each D_O
+        self.all_records = []
+        self.file_number = 0
         self.max_size = int(max_file_size)
 
         self.job_list = []
@@ -17,14 +15,14 @@ class Writer():
         self.file_builder = file_builder
 
     def start(self, pool_size):
-        
+
         while not self.terminate:
             self.wait_for_jobs()
             self.handle_jobs(pool_size)
             self.run_jobs(pool_size)
             self.reset_job_list()
 
-        self.calculate_residual_writes() 
+        self.calculate_residual_writes()
         self.run_jobs(pool_size)
 
     def wait_for_jobs(self):
@@ -55,40 +53,29 @@ class Writer():
         self.terminate = True
 
     def add_to_stored_records(self, domain_object, records):
-        cur = self.all_records.get(domain_object)
-        if cur is None:
-            self.all_records[domain_object] = records
-        else:
-            for item in records: 
-                self.all_records[domain_object].append(item)
+        for item in records:
+            self.all_records.append(item)
 
     def calculate_writes(self):
         # self.max_size indicates largest file size
         # self.all_records contains all records currently received
-        store = self.all_records
         file_size = self.max_size
         file_builder = self.file_builder
-        for domain_object in store:
-            if len(store[domain_object]) > int(file_size):
-                file_num = self.get_file_num(domain_object)
-                records = store[domain_object][:file_size]
-                del store[domain_object][:file_size]
-                job = {
-                    'domain_object': domain_object,
-                    'file_number': file_num,
-                    'file_builder': file_builder,
-                    'records': records
-                }
-                self.job_list.append(job)
+        if len(self.all_records) > int(file_size):
+            file_num = self.get_file_num()
+            records = self.all_records[:file_size]
+            del self.all_records[:file_size]
+            job = {
+                'file_number': file_num,
+                'file_builder': file_builder,
+                'records': records
+            }
+            self.job_list.append(job)
 
-    def get_file_num(self, domain_object):
-        cur = self.file_numbers.get(domain_object)
-        if cur is None:
-            self.file_numbers[domain_object] = 2
-            return 1
-        else:
-            self.file_numbers[domain_object] = cur+1
-            return cur
+    def get_file_num(self):
+        cur = self.file_number
+        self.file_number = cur+1
+        return cur
 
     def run_jobs(self, pool_size):
         mp_p.write(self.job_list, pool_size)
@@ -97,16 +84,13 @@ class Writer():
         self.job_list = []
 
     def calculate_residual_writes(self):
-        store = self.all_records
         file_builder = self.file_builder
-        for domain_object in store:
-            file_num = self.get_file_num(domain_object)
-            records = store[domain_object]
-            job = {
-                    'domain_object': domain_object,
-                    'file_number': file_num,
-                    'file_builder': file_builder,
-                    'records': records
-                }
-            self.job_list.append(job)
+        file_num = self.get_file_num()
+        records = self.all_records
+        job = {
+                'file_number': file_num,
+                'file_builder': file_builder,
+                'records': records
+            }
+        self.job_list.append(job)
         self.all_records = None

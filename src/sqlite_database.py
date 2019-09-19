@@ -7,8 +7,9 @@ class Sqlite_Database:
         # Establish connection #
         # Can connect to ::memory:: if using an in-memory database #
         # TODO: Configuration options for in-memory databases #
-        if (not os.path.isfile("dependencies.db")): 
-            self.__connection = sqlite3.connect("dependencies.db", timeout=30.0)
+        if (not os.path.isfile("dependencies.db")):
+            self.__connection = sqlite3.connect("dependencies.db",
+                                                timeout=30.0)
             self.__connection.row_factory = sqlite3.Row
 
             # Define list of database table dictionaries
@@ -37,7 +38,8 @@ class Sqlite_Database:
 
             self.commit_changes()
         else:
-           self.__connection = sqlite3.connect("dependencies.db", timeout=30.0)
+           self.__connection = sqlite3.connect("dependencies.db",
+                                               timeout=30.0)
         self.__connection.row_factory = sqlite3.Row 
 
     # Takes table with N attributes & X rows for insertion formatted as:

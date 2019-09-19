@@ -3,10 +3,10 @@ from datetime import datetime
 import random
 
 class CashBalance(Generatable):
-    
+
     def generate(self, record_count, custom_args, start_id):
 
-        records = []        
+        records = []
 
         for i in range(start_id, start_id+record_count):
             records.append({
@@ -18,6 +18,6 @@ class CashBalance(Generatable):
             })
 
         return records
-    
+
     def generate_purpose(self):
         return random.choice(['Cash Balance', 'P&L', 'Fees'])

@@ -6,7 +6,7 @@ import random
 class Instrument(Generatable):
 
     def generate(self, record_count, custom_args, start_id):
-        
+
         self.establish_db_connection()
         database = self.get_database()
         cache = Cache()
@@ -14,8 +14,8 @@ class Instrument(Generatable):
         records = []
         persisting_records = []
 
-        for i in range(start_id, start_id+record_count):            
-            asset_class = self.generate_asset_class()         
+        for i in range(start_id, start_id+record_count):
+            asset_class = self.generate_asset_class()
             ticker = self.generate_ticker(cache)
             coi = self.generate_coi(cache)
             exchange_code = i

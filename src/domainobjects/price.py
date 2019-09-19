@@ -11,9 +11,9 @@ class Price(Generatable):
         self.establish_db_connection()
         database = self.get_database()
         instruments = database.retrieve('instruments')
-                
+
         for _ in range(start_id, start_id+record_count):
-            instrument = random.choice(instruments)      
+            instrument = random.choice(instruments)
             records.append({
                 'ric': instrument['ric'],
                 'price': self.generate_random_decimal(),

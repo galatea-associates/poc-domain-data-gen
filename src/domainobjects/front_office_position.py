@@ -3,17 +3,17 @@ from datetime import datetime
 import random
 
 class FrontOfficePosition(Generatable):
-    
+
     def generate(self, record_count, custom_args, start_id):
 
-        records = []    
+        records = []
 
         self.establish_db_connection()
         database = self.get_database()
         instruments = database.retrieve('instruments')
 
         for _ in range(start_id, start_id+record_count):
-            instrument = random.choice(instruments)                    
+            instrument = random.choice(instruments) 
             position_type = self.generate_position_type()
             knowledge_date = self.generate_knowledge_date()
 
@@ -21,7 +21,8 @@ class FrontOfficePosition(Generatable):
                 'ric': instrument['ric'],
                 'position_type': position_type,
                 'knowledge_date': knowledge_date,
-                'effective_date': self.generate_effective_date(0, knowledge_date, position_type),
+                'effective_date': self.generate_effective_date(
+                                    0, knowledge_date, position_type),
                 'account': self.generate_account(),
                 'direction': self.generate_credit_debit(),
                 'qty': self.generate_random_integer(),

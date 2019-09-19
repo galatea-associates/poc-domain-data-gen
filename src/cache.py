@@ -1,6 +1,5 @@
 import pandas as pd
 
-
 class Cache:
 
     def __init__(self):

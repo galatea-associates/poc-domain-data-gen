@@ -4,23 +4,21 @@ from multi_processing.writer import Writer
 
 # Class to coordinate the multiprocessing implementation. It is
 # required to abstract the multiprocessing logic from any unpickleable
-# objects, such as the database connection. 
+# objects, such as the database connection.
 
-# This class creates jobs for the generation queue, and starts
-# both generating and writing processes.
-
+# Create jobs for generation queue, start generation and writing processes
 class Coordinator():
 
     def __init__(self, max_file_size, file_builder):
         queue_manager = Manager()
         self.__generation_job_queue = queue_manager.Queue()
-        self.__write_job_queue = queue_manager.Queue() 
-        
+        self.__write_job_queue = queue_manager.Queue()
+
         self.__generation_coordinator = Generator(
             self.__generation_job_queue,
             self.__write_job_queue
         )
-        
+
         self.__write_coordinator = Writer(
             self.__write_job_queue,
             max_file_size,
@@ -32,7 +30,7 @@ class Coordinator():
     def create_jobs(self, domain_obj, quantity, job_size):
         start_id = 0
         quantity = int(quantity)
-        
+
         while quantity > 0:
             if quantity > job_size:
                 job = {'domain_object': domain_obj,
@@ -56,7 +54,8 @@ class Coordinator():
         self.processes.append(generator_p)
 
     def start_writer(self, pool_size):
-        writer_p = Process(target=self.get_write_coordinator().start, args=(pool_size,))
+        writer_p = Process(target=self.get_write_coordinator().start,
+                            args=(pool_size,))
         writer_p.start()
         self.processes.append(writer_p)
 
@@ -66,7 +65,7 @@ class Coordinator():
     def get_write_coordinator(self):
         return self.__write_coordinator
 
-    # When called, waits for spawned processes to complete before terminating
+    # Waits for spawned processes to complete before terminating
     def await_termination(self):
         for process in self.processes:
             process.join()

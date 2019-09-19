@@ -20,7 +20,8 @@ class DepotPosition(Generatable):
             records.append({
                 'isin': instrument['isin'],
                 'knowledge_date': knowledge_date,
-                'effective_date': self.generate_effective_date(3, knowledge_date, position_type),
+                'effective_date': self.generate_effective_date(
+                                    3, knowledge_date, position_type),
                 'account': self.generate_account(),
                 'qty': self.generate_random_integer(),
                 'purpose': self.generate_purpose(),
@@ -29,6 +30,6 @@ class DepotPosition(Generatable):
             })
 
         return records
-    
+
     def generate_purpose(self):
         return random.choice(['Holdings', 'Seg'])

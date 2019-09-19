@@ -7,10 +7,9 @@ from domainobjects.generatable import Generatable
 class SwapContract(Generatable):
 
     def generate(self, record_count, custom_args, start_id):
-        # Here record_count indicates the number of records to pull from the database
-        # Start_ID is the offset within the database to start pulling records from
-        swap_per_counterparty_min = int(custom_args['swap_per_counterparty']['min'])
-        swap_per_counterparty_max = int(custom_args['swap_per_counterparty']['max'])
+        swaps_per_counterparty = custom_args['swap_per_counterparty']
+        swap_per_counterparty_min = int(swaps_per_counterparty['min'])
+        swap_per_counterparty_max = int(swaps_per_counterparty['max'])
 
         records = []
         persisting_records = []
@@ -18,10 +17,12 @@ class SwapContract(Generatable):
         self.establish_db_connection()
         database = self.get_database()
 
-        counterparties = database.retrieve_batch('counterparties', record_count, start_id)
+        counterparties = database.retrieve_batch('counterparties',
+                                                 record_count, start_id)
 
-        for counterparty in counterparties:            
-            swap_count = random.randint(swap_per_counterparty_min, swap_per_counterparty_max)
+        for counterparty in counterparties:
+            swap_count = random.randint(swap_per_counterparty_min,
+                                        swap_per_counterparty_max)
             for _ in range(0, swap_count):
                 start_date = self.generate_random_date()
                 status = self.generate_status()
@@ -34,7 +35,9 @@ class SwapContract(Generatable):
                     'accounting_area': self.generate_random_string(10),
                     'status': status,
                     'start_date': start_date,
-                    'end_date': self.generate_swap_end_date(start_date=start_date, status=status),
+                    'end_date': self.generate_swap_end_date(
+                                            start_date = start_date,
+                                            status = status),
                     'swap_type': self.generate_swap_type(),
                     'reference_rate': self.generate_reference_rate(),
                     'swap_contract_field1': self.generate_random_string(10),
@@ -54,14 +57,16 @@ class SwapContract(Generatable):
         database.commit_changes()
         return records
 
-    def generate_swap_end_date(self, years_to_add=5, start_date=None, status=None):
-        return None if status == 'Live' else start_date + timedelta(days=365 * years_to_add)
+    def generate_swap_end_date(self, years_to_add=5,
+                                start_date=None, status=None):
+        return None if status == 'Live' else start_date +\
+                             timedelta(days=365 * years_to_add)
 
-    def generate_swap_type(self):      
+    def generate_swap_type(self):
         return random.choice(['Equity', 'Portfolio'])
 
     def generate_reference_rate(self):
         return random.choice(['LIBOR'])
 
-    def generate_status(self):      
+    def generate_status(self):
         return random.choice(['Live', 'Dead'])

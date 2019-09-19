@@ -1,10 +1,10 @@
-from domainobjects.generatable  import Generatable
+from domainobjects.generatable import Generatable
 import random
 import string
 from datetime import datetime
 
 class Counterparty(Generatable):
-    
+
     def generate(self, record_count, custom_args, start_id):
 
         self.establish_db_connection()
@@ -30,5 +30,3 @@ class Counterparty(Generatable):
             database.persist("counterparties", [str(i+1)])
         database.commit_changes()
         return records
-
-   
