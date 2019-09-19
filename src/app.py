@@ -2,7 +2,6 @@ import importlib
 import ujson
 import os
 import timeit
-import yappi
 import random
 
 from argparse import ArgumentParser
