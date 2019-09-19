@@ -95,7 +95,7 @@ class Generatable(ABC):
     def generate_effective_date(self, n_days_to_add=3,
                                 knowledge_date=None, position_type=None):
         return knowledge_date if position_type == 'SD' \
-        else knowledge_date + timedelta(days=n_days_to_add)
+            else knowledge_date + timedelta(days=n_days_to_add)
 
     def generate_account(self, account_types=ACCOUNT_TYPES):
         account_type = random.choice(account_types)

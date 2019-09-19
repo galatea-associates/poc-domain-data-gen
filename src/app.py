@@ -43,11 +43,11 @@ def get_file_builder(obj_config, file_builder_configs):
 
 # Starts both data generating and file writing processes & populates the job
 # queue of the coordinator to get both processes underway. Post population of
-# jobs, awaits both generator and writer to terminate before continuing 
+# jobs, awaits both generator and writer to terminate before continuing
 def process_domain_object(obj_config, file_builder, shared_config):
 
     obj_class = get_class('domainobjects', obj_config['module_name'],
-                            obj_config['class_name'])
+                          obj_config['class_name'])
     domain_obj = obj_class(file_builder, obj_config)
     custom_args = obj_config['custom_args']
 
@@ -64,7 +64,7 @@ def process_domain_object(obj_config, file_builder, shared_config):
     obj_name = obj_config['class_name']
     record_count = get_record_count(obj_config)
     job_size = batch_size_calc.get(obj_name, custom_args, default_job_size)
-    
+
     coordinator.create_jobs(obj_name, record_count, job_size)
     coordinator.await_termination()
 
