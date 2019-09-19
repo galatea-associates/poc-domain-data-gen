@@ -11,9 +11,13 @@ class JSONLBuilder(FileBuilder):
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
-        with open(os.path.join(output_dir,
-                  file_name.format(f'{file_number:03}')),
-                  'w') as output_file:
+        file_path = os.path.join(output_dir, file_name.format(f'{file_number:03}'))
+
+        with open(file_path) as output_file:
             to_output = [ujson.dumps(record) for record in data]
             formatted_output = "\n".join(to_output)
             output_file.write(formatted_output)
+        
+        #TODO: REMOVE THIS 
+        # This line is for testing on AWS without needed increased space to write
+        os.unlink(file_path)
