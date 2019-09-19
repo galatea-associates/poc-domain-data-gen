@@ -1,6 +1,5 @@
 import time
 import cProfile, pstats, io
-from pstats import SortKey
 
 import multi_processing.pool_tasks as mp_p
 
@@ -18,8 +17,6 @@ class Writer():
         self.file_builder = file_builder
 
     def start(self, pool_size):
-        #pr = cProfile.Profile()
-        #pr.enable()
         
         while not self.terminate:
             self.wait_for_jobs()
@@ -29,12 +26,6 @@ class Writer():
 
         self.calculate_residual_writes() 
         self.run_jobs(pool_size)
-
-        #pr.disable()
-        #s = io.StringIO()
-        #ps = pstats.Stats(pr, stream=s).sort_stats(SortKey.CUMULATIVE)
-        #ps.print_stats()
-        #print(s.getvalue())
 
     def wait_for_jobs(self):
         while self.write_queue.empty():
