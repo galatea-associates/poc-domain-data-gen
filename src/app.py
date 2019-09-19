@@ -42,9 +42,9 @@ def get_file_builder(obj_config, file_builder_configs):
 
 
 def process_domain_object(obj_config, file_builder, shared_config):
-    # Starts both data generating and file writing processes & populates the job
-    # queue of the coordinator to get both processes underway. Post population of
-    # jobs, awaits both generator and writer to terminate before continuing
+    # Starts both data generating & file writing processes & populates the job
+    # queue of the coordinator to get both processes underway. Post population
+    # of jobs, awaits both generator and writer to terminate before continuing
 
     obj_class = get_class('domainobjects', obj_config['module_name'],
                           obj_config['class_name'])
