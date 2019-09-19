@@ -1,11 +1,13 @@
 from multiprocessing import Pool
 
+
 def generate(job_list, pool_size):
     pool = Pool(pool_size)
     result = pool.map(generate_data, job_list)
     pool.close()
     pool.join()
     return result
+
 
 def generate_data(instruction):
 
@@ -21,11 +23,13 @@ def generate_data(instruction):
     output = [domain_object_name, records]
     return output
 
+
 def write(job_list, pool_size):
     pool = Pool(pool_size)
     pool.map(write_data, job_list)
     pool.close()
     pool.join()
+
 
 def write_data(job):
     file_number = job['file_number']

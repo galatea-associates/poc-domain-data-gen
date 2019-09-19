@@ -1,6 +1,7 @@
 import time
 import multi_processing.pool_tasks as mp_p
 
+
 class Writer():
 
     def __init__(self, write_queue, max_file_size, file_builder):

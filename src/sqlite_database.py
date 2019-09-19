@@ -1,6 +1,7 @@
 import sqlite3
 import os.path
 
+
 class Sqlite_Database:
 
     def __init__(self):
@@ -15,15 +16,15 @@ class Sqlite_Database:
             # Define list of database table dictionaries
             # These are for domain objects requiring persistence
             instrument_def = {"ric": "text",
-                            "cusip": "text",
-                            "isin": "text"}
+                              "cusip": "text",
+                              "isin": "text"}
             counterparty_def = {"id": "text"}
             swap_contract_def = {"id": "text"}
             swap_position_def = {"swap_contract_id": "text",
-                                "ric": "text",
-                                "position_type": "text",
-                                "effective_date": "text",
-                                "long_short": "text"}
+                                 "ric": "text",
+                                 "position_type": "text",
+                                 "effective_date": "text",
+                                 "long_short": "text"}
 
             tables_dict = {
                 "instruments": instrument_def,
@@ -38,9 +39,9 @@ class Sqlite_Database:
 
             self.commit_changes()
         else:
-           self.__connection = sqlite3.connect("dependencies.db",
+            self.__connection = sqlite3.connect("dependencies.db",
                                                timeout=30.0)
-        self.__connection.row_factory = sqlite3.Row 
+        self.__connection.row_factory = sqlite3.Row
 
     # Takes table with N attributes & X rows for insertion formatted as:
         # [[attr1_1, attr2_1, ... , attN_1],

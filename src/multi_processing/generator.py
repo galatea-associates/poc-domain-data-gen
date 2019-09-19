@@ -1,7 +1,6 @@
 import time
-from multiprocessing import Manager
-
 import multi_processing.pool_tasks as mp_p
+
 
 class Generator():
 
