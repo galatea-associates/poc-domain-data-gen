@@ -66,9 +66,9 @@ class Cashflow(Generatable):
         if accrual == "DAILY":
             return True
         elif accrual == "QUARTERLY" and \
-    (effective_date.day, effective_date.month) in \
-    [(31, 3), (30, 6), (30, 9), (31, 12)]:
+                (effective_date.day, effective_date.month) in \
+                [(31, 3), (30, 6), (30, 9), (31, 12)]:
             return True
         elif accrual == "CHANCE_ACCRUAL" and \
-    random.random() < (int(probability) / 100):
+                random.random() < (int(probability) / 100):
             return True
