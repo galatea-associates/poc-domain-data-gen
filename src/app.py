@@ -107,5 +107,6 @@ def get_class(package_name, module_name, class_name):
     return getattr(importlib.import_module(package_name+'.'+module_name),
                    class_name)
 
+
 if __name__ == '__main__':
     main()
