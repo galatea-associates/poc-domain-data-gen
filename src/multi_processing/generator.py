@@ -14,7 +14,7 @@ class Generator():
         
         while not self.terminate:
             self.wait_for_jobs()
-            job_list = self.format_jobs(obj_class, custom_obj_args)
+            job_list = self.format_jobs(obj_class, custom_obj_args, pool_size)
             self.run_jobs(job_list, pool_size)
         
         self.write_queue.put("terminate")
@@ -24,10 +24,10 @@ class Generator():
             time.sleep(1)
         return
 
-    def format_jobs(self, obj_class, custom_obj_args):
+    def format_jobs(self, obj_class, custom_obj_args, pool_size):
         job_list = []
         while (not self.generate_queue.empty()
-                and len(job_list) < 12):
+                and len(job_list) < (pool_size*2)):
             job = self.get_job()
             if (job == "terminate"):
                 self.issue_termination()

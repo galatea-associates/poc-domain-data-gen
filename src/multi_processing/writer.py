@@ -20,7 +20,7 @@ class Writer():
         
         while not self.terminate:
             self.wait_for_jobs()
-            self.handle_jobs()
+            self.handle_jobs(pool_size)
             self.run_jobs(pool_size)
             self.reset_job_list()
 
@@ -32,9 +32,9 @@ class Writer():
             time.sleep(1)
         return
 
-    def handle_jobs(self):
+    def handle_jobs(self, pool_size):
         while (not self.write_queue.empty()
-                and len(self.job_list) < 2):
+                and len(self.job_list) < pool_size*2):
             record_list = self.get_job()
             if (record_list == "terminate"):
                 self.issue_termination()
