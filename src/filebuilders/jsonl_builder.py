@@ -21,3 +21,4 @@ class JSONLBuilder(FileBuilder):
         # TODO: REMOVE THIS LINE
         # Only here to save space requirements on AWS        
         os.unlink(file_path)
+        print("File num",file_number)
