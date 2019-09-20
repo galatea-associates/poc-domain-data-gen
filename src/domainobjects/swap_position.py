@@ -8,48 +8,48 @@ class SwapPosition(Generatable):
 
     def generate(self, record_count, custom_args, start_id):
         ins_per_swap_range = custom_args['ins_per_swap']
+        range_min = ins_per_swap_range['min']
+        range_max = ins_per_swap_range['max']
 
+        record = self.instantiate_record()
         records = []
         persisting_records = []
 
-        self.establish_db_connection()
-        database = self.get_database()
+        database = self.establish_db_connection()
 
         all_instruments = database.retrieve('instruments')
+
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
-
         swap_contract_batch = database.retrieve_batch('swap_contracts',
                                                       record_count, start_id)
 
         for swap_contract in swap_contract_batch:
-            ins_count = random.randint(
-                int(ins_per_swap_range['min']),
-                int(ins_per_swap_range['max']))
+            ins_count = random.randint(int(range_min), int(range_max))
             instruments = random.sample(all_instruments, ins_count)
-
+            record['swap_contract_id'] = swap_contract['id']
+            
             for instrument in instruments:
                 long_short = self.generate_long_short()
                 purpose = self.generate_purpose()
+                record['ric'] = instrument['ric']
+                record['long_short'] = long_short
+                record['purpose'] = purpose
+
                 for position_type in ['S', 'I', 'E']:
                     quantity = self.generate_random_integer(
                         negative=long_short.upper() == "SHORT"
                     )
+                    record['td_quantity'] = quantity
+                    record['position_type'] = position_type
+                    
                     for date in date_range:
                         current_date = datetime.strftime(date, '%Y-%m-%d')
-                        records.append({
-                            # 'swap_position_id': i,
-                            'ric': instrument['ric'],
-                            'swap_contract_id': swap_contract['id'],
-                            'position_type': position_type,
-                            'knowledge_date': current_date,
-                            'effective_date': current_date,
-                            'account': self.generate_account(),
-                            'long_short': long_short,
-                            'td_quantity': quantity,
-                            'purpose': purpose,
-                            'time_stamp': datetime.now()
-                        })
+                        record['knowledge_date'] = current_date
+                        record['effective_date'] = current_date
+                        record['account'] = self.generate_account()
+                        record['time_stamp'] = datetime.now()
+                        records.append(record.copy())
 
                         if (position_type == 'E'):
                             persisting_records.append(
@@ -74,3 +74,17 @@ class SwapPosition(Generatable):
 
     def generate_purpose(self):
         return 'Outright'
+
+    def instantiate_record(self):
+        return {
+            'ric': None,
+            'swap_contract_id': None,
+            'position_type': None,
+            'knowledge_date': None,
+            'effective_date': None,
+            'account': None,
+            'long_short': None,
+            'td_quantity': None,
+            'purpose': None,
+            'time_stamp': None
+        }

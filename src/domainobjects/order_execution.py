@@ -8,16 +8,19 @@ class OrderExecution(Generatable):
 
         records = []
 
-        self.establish_db_connection()
-        database = self.get_database()
+        database = self.establish_db_connection()
 
-        instruments = database.retrieve('instruments')
+        self.instruments = database.retrieve('instruments')
 
         for i in range(start_id, start_id+record_count):
-            instrument = random.choice(instruments)
+            records.append(self.generate_record(i))
 
-            records.append({
-                'order_id': i,
+        return records
+
+    def generate_record(self, id):
+        instrument = self.get_random_instrument()
+        return {
+                'order_id': id,
                 'account_num': self.generate_random_integer(length=8),
                 'direction': self.generate_credit_debit(),
                 'sto_id': self.generate_random_integer(length=7),
@@ -27,6 +30,4 @@ class OrderExecution(Generatable):
                 'ric': instrument['ric'],
                 'qty': self.generate_random_integer(),
                 'time_stamp': datetime.now(),
-            })
-
-        return records
+            }

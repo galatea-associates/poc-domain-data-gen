@@ -26,8 +26,13 @@ class Generatable(ABC):
     def generate(self, record_count, custom_args, start_id):
        pass
 
+    #@abstractmethod
+    #def get_record(self):
+    #    pass
+
     def establish_db_connection(self):
         self.__database = Sqlite_Database()
+        return self.__database
 
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
@@ -104,6 +109,9 @@ class Generatable(ABC):
 
     def generate_return_type(self):
         return random.choice(self.RETURN_TYPES)
+
+    def get_random_instrument(self):
+        return random.choice(self.instruments)
 
     def get_database(self):
         return self.__database

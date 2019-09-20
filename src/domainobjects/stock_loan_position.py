@@ -8,19 +8,20 @@ class StockLoanPosition(Generatable):
     def generate(self, record_count, custom_args, start_id):
         records = []
 
-        self.establish_db_connection()
-        database = self.get_database()
-
-        instruments = database.retrieve('instruments')
+        database = self.establish_db_connection()
+        self.instruments = database.retrieve('instruments')
 
         for i in range(start_id, start_id+record_count):
-            instrument = random.choice(instruments)
-            position_type = self.generate_position_type()
-            knowledge_date = self.generate_knowledge_date()
-            collateral_type = self.generate_collateral_type()
+            records.append(self.generate_record(i))
+        return records
 
-            records.append({
-                'stock_loan_contract_id': i,
+    def generate_record(self, id):
+        instrument = self.get_random_instrument()
+        position_type = self.generate_position_type()
+        knowledge_date = self.generate_knowledge_date()
+        collateral_type = self.generate_collateral_type()
+        return {
+                'stock_loan_contract_id': id,
                 'ric': instrument['ric'],
                 'knowledge_date': knowledge_date,
                 'effective_date': self.generate_effective_date(0,
@@ -40,9 +41,8 @@ class StockLoanPosition(Generatable):
                 'is_callable': self.generate_random_boolean(),
                 'return_type': self.generate_return_type(),
                 'time_stamp': datetime.now()
-            })
+            }
 
-        return records
 
     def generate_haircut(self, collateral_type):
         return '2.00%' if collateral_type == 'Non Cash' else None

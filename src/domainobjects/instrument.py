@@ -7,26 +7,34 @@ class Instrument(Generatable):
 
     def generate(self, record_count, custom_args, start_id):
 
-        self.establish_db_connection()
-        database = self.get_database()
+        database = self.establish_db_connection()
         cache = Cache()
 
         records = []
         persisting_records = []
 
         for i in range(start_id, start_id+record_count):
-            asset_class = self.generate_asset_class()
-            ticker = self.generate_ticker(cache)
-            coi = self.generate_coi(cache)
-            exchange_code = i
-            cusip = str(self.generate_random_integer(length=9))
-            isin = self.generate_isin(coi, cusip)
-            ric = self.generate_ric(ticker, exchange_code)
-            sedol = self.generate_random_integer(length=7)
-            j = i
+            record = self.generate_record(i, cache)
+            records.append(record)
+            persisting_records.append(
+                [record['ric'], record['cusip'], record['isin']]
+            )
 
-            records.append({
-                'instrument_id': j,
+        database.persist_batch("instruments", persisting_records)
+        database.commit_changes()
+        return records
+
+    def generate_record(self, id, cache):
+        asset_class = self.generate_asset_class()
+        ticker = self.generate_ticker(cache)
+        coi = self.generate_coi(cache)
+        exchange_code = id
+        cusip = str(self.generate_random_integer(length=9))
+        isin = self.generate_isin(coi, cusip)
+        ric = self.generate_ric(ticker, exchange_code)
+        sedol = self.generate_random_integer(length=7)
+        return {
+                'instrument_id': id,
                 'ric': ric,
                 'isin': isin,
                 'sedol': sedol,
@@ -34,13 +42,8 @@ class Instrument(Generatable):
                 'cusip': cusip,
                 'asset_class': asset_class,
                 'coi': coi,
-                'time_stamp': datetime.now()})
-
-            persisting_records.append([ric, cusip, isin])
-
-        database.persist_batch("instruments", persisting_records)
-        database.commit_changes()
-        return records
+                'time_stamp': datetime.now()
+            }
 
     def generate_asset_class(self):
         return 'Stock'

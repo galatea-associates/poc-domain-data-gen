@@ -8,17 +8,20 @@ class Price(Generatable):
 
         records = []
 
-        self.establish_db_connection()
-        database = self.get_database()
-        instruments = database.retrieve('instruments')
+        database = self.establish_db_connection()
+        self.instruments = database.retrieve('instruments')
 
         for _ in range(start_id, start_id+record_count):
-            instrument = random.choice(instruments)
-            records.append({
+            record = self.generate_record()
+            records.append(record)
+
+        return records
+
+    def generate_record(self):
+        instrument = self.get_random_instrument()
+        return {
                 'ric': instrument['ric'],
                 'price': self.generate_random_decimal(),
                 'curr': self.generate_currency(),
                 'time_stamp': datetime.now()
-            })
-
-        return records
+            }

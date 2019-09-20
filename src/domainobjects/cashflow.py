@@ -9,46 +9,47 @@ class Cashflow(Generatable):
     def generate(self, record_count, custom_args, start_id):
         cashflow_gen_args = custom_args['cashflow_generation']
 
-        self.establish_db_connection()
-        database = self.get_database()
+        database = self.establish_db_connection()
 
+        record = self.instantiate_record()
         records = []
         swap_position_batch =\
             database.retrieve_batch('swap_positions', record_count, start_id)
 
         for swap_position in swap_position_batch:
-            if swap_position['position_type'] != 'E':
-                continue
+            if swap_position['position_type'] != 'E': continue
 
-            # Intermediary variable required
-            # sqlite3.Row does not support assignment
             effective_date_ = swap_position['effective_date']
             effective_date = datetime.strptime(effective_date_, '%Y-%m-%d')
-
+            record['effective_date'] = effective_date
+            record['swap_contract_id'] = swap_position['swap_contract_id']
             for cf_arg in cashflow_gen_args:
                 accrual = cf_arg['cashFlowAccrual']
                 probability = cf_arg['cashFlowAccrualProbability']
+                record['ric'] = swap_position['ric']
+                record['long_short'] = swap_position['long_short']
                 if self.generate_cashflow(effective_date,
                                           accrual,
                                           probability):
 
-                    pay_date_period = cf_arg['cashFlowPaydatePeriod']
-                    p_date_func = self.get_pay_date_func(pay_date_period)
-                    swap_contract_id = swap_position['swap_contract_id']
-                    records.append({
-                        # 'cashflow_id': i,
-                        'swap_contract_id': swap_contract_id,
-                        'ric': swap_position['ric'],
-                        'cashflow_type': cf_arg['cashFlowType'],
-                        'pay_date': datetime.strftime(
-                            p_date_func(effective_date), '%Y-%m-%d'),
-                        'effective_date': effective_date_,
-                        'currency': self.generate_currency(),
-                        'amount': self.generate_random_integer(),
-                        'long_short': swap_position['long_short']
-                    })
+                    record = self.generate_record(cf_arg, 
+                                                  effective_date, record)
+                    records.append(record.copy())
 
         return records
+
+    def generate_record(self, cf_arg, effective_date, record):
+
+        pay_date_period = cf_arg['cashFlowPaydatePeriod']
+        p_date_func = self.get_pay_date_func(pay_date_period)
+
+        record['cashflow_type'] = cf_arg['cashFlowType']
+        record['pay_date'] = datetime.strftime(p_date_func(effective_date),
+                                              '%Y-%m-%d')
+        record['currency'] = self.generate_currency()
+        record['amount'] = self.generate_random_integer()
+
+        return record
 
     def calc_eom(self, d):
         return date(d.year, d.month, calendar.monthrange(d.year, d.month)[-1])
@@ -72,3 +73,15 @@ class Cashflow(Generatable):
         elif accrual == "CHANCE_ACCRUAL" and \
                 random.random() < (int(probability) / 100):
             return True
+    
+    def instantiate_record(self):
+        return {
+            'swap_contract_id': None,
+            'ric': None,
+            'cashflow_type': None,
+            'pay_date': None,
+            'effective_date': None,
+            'currency': None,
+            'amount': None,
+            'long_short': None
+        }
