@@ -8,37 +8,26 @@ class SwapContract(Generatable):
 
     def generate(self, record_count, start_id):
 
-        record = self.instantiate_record()
-        records = []
-        persisting_records = []
         counterparties = self.retrieve_batch_records('counterparties',
                                                  record_count, start_id)
 
-        for counterparty in counterparties:
-            record["counterparty_id"] = counterparty['id']
-            swap_count = self.get_number_of_swaps()
-            for _ in range(0, swap_count): 
-                contract_id = str(uuid.uuid1())
-                record['swap_contract_id'] = contract_id
-                record = self.generate_remaining_record(record)
-                records.append(record.copy())
+        records = [self.generate_record(counterparty['id']) \
+                   for counterparty in counterparties \
+                   for _ in range(0, self.get_number_of_swaps())]
 
-                persisting_records.append([contract_id])
-
-        self.persist_records("swap_contracts", persisting_records)
+        self.persist_records("swap_contracts")
         return records
 
-    def get_number_of_swaps(self):
-        custom_args = self.get_custom_args()
-        swaps_per_counterparty = custom_args['swap_per_counterparty']
-        swap_min = int(swaps_per_counterparty['min'])
-        swap_max = int(swaps_per_counterparty['max'])
-        return random.randint(swap_min, swap_max)
+    def generate_record(self, counterparty):
+        record = self.instantiate_record()
 
-    def generate_remaining_record(self, record):
-        start_date = self.generate_random_date()
         status = self.generate_status()
+        start_date = self.generate_random_date()
+        contract_id = str(uuid.uuid1())
+        self.persist_record([contract_id])
 
+        record['counterparty_id'] = counterparty
+        record['swap_contract_id'] = contract_id
         record['swap_mnemonic'] = self.generate_random_string(10)
         record['is_short_mtm_financed'] = self.generate_random_boolean()
         record['accounting_area'] = self.generate_random_string(10)
@@ -61,6 +50,13 @@ class SwapContract(Generatable):
 
         return record
 
+    def get_number_of_swaps(self):
+        custom_args = self.get_custom_args()
+        swaps_per_counterparty = custom_args['swap_per_counterparty']
+        swap_min = int(swaps_per_counterparty['min'])
+        swap_max = int(swaps_per_counterparty['max'])
+        return random.randint(swap_min, swap_max)
+
     def generate_swap_end_date(self, years_to_add=5,
                                start_date=None, status=None):
         return None if status == 'Live' else start_date +\
@@ -77,6 +73,8 @@ class SwapContract(Generatable):
 
     def instantiate_record(self):
         return {
+            'counterparty_id': None,
+            'swap_contract_id': None,
             'swap_mnemonic': None,
             'accounting_area': None,
             'status': None,

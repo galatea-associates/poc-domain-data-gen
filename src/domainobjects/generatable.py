@@ -21,14 +21,11 @@ class Generatable(ABC):
         self.__file_builder = file_builder
         self.__config = domain_object_config
         self.__database = None
+        self.__persisting_records = []
 
     @abstractmethod
     def generate(self, record_count, start_id):
        pass
-
-    def establish_db_connection(self):
-        self.__database = Sqlite_Database()
-        return self.__database
 
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
@@ -106,12 +103,17 @@ class Generatable(ABC):
     def generate_return_type(self):
         return random.choice(self.RETURN_TYPES)
 
+    # THESE ARE NON-GENERATING, UTILITY METHODS USED WHERE NECESSARY #
+
     def get_random_instrument(self):
         return random.choice(self.instruments)
 
-    def persist_records(self, table_name, records):
+    def persist_record(self, record):
+        self.__persisting_records.append(record)
+
+    def persist_records(self, table_name):
         if(self.__database is None): self.establish_db_connection()
-        self.__database.persist_batch(table_name, records)
+        self.__database.persist_batch(table_name, self.__persisting_records)
         self.__database.commit_changes()
 
     def retrieve_records(self, table_name):
@@ -123,6 +125,10 @@ class Generatable(ABC):
         return self.__database.retrieve_batch(table_name, amount, start_pos)
 
     def get_database(self):
+        return self.__database
+
+    def establish_db_connection(self):
+        self.__database = Sqlite_Database()
         return self.__database
 
     def get_file_builder(self):

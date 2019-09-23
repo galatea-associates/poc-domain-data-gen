@@ -10,16 +10,15 @@ class Instrument(Generatable):
         cache = Cache()
 
         records = []
-        persisting_records = []
 
         for i in range(start_id, start_id+record_count):
             record = self.generate_record(i, cache)
             records.append(record)
-            persisting_records.append(
+            self.persist_record(
                 [record['ric'], record['cusip'], record['isin']]
             )
 
-        self.persist_records("instruments", persisting_records)
+        self.persist_records("instruments")
         return records
 
     def generate_record(self, id, cache):

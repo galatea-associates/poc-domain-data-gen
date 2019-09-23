@@ -8,13 +8,12 @@ class Counterparty(Generatable):
     def generate(self, record_count, start_id):
 
         records = []
-        persisting_records = []
 
         for i in range(start_id, record_count+start_id):
             records.append(self.get_record(i))
-            persisting_records.append([str(i)])
+            self.persist_record([str(i)])
 
-        self.persist_records("counterparties", persisting_records)
+        self.persist_records("counterparties")
         return records
 
     def get_record(self, current_id):
