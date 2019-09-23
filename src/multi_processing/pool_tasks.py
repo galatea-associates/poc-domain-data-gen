@@ -13,13 +13,12 @@ def generate_data(instruction):
 
     instructions = instruction[0]
     domain_object = instruction[1]
-    custom_args = instruction[2]
 
     domain_object_name = instructions['domain_object']
     amount = instructions['amount']
     start_id = instructions['start_id']
 
-    records = domain_object.generate(amount, custom_args, start_id)
+    records = domain_object.generate(amount, start_id)
     output = [domain_object_name, records]
     return output
 

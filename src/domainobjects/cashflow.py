@@ -6,13 +6,13 @@ import calendar
 
 class Cashflow(Generatable):
 
-    def generate(self, record_count, custom_args, start_id):
-        cashflow_gen_args = custom_args['cashflow_generation']
+    def generate(self, record_count, start_id):
 
         record = self.instantiate_record()
         record_store = []
         swap_position_batch =\
          self.retrieve_batch_records('swap_positions', record_count, start_id)
+        cashflow_gen_args = self.get_cashflow_gen_args()
 
         for swap_position in swap_position_batch:
             if swap_position['position_type'] != 'E': continue
@@ -36,6 +36,10 @@ class Cashflow(Generatable):
                     record_store.append(record.copy())
 
         return record_store
+
+    def get_cashflow_gen_args(self):
+        custom_args = self.get_custom_args()
+        return custom_args['cashflow_generation']
 
     def generate_remaining_record(self, cf_arg, effective_date, record):
 

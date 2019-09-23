@@ -4,7 +4,7 @@ import random
 
 class CashBalance(Generatable):
 
-    def generate(self, record_count, custom_args, start_id):
+    def generate(self, record_count, start_id):
 
         records = []
 

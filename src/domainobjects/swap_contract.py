@@ -6,10 +6,7 @@ from domainobjects.generatable import Generatable
 
 class SwapContract(Generatable):
 
-    def generate(self, record_count, custom_args, start_id):
-        swaps_per_counterparty = custom_args['swap_per_counterparty']
-        swap_min = int(swaps_per_counterparty['min'])
-        swap_max = int(swaps_per_counterparty['max'])
+    def generate(self, record_count, start_id):
 
         record = self.instantiate_record()
         records = []
@@ -18,8 +15,8 @@ class SwapContract(Generatable):
                                                  record_count, start_id)
 
         for counterparty in counterparties:
-            swap_count = random.randint(swap_min, swap_max)
             record["counterparty_id"] = counterparty['id']
+            swap_count = self.get_number_of_swaps()
             for _ in range(0, swap_count): 
                 contract_id = str(uuid.uuid1())
                 record['swap_contract_id'] = contract_id
@@ -30,6 +27,13 @@ class SwapContract(Generatable):
 
         self.persist_records("swap_contracts", persisting_records)
         return records
+
+    def get_number_of_swaps(self):
+        custom_args = self.get_custom_args()
+        swaps_per_counterparty = custom_args['swap_per_counterparty']
+        swap_min = int(swaps_per_counterparty['min'])
+        swap_max = int(swaps_per_counterparty['max'])
+        return random.randint(swap_min, swap_max)
 
     def generate_remaining_record(self, record):
         start_date = self.generate_random_date()
@@ -80,13 +84,13 @@ class SwapContract(Generatable):
             'end_date': None,
             'swap_type': None,
             'reference_rate': None,
-            'swap_contract_f1': None,
-            'swap_contract_f2': None,
-            'swap_contract_f3': None,
-            'swap_contract_f4': None,
-            'swap_contract_f5': None,
-            'swap_contract_f6': None,
-            'swap_contract_f7': None,
-            'swap_contract_f8': None,
+            'swap_contract_field1': None,
+            'swap_contract_field2': None,
+            'swap_contract_field3': None,
+            'swap_contract_field4': None,
+            'swap_contract_field5': None,
+            'swap_contract_field6': None,
+            'swap_contract_field7': None,
+            'swap_contract_field8': None,
             'time_stamp': None
         }

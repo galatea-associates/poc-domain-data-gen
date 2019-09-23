@@ -6,10 +6,7 @@ import pandas as pd
 
 class SwapPosition(Generatable):
 
-    def generate(self, record_count, custom_args, start_id):
-        ins_per_swap_range = custom_args['ins_per_swap']
-        range_min = ins_per_swap_range['min']
-        range_max = ins_per_swap_range['max']
+    def generate(self, record_count, start_id):
 
         record = self.instantiate_record()
         records = []
@@ -17,16 +14,15 @@ class SwapPosition(Generatable):
 
         all_instruments = self.retrieve_records('instruments')
 
-        start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
+        start_date = datetime.strptime(self.get_start_date(), '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
         swap_contract_batch = self.retrieve_batch_records('swap_contracts',
                                                       record_count, start_id)
 
         for swap_contract in swap_contract_batch:
-            ins_count = random.randint(int(range_min), int(range_max))
-            instruments = random.sample(all_instruments, ins_count)
             record['swap_contract_id'] = swap_contract['id']
-            
+            ins_count = self.get_number_of_instruments()
+            instruments = random.sample(all_instruments, ins_count)
             for instrument in instruments:
                 long_short = self.generate_long_short()
                 purpose = self.generate_purpose()
@@ -56,6 +52,17 @@ class SwapPosition(Generatable):
 
         self.persist_records('swap_positions', persisting_records)
         return records
+
+    def get_number_of_instruments(self):
+        custom_args = self.get_custom_args()
+        ins_per_swap_range = custom_args['ins_per_swap']
+        min_ins = int(ins_per_swap_range['min'])
+        max_ins = int(ins_per_swap_range['max'])
+        return random.randint(min_ins, max_ins)
+
+    def get_start_date(self):
+        custom_args = self.get_custom_args()
+        return custom_args['start_date']
 
     def generate_remaining_record(self, record, current_date):
         record['knowledge_date'] = current_date

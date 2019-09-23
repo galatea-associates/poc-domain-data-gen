@@ -23,7 +23,7 @@ class Generatable(ABC):
         self.__database = None
 
     @abstractmethod
-    def generate(self, record_count, custom_args, start_id):
+    def generate(self, record_count, start_id):
        pass
 
     def establish_db_connection(self):
@@ -130,3 +130,6 @@ class Generatable(ABC):
 
     def get_object_config(self):
         return self.__config
+    
+    def get_custom_args(self):
+        return self.__config['custom_args']

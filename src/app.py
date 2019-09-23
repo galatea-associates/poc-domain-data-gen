@@ -56,7 +56,7 @@ def process_domain_object(obj_config, file_builder, shared_config):
     writer_pool_size = shared_config['write_pools']
 
     # Start generation & writing subprocesses for this object
-    coordinator.start_generator(domain_obj, custom_args, generator_pool_size)
+    coordinator.start_generator(domain_obj, generator_pool_size)
     coordinator.start_writer(writer_pool_size)
 
     obj_name = obj_config['class_name']

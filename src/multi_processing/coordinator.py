@@ -47,9 +47,9 @@ class Coordinator():
 
         self.__generation_job_queue.put("terminate")
 
-    def start_generator(self, obj_class, custom_obj_args, pool_size):
+    def start_generator(self, obj_class, pool_size):
         generator_p = Process(target=self.get_generation_coordinator().start,
-                              args=(obj_class, custom_obj_args, pool_size,))
+                              args=(obj_class, pool_size,))
         generator_p.start()
         self.processes.append(generator_p)
 
