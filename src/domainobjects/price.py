@@ -7,9 +7,7 @@ class Price(Generatable):
     def generate(self, record_count, custom_args, start_id):
 
         records = []
-
-        database = self.establish_db_connection()
-        self.instruments = database.retrieve('instruments')
+        self.instruments = self.retrieve_records('instruments')
 
         for _ in range(start_id, start_id+record_count):
             record = self.generate_record()

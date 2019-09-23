@@ -7,8 +7,7 @@ class DepotPosition(Generatable):
 
     def generate(self, record_count, custom_args, start_id):
 
-        database = self.establish_db_connection()
-        self.instruments = database.retrieve('instruments')
+        self.instruments = self.retrieve_records('instruments')
 
         records = []
 

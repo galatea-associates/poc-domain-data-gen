@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from sqlite_database import Sqlite_Database
+from utils.sqlite_database import Sqlite_Database
 import random
 import string
 
@@ -25,10 +25,6 @@ class Generatable(ABC):
     @abstractmethod
     def generate(self, record_count, custom_args, start_id):
        pass
-
-    #@abstractmethod
-    #def get_record(self):
-    #    pass
 
     def establish_db_connection(self):
         self.__database = Sqlite_Database()
@@ -112,6 +108,19 @@ class Generatable(ABC):
 
     def get_random_instrument(self):
         return random.choice(self.instruments)
+
+    def persist_records(self, table_name, records):
+        if(self.__database is None): self.establish_db_connection()
+        self.__database.persist_batch(table_name, records)
+        self.__database.commit_changes()
+
+    def retrieve_records(self, table_name):
+        if(self.__database is None): self.establish_db_connection()
+        return self.__database.retrieve(table_name)
+
+    def retrieve_batch_records(self, table_name, amount, start_pos):
+        if(self.__database is None): self.establish_db_connection()
+        return self.__database.retrieve_batch(table_name, amount, start_pos)
 
     def get_database(self):
         return self.__database

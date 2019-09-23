@@ -1,13 +1,12 @@
 from domainobjects.generatable import Generatable
 from datetime import datetime
-from cache import Cache
+from utils.cache import Cache
 import random
 
 class Instrument(Generatable):
 
     def generate(self, record_count, custom_args, start_id):
 
-        database = self.establish_db_connection()
         cache = Cache()
 
         records = []
@@ -20,8 +19,7 @@ class Instrument(Generatable):
                 [record['ric'], record['cusip'], record['isin']]
             )
 
-        database.persist_batch("instruments", persisting_records)
-        database.commit_changes()
+        self.persist_records("instruments", persisting_records)
         return records
 
     def generate_record(self, id, cache):

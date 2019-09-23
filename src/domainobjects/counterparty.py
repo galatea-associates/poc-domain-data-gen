@@ -7,7 +7,6 @@ class Counterparty(Generatable):
 
     def generate(self, record_count, custom_args, start_id):
 
-        database = self.establish_db_connection()
         records = []
         persisting_records = []
 
@@ -15,8 +14,7 @@ class Counterparty(Generatable):
             records.append(self.get_record(i))
             persisting_records.append([str(i)])
 
-        database.persist_batch("counterparties", persisting_records)
-        database.commit_changes()
+        self.persist_records("counterparties", persisting_records)
         return records
 
     def get_record(self, current_id):

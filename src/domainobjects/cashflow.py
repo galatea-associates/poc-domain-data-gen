@@ -9,12 +9,10 @@ class Cashflow(Generatable):
     def generate(self, record_count, custom_args, start_id):
         cashflow_gen_args = custom_args['cashflow_generation']
 
-        database = self.establish_db_connection()
-
         record = self.instantiate_record()
-        records = []
+        record_store = []
         swap_position_batch =\
-            database.retrieve_batch('swap_positions', record_count, start_id)
+         self.retrieve_batch_records('swap_positions', record_count, start_id)
 
         for swap_position in swap_position_batch:
             if swap_position['position_type'] != 'E': continue
@@ -24,21 +22,22 @@ class Cashflow(Generatable):
             record['effective_date'] = effective_date
             record['swap_contract_id'] = swap_position['swap_contract_id']
             for cf_arg in cashflow_gen_args:
-                accrual = cf_arg['cashFlowAccrual']
-                probability = cf_arg['cashFlowAccrualProbability']
                 record['ric'] = swap_position['ric']
                 record['long_short'] = swap_position['long_short']
-                if self.generate_cashflow(effective_date,
+
+                accrual = cf_arg['cashFlowAccrual']
+                probability = cf_arg['cashFlowAccrualProbability']
+                if self.cashflow_accrues(effective_date,
                                           accrual,
                                           probability):
 
-                    record = self.generate_record(cf_arg, 
+                    record = self.generate_remaining_record(cf_arg, 
                                                   effective_date, record)
-                    records.append(record.copy())
+                    record_store.append(record.copy())
 
-        return records
+        return record_store
 
-    def generate_record(self, cf_arg, effective_date, record):
+    def generate_remaining_record(self, cf_arg, effective_date, record):
 
         pay_date_period = cf_arg['cashFlowPaydatePeriod']
         p_date_func = self.get_pay_date_func(pay_date_period)
@@ -63,7 +62,7 @@ class Cashflow(Generatable):
             "END_OF_HALF":self.calc_eoh
         }.get(pay_date_period, lambda: "Invalid pay date period")
 
-    def generate_cashflow(self, effective_date, accrual, probability):
+    def cashflow_accrues(self, effective_date, accrual, probability):
         if accrual == "DAILY":
             return True
         elif accrual == "QUARTERLY" and \

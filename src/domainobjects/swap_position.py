@@ -15,13 +15,11 @@ class SwapPosition(Generatable):
         records = []
         persisting_records = []
 
-        database = self.establish_db_connection()
-
-        all_instruments = database.retrieve('instruments')
+        all_instruments = self.retrieve_records('instruments')
 
         start_date = datetime.strptime(custom_args['start_date'], '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
-        swap_contract_batch = database.retrieve_batch('swap_contracts',
+        swap_contract_batch = self.retrieve_batch_records('swap_contracts',
                                                       record_count, start_id)
 
         for swap_contract in swap_contract_batch:
@@ -42,13 +40,9 @@ class SwapPosition(Generatable):
                     )
                     record['td_quantity'] = quantity
                     record['position_type'] = position_type
-                    
                     for date in date_range:
                         current_date = datetime.strftime(date, '%Y-%m-%d')
-                        record['knowledge_date'] = current_date
-                        record['effective_date'] = current_date
-                        record['account'] = self.generate_account()
-                        record['time_stamp'] = datetime.now()
+                        record = self.generate_remaining_record(record, current_date)
                         records.append(record.copy())
 
                         if (position_type == 'E'):
@@ -60,9 +54,15 @@ class SwapPosition(Generatable):
                                  str(long_short)]
                             )
 
-        database.persist_batch('swap_positions', persisting_records)
-        database.commit_changes()
+        self.persist_records('swap_positions', persisting_records)
         return records
+
+    def generate_remaining_record(self, record, current_date):
+        record['knowledge_date'] = current_date
+        record['effective_date'] = current_date
+        record['account'] = self.generate_account()
+        record['time_stamp'] = datetime.now()
+        return record
 
     def generate_account(self):
         account_type = random.choice(self.ACCOUNT_TYPES)
