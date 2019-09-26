@@ -3,18 +3,43 @@ from datetime import datetime
 import random
 
 class BackOfficePosition(Generatable):
+    """ Class to generate back office positions. Generate method will generate
+    a set amount of positions. Other generation methods included where back
+    office positions are the only domain object requiring them. """
 
     def generate(self, record_count, start_id):
+        """ Generate a set number of back office positions 
+        
+        Parameters
+        ----------
+        record_count : int
+            Number of back office positions to generate
+        start_id : int
+            Starting id to generate from
+
+        Returns
+        -------
+        List
+            Containing 'record_count' back office positions 
+        """
 
         self.instruments = self.retrieve_records('instruments')
         records = []
 
         for _ in range(start_id, start_id+record_count):
-            records.append(self.get_record())
+            records.append(self.generate_record())
 
         return records
 
-    def get_record(self):
+    def generate_record(self):
+        """ Generate a single back office position
+
+        Returns
+        -------
+        dict
+            A single back office position object
+        """
+
         instrument = self.get_random_instrument()
         position_type = self.generate_position_type()
         knowledge_date = self.generate_knowledge_date()
@@ -32,4 +57,12 @@ class BackOfficePosition(Generatable):
         }
 
     def generate_purpose(self):
+        """ Generate a purpose for a back office position 
+
+        Returns
+        -------
+        String
+            Back office position purposes are always outright
+        """
+
         return 'Outright'

@@ -1,3 +1,35 @@
+""" Random Data Generator for Financial-Domain Objects
+
+    Based on a user provided configuration, generate a set of random data
+    pertaining to said configuration. Currently supported domain objects are:
+        
+        * Back Office Position
+        * Cash Balance
+        * Cashflow
+        * Counterparty
+        * Depot Positions
+        * Front Office Position
+        * Instrument
+        * Order Execution
+        * Price
+        * Stock Loan Position
+        * Swap Contract
+        * Swap Position
+    
+    Each domain object to be generated (record count > 0) is generated in 
+    turn to account for inter-object dependencies. Generation is  
+    multiprocessed with a primary coordinator spawning two child process 
+    coordinators. One of these children handles object generation, and the
+    second writing of these to file.
+
+    The generation coordinator recieved instruction to generate X number of 
+    objects over Y number of subprocesses (Pool Size). Once these jobs are 
+    executed and records returned, they are placed into a writing job queue.
+    The writing to file coordinator picks up & formats these tasks before 
+    assigning them to execute on a second pool
+
+"""
+
 import importlib
 import ujson
 import os
@@ -8,7 +40,7 @@ import multi_processing.batch_size_calc as batch_size_calc
 
 
 def main():
-    # Delete db if one already exists
+    # Delete database if one already exists
     if os.path.exists('dependencies.db'):
         os.unlink('dependencies.db')
 
@@ -30,8 +62,23 @@ def main():
 
 
 def get_file_builder(obj_config, file_builder_configs):
-    # Given an objects configuration and all file_builder descriptions,
-    # return an instantiated file builder as per spec in object config
+    """ Retrieves file builder object from provided configs 
+        
+        Parameters
+        ----------
+        obj_config : dict
+            A domain objects configuration as provided by user
+        file_builder_configs: dict
+            All possible file builder configurations
+
+        Returns
+        -------
+        File_Builder
+            Instantiated file builder as defined by the file builder
+            configurations, as per the user specified output type of
+            the given object configuration 
+    """
+    
     fb_name = obj_config['file_builder_name']
     fb_config = get_fb_config(file_builder_configs, fb_name)
     file_builder = get_class('filebuilders', fb_config['module_name'],
@@ -40,9 +87,21 @@ def get_file_builder(obj_config, file_builder_configs):
 
 
 def process_domain_object(obj_config, file_builder, shared_config):
-    # Starts both data generating & file writing processes & populates the job
-    # queue of the coordinator to get both processes underway. Post population
-    # of jobs, awaits both generator and writer to terminate before continuing
+    """ Instantiates generation and file-writing processes. Populates the
+    generation job queue & starts both generation and writing coordinators.
+    Awaits for both coordinators to terminate before continuing to the next
+    domain object, or finishing execution.
+
+    Parameters
+    ----------
+    obj_config : dict
+        A domain objects configuration as provided by user
+    file_builder : File_Builder
+        An instantiated filebuilder as per this objects required output 
+        file type
+    shared_config : dict
+        User-provided configuration shared between all objects
+    """
 
     obj_class = get_class('domainobjects', obj_config['module_name'],
                           obj_config['class_name'])
@@ -68,8 +127,24 @@ def process_domain_object(obj_config, file_builder, shared_config):
 
 
 def get_record_count(obj_config):
-    # Get number of records required to generate OR the size of an objects
-    # dependency table from the DB, used to create jobs in queue
+    """ Returns the number of records to be generated for a given object.
+    Where objects are non-dependent on others, the user-provided configuration
+    amount is used. Otherwise, the record_count is set to be the number of 
+    records generated of the domain object the to-generate one is dependent
+    on.
+
+    Parameters
+    ----------
+    obj_config : dict
+        A domain objects configuration as provided by user
+
+    Returns
+    -------
+    int
+        Number of records to generate, or the number of dependent objects 
+        generated prior where cur object non-deterministic amount to generate
+    """
+
     nondeterministic_objects = ['swap_contract', 'swap_position', 'cashflow']
     object_module = obj_config['module_name']
 
@@ -86,6 +161,16 @@ def get_record_count(obj_config):
 
 
 def get_args():
+    """ Configure a parser to retrieve & parse command-line arguments
+    input by the user.
+
+    Returns
+    -------
+    namespace
+        Namespace is populated with observed arguments, unless none observed,
+        in which case default values are returned. Access elements via '.'
+        convention, i.e. parser.parse_args().config  
+    """
     # Configure expected command line args & default values thereof
     parser = ArgumentParser(description='''Random financial data
                                         generation. For more information,
@@ -96,14 +181,48 @@ def get_args():
 
 
 def get_fb_config(file_builders, file_extension):
-    # Get file_builder configuration for a given file extension
+    """ Get the configuration of a specified filebuilder. This expression
+    filters the set of all configs such that only the file builder for
+    the provided file_extension is returned.
+
+    Parameters
+    ----------
+    file_builders : dict
+        Parsed json of provided configuration containing parameters for
+        all possible filebuilders.
+    file_extension: string
+        The file_builder for which the configuration should be returned.
+
+    Returns
+    -------
+    dict
+        The configuration of the required file builder for the output
+        type required.
+    """
     return list(filter(
             lambda file_builder: file_builder['name'] == file_extension,
             file_builders))[0]
 
 
 def get_class(package_name, module_name, class_name):
-    # Return a specified class in given package/module heirarchy
+    """ Return a given class which sits within a specified heirarchy.
+    Used to return classes of filebuilders and domainobjects to only
+    instantiate as and when that domainobject/filebuilder is required.
+
+    Parameters
+    ----------
+    package_name : string
+        The package the required class is in
+    module_name : string
+        The module within the package the required class is in
+    class_name : string
+        Name of the class
+
+    Returns
+    -------
+    class
+        Uninstantiated requested class
+    """
     return getattr(importlib.import_module(package_name+'.'+module_name),
                    class_name)
 

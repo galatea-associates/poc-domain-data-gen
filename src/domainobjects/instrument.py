@@ -4,8 +4,26 @@ from utils.cache import Cache
 import random
 
 class Instrument(Generatable):
+    """ Class to generate instruments. Generate method generates a set amount
+    of positions. Other generation methods included where instruments are the
+    only domain object requiring these.
+    """
 
     def generate(self, record_count, start_id):
+        """ Generate a set number of instruments
+
+        Parameters
+        ----------
+        record_count : int
+            Number of instruments to generate
+        start_id : int
+            Starting id to generate from
+
+        Returns
+        -------
+        List
+            Containing 'record_count' instruments 
+        """
 
         cache = Cache()
 
@@ -22,6 +40,22 @@ class Instrument(Generatable):
         return records
 
     def generate_record(self, id, cache):
+        """ Generate a single instrument
+
+        Parameters
+        ----------
+        id : int
+            Current id of the instrument to generate, used as a pseudo
+            exchange code to ensure uniquely generated instruments
+        cache : dict
+            Storeage medium for tickers and countries of issuance.
+
+        Returns
+        -------
+        dict
+            A single back office position object
+        """
+
         asset_class = self.generate_asset_class()
         ticker = self.generate_ticker(cache)
         coi = self.generate_coi(cache)
@@ -43,21 +77,63 @@ class Instrument(Generatable):
             }
 
     def generate_asset_class(self):
+        """ Generate a predetermined asset class for instruments
+
+        Returns
+        -------
+        String
+            Asset class of an instrument will be 'Stock'
+        """
+
         return 'Stock'
 
-    def generate_sequential_exchange_code(self, current_tickers, ticker):
-        if (ticker in current_tickers.keys()):
-            cur_val = current_tickers[ticker]
-            current_tickers[ticker] = cur_val+1
-        else:
-            current_tickers[ticker] = 0
-        return current_tickers[ticker]
-
     def generate_coi(self, cache):
+        """ Generate a random country of issuance
+
+        Parameters
+        ----------
+        cache : dict
+            Storeage medium for tickers and countries of issuance and exchange
+            codes
+
+        Returns
+        -------
+        String
+            Randomly selected country code from those in the cache
+        """
+
         return random.choice(cache.retrieve_from_cache('cois'))
 
     def generate_ticker(self, cache):
+        """ Generate a random ticker
+
+        Parameters
+        ----------
+        cache : dict
+            Storeage medium for tickers and countries of issuance and exchange
+            codes
+
+        Returns
+        -------
+        String
+            Randomly selected ticker from those in the cache
+        """
+
         return random.choice(cache.retrieve_from_cache('tickers'))
 
     def generate_exchange_code(self, cache):
+        """ Generate a random exchange code
+
+        Parameters
+        ----------
+        cache : dict
+            Storeage medium for tickers and countries of issuance and exchange
+            codes
+
+        Returns
+        -------
+        String
+            Randomly selected exchange code from those in the cache
+        """
+
         return random.choice(cache.retrieve_from_cache('exchange_codes'))

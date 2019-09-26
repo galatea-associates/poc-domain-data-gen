@@ -4,8 +4,24 @@ import string
 from datetime import datetime
 
 class Counterparty(Generatable):
+    """ A class to generate counterparties. Generate method will generate a 
+    set amount of positions. """
 
     def generate(self, record_count, start_id):
+        """ Generate a set number of counterparties.
+
+        Parameters
+        ----------
+        record_count : int
+            Number of counterparties to generate
+        start_id : int
+            Starting id to generate from
+
+        Returns
+        -------
+        List
+            Containing 'record_count' counterparties
+        """
 
         records = []
 
@@ -17,6 +33,19 @@ class Counterparty(Generatable):
         return records
 
     def get_record(self, current_id):
+        """ Generate a single counterparty record
+
+        Parameters
+        ----------
+        current_id : int
+            Current id of the counterparty being generated
+
+        Returns
+        -------
+        dict
+            A single counterparty objects
+        """
+
         return {
             'counterparty_id': current_id,
             'book': self.generate_random_string(5, include_numbers=False),

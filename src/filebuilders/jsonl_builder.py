@@ -3,8 +3,11 @@ import ujson
 import os
 
 class JSONLBuilder(FileBuilder):
+    """ A class to generate a JSONL file from records. JSONL is JSON but each
+    object appears on a new and single line. The ujson library used to format
+    data into JSON format, and these are joined with a new line. """
 
-    def build(self, file_number, data):
+    def build(self, file_number, data, upload_to_google_drive=False):
         output_dir = self.get_output_directory()
         file_name = self.get_file_name()
 

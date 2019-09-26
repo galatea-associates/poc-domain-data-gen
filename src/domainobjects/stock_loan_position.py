@@ -4,8 +4,26 @@ from datetime import datetime
 import random
 
 class StockLoanPosition(Generatable):
+    """ Class to generate stock loan positions. Generate method will generate
+    a set amount of positions. Other generation method included where stock
+    loan positions are the only domain object requiring them. """
 
     def generate(self, record_count, start_id):
+        """ Generate a set number of stock loan positions
+
+        Parameters
+        ----------
+        record_count : int
+            Number of stock loan positions to generate
+        start_id : int
+            Starting id to generate from
+
+        Returns
+        -------
+        List
+            Containing 'record_count' stock loan positions 
+
+        """
         records = []
         self.instruments = self.retrieve_records('instruments')
 
@@ -14,6 +32,19 @@ class StockLoanPosition(Generatable):
         return records
 
     def generate_record(self, id):
+        """ Generate a single stock loan position record
+
+        Parameters
+        ----------
+        id : int
+            ID of this generation
+
+        Returns
+        -------
+        dict
+            A single stock loan position object
+        """
+
         instrument = self.get_random_instrument()
         position_type = self.generate_position_type()
         knowledge_date = self.generate_knowledge_date()
@@ -43,23 +74,101 @@ class StockLoanPosition(Generatable):
 
 
     def generate_haircut(self, collateral_type):
+        """ Generate a haircut value based on collateral type 
+            
+        Parameters
+        ----------
+        collateral_type : String
+            The type of collateral used for the loan
+
+        Returns
+        -------
+        String
+            Either a string of percentage, or the fact it's non cash
+        """
+
         return '2.00%' if collateral_type == 'Non Cash' else None
 
     def generate_collateral_margin(self, collateral_type):
+        """ Generate the collateral margin
+
+        Parameters
+        ----------
+        collateral_type : String
+            The type of collateral used for the loan
+
+        Returns
+        -------
+        String
+            Either a string of percentage, or the fact it's cash
+        """
+
         return '140.00%' if collateral_type == 'Cash' else None
 
     def generate_collateral_type(self):
+        """ Generate the type of collateral used
+
+        Returns
+        -------
+        String
+            'Cash' or 'Non Cash'
+        """
+
         return random.choice(['Cash', 'Non Cash'])
 
     def generate_termination_date(self):
+        """ Generates a date for the termination of the loan
+
+        Returns
+        -------
+        Date 
+            where end date chosen to exist
+        Nothing 
+            where end date chosen to not exist
+        """
+
         does_exist = random.choice([True, False])
         return None if not does_exist else self.generate_knowledge_date()
 
     def generate_rebate_rate(self, collateral_type):
+        """ Generate the rebate rate of the loan
+
+        Parameters
+        ----------
+        collateral_type : String
+            The type of collateral used for the loan
+
+        Returns
+        -------
+        String
+            Percentage where the collateral type is cash
+        """
+
         return '5.75%' if collateral_type == 'Cash' else None
 
     def generate_borrow_fee(self, collateral_type):
+        """ Generates the borrow fee of the loan
+
+        Parameters
+        ----------
+        collateral_type : String
+            The type of collateral used for the loan
+
+        Returns
+        -------
+        String
+            Percentage where the collateral type is noncash
+        """
+
         return '4.00%'if collateral_type == 'Non Cash' else None
 
-    def generate_purpose(self):      
+    def generate_purpose(self):
+        """ Generates the purpose of the loan
+
+        Returns
+        -------
+        String
+            Random choice between Borrow or Loan
+        """
+
         return random.choice(['Borrow', 'Loan'])

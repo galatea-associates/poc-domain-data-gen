@@ -3,8 +3,10 @@ import csv
 import os
 
 class CSVBuilder(FileBuilder):
+    """ A class to generate a CSV file from records. Uses the csv library to
+    achieve this. """
 
-    def build(self, file_number, data):
+    def build(self, file_number, data, upload_to_google_drive=False):
         output_dir = self.get_output_directory()
         file_name = self.get_file_name()
 

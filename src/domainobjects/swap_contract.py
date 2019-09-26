@@ -5,8 +5,30 @@ from datetime import datetime, timedelta
 from domainobjects.generatable import Generatable
 
 class SwapContract(Generatable):
+    """ Class to generate swap contracts. Generate method will generate a set
+    of swap contracts. Other generation methods are included where swap
+    contracts are the only domain object requiring them.
+
+    Process of generating swap contracts is dependent on counterparties, for
+    each of these, randomly select a number of swaps between the user-defined
+    range, and generate a record for each swap.
+    """
 
     def generate(self, record_count, start_id):
+        """ Generate a set number of swap contracts
+
+        Parameters
+        ----------
+        record_count : int
+            Number of swap contracts to generate
+        start_id : int
+            Starting id to generate from
+
+        Returns
+        -------
+        List
+            Containing 'record_count' swap contract
+        """
 
         counterparties = self.retrieve_batch_records('counterparties',
                                                  record_count, start_id)
@@ -19,6 +41,20 @@ class SwapContract(Generatable):
         return records
 
     def generate_record(self, counterparty):
+        """ Generate a single swap contract
+
+        Parameters
+        ----------
+        Counterparty : dict
+            Dictionary containing a partial record of a counterparty, only
+            contains the information necessary to generate swap contracts
+
+        Returns
+        -------
+        dict
+            A single swap contract object
+        """
+
         record = self.instantiate_record()
 
         status = self.generate_status()
@@ -51,6 +87,15 @@ class SwapContract(Generatable):
         return record
 
     def get_number_of_swaps(self):
+        """ Randomly calculate a value between the user-provided minimums
+        and maximums. 
+
+        Returns
+        -------
+        int
+            The number of swaps
+        """
+
         custom_args = self.get_custom_args()
         swaps_per_counterparty = custom_args['swap_per_counterparty']
         swap_min = int(swaps_per_counterparty['min'])
@@ -59,16 +104,61 @@ class SwapContract(Generatable):
 
     def generate_swap_end_date(self, years_to_add=5,
                                start_date=None, status=None):
+        """ Generate the end date of the swap
+
+        Parameters
+        ----------
+        years_to_add : int
+            Number of years to add to the start date if contract live
+        start_date : Date
+            Date from which swap contract commenced
+        Status : String
+            'Live' or 'Dead' - randomly generated beforehand
+
+        Returns
+        -------
+            String
+                If the swap contract is live
+            Date
+                Where the swap contract is dead, adds specified number of
+                years
+        """
+
         return None if status == 'Live' else start_date +\
                              timedelta(days=365 * years_to_add)
 
     def generate_swap_type(self):
+        """ Generate the type of swap
+
+        Returns
+        -------
+        String
+            Random choice between 'Equity' and 'Portfolio'
+
+        """
+
         return random.choice(['Equity', 'Portfolio'])
 
     def generate_reference_rate(self):
+        """ Generate the reference rate
+
+        Returns
+        -------
+        String
+            Randomly chosen reference rate
+        """
+
         return random.choice(['LIBOR'])
 
     def generate_status(self):
+        """ Generate the current status of the swap
+
+        Returns
+        -------
+        String
+            Random choice between 'Live' and 'Dead'
+        """
+
         return random.choice(['Live', 'Dead'])
 
     def instantiate_record(self):

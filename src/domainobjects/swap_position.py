@@ -5,8 +5,32 @@ import string
 import pandas as pd
 
 class SwapPosition(Generatable):
+    """ Class to generate swap positions. Generate method will generate a set
+    amount of swap positions. Other generation methods are included where swap
+    positions are the only domain object requiring them.
+    
+    Process of generating swap positions dependent on swap contracts, for each
+    of these positions, choose a random number of instruments from those
+    generated prior, then for each position type (start of day, intraday,
+    end of day), generate a record for every date from the user specified
+    start-date until today's date.
+    """
 
     def generate(self, record_count, start_id):
+        """ Generate a set number of swap positions
+
+        Parameters
+        ----------
+        record_count : int
+            Number of swap positions to generate
+        start_id : int
+            Starting id to generate from
+
+        Returns
+        -------
+        List
+            Containing 'record_count' swap positions
+        """
 
         self.all_instruments = self.retrieve_records('instruments')
 
@@ -26,6 +50,22 @@ class SwapPosition(Generatable):
         return records
 
     def generate_record(self, swap_contract, instrument, position_type, date):
+        """ Generate a single swap position
+
+        Parameters
+        ----------
+        Swap Position : dict
+            Dictionary containing a partial record of a swap contract, only
+            contains the information necessary to generate swap positions
+        cf_arg : dict
+            Dictionary defining the particular swap position being generated 
+            for
+
+        Returns
+        -------
+        dict
+            A single swap position object
+        """
         record = self.instantiate_record()
         long_short = self.generate_long_short()
         purpose = self.generate_purpose()
@@ -57,10 +97,28 @@ class SwapPosition(Generatable):
         return record
 
     def get_random_instruments(self):
+        """ Retrieves a random batch of instruments
+
+        Returns
+        -------
+        SQLite3 Row
+            Random number of instruments retrieved from the database
+        """
+
         ins_count = self.get_number_of_instruments()
         return random.sample(self.all_instruments, ins_count)
 
     def get_number_of_instruments(self):
+        """ Return a random number between the user-specified limits for the
+        minimum and maximum amount of instruments per swap
+
+        Returns
+        -------
+        int
+            Random number between the user-specified limits for the minimum
+            and maximum amount of instruments per swap 
+        """
+
         custom_args = self.get_custom_args()
         ins_per_swap_range = custom_args['ins_per_swap']
         min_ins = int(ins_per_swap_range['min'])
@@ -68,18 +126,49 @@ class SwapPosition(Generatable):
         return random.randint(min_ins, max_ins)
 
     def get_start_date(self):
+        """ Get the user-specified start date
+
+        Returns
+        -------
+        String
+            String format of the user-specified start date for generation
+        """
+
         custom_args = self.get_custom_args()
         return custom_args['start_date']
 
     def generate_account(self):
+        """ Generate an account identifier
+
+        Returns
+        -------
+            Random account type, appended with 4 random digits
+        """
+
         account_type = random.choice(self.ACCOUNT_TYPES)
         random_string = ''.join(random.choices(string.digits, k=4))
         return ''.join([account_type, random_string])
 
     def generate_long_short(self):
+        """ Generates a long or short flag randomly
+
+        Returns
+        -------
+        String
+            Random choice between 'Long' or 'Short'
+        """
+
         return random.choice(self.LONG_SHORT)
 
     def generate_purpose(self):
+        """ Generate swap positions purpose
+
+        Returns
+        -------
+        String
+            Always returns 'outright'
+        """
+
         return 'Outright'
 
     def instantiate_record(self):
