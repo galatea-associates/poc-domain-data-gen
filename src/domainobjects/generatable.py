@@ -9,7 +9,7 @@ class Generatable(ABC):
     """ Parents class of all domain objects. Contains shared generation
     methods, and defines an abstract method for generation. Pre-defines
     lists of potential values for some variations to minimise number of
-    list constructions. 
+    list constructions.
     
     Attributes
     ----------
@@ -39,14 +39,14 @@ class Generatable(ABC):
 
     config : Dict
         User-specified configuration for domain objects. For shared config and
-        domain-specific values, such as swaps per counterparty.
+        domain-specific values, such as swaps per counterparty
 
     database : SQLite3 Connection
         Connection to the dependency database
 
     persisting_records : List
         Records, or partial records, to persist to the database. Used to store
-        attributes or objects other generations depend on.
+        attributes or objects other generations depend on
 
     Methods
     -------
@@ -93,7 +93,7 @@ class Generatable(ABC):
         inclusion of settlement or trade date positions
 
     generate_knowledge_date()
-        Return todays date 
+        Return todays date
 
     generate_effective_date(n_days_to_add, knowledge_date, position_type)
         Return today is position is of settlement, else extend by n days
@@ -142,8 +142,8 @@ class Generatable(ABC):
     RETURN_TYPES = ['Outstanding', 'Pending Return', 'Pending Recall',
                     'Partial Return', 'Partial Recall', 'Settled']
 
-    def __init__(self, file_builder, domain_object_config):
-        """ Set configuration, default databse connection to None and
+    def __init__(self, domain_object_config):
+        """ Set configuration, default database connection to None and
         instantiate list of records to persist to be empty. """
 
         self.__config = domain_object_config
@@ -168,7 +168,7 @@ class Generatable(ABC):
             Length of the random string to generate
         include_letters : Boolean
             Boolean flag of whether letters are included in the string
-        include_numbers : Boolean 
+        include_numbers : Boolean
             Boolean flag of whether numbers are included in the string
 
         Returns
@@ -231,7 +231,7 @@ class Generatable(ABC):
     def generate_random_integer(self, min=1, max=10000,
                                 length=None, negative=False):
         """ Generate a random integer of a given length. If no length given,
-        generate a random integer between minimum and maximum. 
+        generate a random integer between minimum and maximum.
 
         Parameters
         ----------
@@ -320,13 +320,13 @@ class Generatable(ABC):
         return '{0}.{1}'.format(ticker, exchange_code)
 
     def generate_isin(self, coi, cusip):
-        """ Appends two input values to "coi.cusip.4"
+        """ Appends two input values to "'coi''cusip''4'"
 
         Parameters
         ----------
         coi : String
             a country of issuance code
-        cusip : String
+        cusip : int
             a CUSIP value
 
         Returns
@@ -334,7 +334,7 @@ class Generatable(ABC):
         String
 
         """
-        return ''.join([coi, cusip, '4'])
+        return ''.join([coi, str(cusip), '4'])
 
     def generate_credit_debit(self):
         """ Generate a random credit or debit value
@@ -416,7 +416,7 @@ class Generatable(ABC):
             else knowledge_date + timedelta(days=n_days_to_add)
 
     def generate_account(self, account_types=ACCOUNT_TYPES):
-        """ Generates an account value 
+        """ Generates an account value
 
         Parameters
         ----------
@@ -435,7 +435,7 @@ class Generatable(ABC):
         return ''.join([account_type, random_string])
 
     def generate_return_type(self):
-        """ Generate a return type 
+        """ Generate a return type
 
         Returns
         -------

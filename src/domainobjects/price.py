@@ -44,6 +44,6 @@ class Price(Generatable):
         return {
                 'ric': instrument['ric'],
                 'price': self.generate_random_decimal(),
-                'curr': self.generate_currency(),
+                'currency': self.generate_currency(),
                 'time_stamp': datetime.now()
             }

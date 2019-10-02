@@ -8,6 +8,8 @@ class DepotPosition(Generatable):
     amount of positions. Other generation method are included where depot
     positions are the only domain object requiring them. """
 
+    DEPOT_POSITION_PURPOSES = ['Holdings', 'Seg']
+
     def generate(self, record_count, start_id):
         """ Generate a set number of depot positions 
         
@@ -54,8 +56,9 @@ class DepotPosition(Generatable):
         return {
             'isin': instrument['isin'],
             'knowledge_date': knowledge_date,
+            'position_type': position_type,
             'effective_date': self.generate_effective_date(
-                                3, knowledge_date, position_type),
+                                2, knowledge_date, position_type),
             'account': self.generate_account(),
             'qty': self.generate_random_integer(),
             'purpose': self.generate_purpose(),
@@ -71,4 +74,4 @@ class DepotPosition(Generatable):
         String
             Depot position purposes are one of Holdings or Seg
         """
-        return random.choice(['Holdings', 'Seg'])
+        return random.choice(self.DEPOT_POSITION_PURPOSES)

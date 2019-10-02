@@ -33,7 +33,7 @@ class Instrument(Generatable):
             record = self.generate_record(i, cache)
             records.append(record)
             self.persist_record(
-                [record['ric'], record['cusip'], record['isin']]
+                [record['ric'], str(record['cusip']), str(record['isin'])]
             )
 
         self.persist_records("instruments")
@@ -60,7 +60,7 @@ class Instrument(Generatable):
         ticker = self.generate_ticker(cache)
         coi = self.generate_coi(cache)
         exchange_code = id
-        cusip = str(self.generate_random_integer(length=9))
+        cusip = self.generate_random_integer(length=9)
         isin = self.generate_isin(coi, cusip)
         ric = self.generate_ric(ticker, exchange_code)
         sedol = self.generate_random_integer(length=7)

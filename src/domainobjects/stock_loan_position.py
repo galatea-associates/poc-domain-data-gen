@@ -8,6 +8,9 @@ class StockLoanPosition(Generatable):
     a set amount of positions. Other generation method included where stock
     loan positions are the only domain object requiring them. """
 
+    COLLATERAL_TYPES = ['Cash', 'Non Cash']
+    STOCK_LOAN_POSITION_PURPOSES = ['Borrow', 'Loan']
+
     def generate(self, record_count, start_id):
         """ Generate a set number of stock loan positions
 
@@ -114,7 +117,7 @@ class StockLoanPosition(Generatable):
             'Cash' or 'Non Cash'
         """
 
-        return random.choice(['Cash', 'Non Cash'])
+        return random.choice(self.COLLATERAL_TYPES)
 
     def generate_termination_date(self):
         """ Generates a date for the termination of the loan
@@ -171,4 +174,4 @@ class StockLoanPosition(Generatable):
             Random choice between Borrow or Loan
         """
 
-        return random.choice(['Borrow', 'Loan'])
+        return random.choice(self.STOCK_LOAN_POSITION_PURPOSES)

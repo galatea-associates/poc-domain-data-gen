@@ -7,6 +7,9 @@ class BackOfficePosition(Generatable):
     a set amount of positions. Other generation methods included where back
     office positions are the only domain object requiring them. """
 
+    BACK_OFFICE_ACCOUNT_TYPES = ['ICP']
+    BACK_OFFICE_PURPOSES = ['Outright']
+
     def generate(self, record_count, start_id):
         """ Generate a set number of back office positions 
         
@@ -48,8 +51,10 @@ class BackOfficePosition(Generatable):
             'position_type': position_type,
             'knowledge_date': knowledge_date,
             'effective_date': self.generate_effective_date(
-                                0, knowledge_date, position_type),
-            'account': self.generate_account(account_types=['ICP']),
+                                2, knowledge_date, position_type),
+            'account': self.generate_account(
+                account_types=self.BACK_OFFICE_ACCOUNT_TYPES
+                ),
             'direction': self.generate_credit_debit(),
             'qty': self.generate_random_integer(),
             'purpose': self.generate_purpose(),
@@ -65,4 +70,4 @@ class BackOfficePosition(Generatable):
             Back office position purposes are always outright
         """
 
-        return 'Outright'
+        return random.choice(self.BACK_OFFICE_PURPOSES)

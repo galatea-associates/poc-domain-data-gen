@@ -16,6 +16,9 @@ class SwapPosition(Generatable):
     start-date until today's date.
     """
 
+    PURPOSES = ['Outright']
+    POSITION_TYPES = ['S', 'I', 'E']
+
     def generate(self, record_count, start_id):
         """ Generate a set number of swap positions
 
@@ -43,7 +46,7 @@ class SwapPosition(Generatable):
                                         position_type, date)\
                    for swap_contract in swap_contract_batch\
                    for instrument in self.get_random_instruments()\
-                   for position_type in ['S', 'I', 'E']\
+                   for position_type in self.POSITION_TYPES\
                    for date in date_range]
 
         self.persist_records('swap_positions')
@@ -73,7 +76,7 @@ class SwapPosition(Generatable):
                         negative=long_short.upper() == "SHORT"
                     )
         current_date = datetime.strftime(date, '%Y-%m-%d')
-        
+
         record['swap_contract_id'] = swap_contract['id']
         record['ric'] = instrument['ric']
         record['long_short'] = long_short
@@ -90,7 +93,7 @@ class SwapPosition(Generatable):
                 [str(swap_contract['id']),
                  instrument['ric'],
                  position_type,
-                 current_date,
+                 str(current_date),
                  str(long_short)]
             )
         
@@ -169,7 +172,7 @@ class SwapPosition(Generatable):
             Always returns 'outright'
         """
 
-        return 'Outright'
+        return random.choice(self.PURPOSES)
 
     def instantiate_record(self):
         return {

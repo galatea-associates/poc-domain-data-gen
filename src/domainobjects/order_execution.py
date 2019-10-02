@@ -52,7 +52,7 @@ class OrderExecution(Generatable):
                 'sto_id': self.generate_random_integer(length=7),
                 'agent_id': self.generate_random_integer(length=7),
                 'price': self.generate_random_decimal(),
-                'curr': self.generate_currency(),
+                'currency': self.generate_currency(),
                 'ric': instrument['ric'],
                 'qty': self.generate_random_integer(),
                 'time_stamp': datetime.now(),

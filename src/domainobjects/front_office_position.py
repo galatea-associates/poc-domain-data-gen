@@ -8,6 +8,8 @@ class FrontOfficePosition(Generatable):
     where front office positions are the only domain object requiring them. 
     """
 
+    FRONT_OFFICE_POSITION_PURPOSES = ['Outright']
+
     def generate(self, record_count, start_id):
         """ Generate a set number of front office positions 
         
@@ -54,7 +56,7 @@ class FrontOfficePosition(Generatable):
             'position_type': position_type,
             'knowledge_date': knowledge_date,
             'effective_date': self.generate_effective_date(
-                                0, knowledge_date, position_type),
+                                2, knowledge_date, position_type),
             'account': self.generate_account(),
             'direction': self.generate_credit_debit(),
             'qty': self.generate_random_integer(),
@@ -71,4 +73,4 @@ class FrontOfficePosition(Generatable):
             Front office position purposes are always outright
         """
 
-        return 'Outright'
+        return random.choice(self.FRONT_OFFICE_POSITION_PURPOSES)

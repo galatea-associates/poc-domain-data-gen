@@ -7,6 +7,8 @@ class CashBalance(Generatable):
     amount of balances. Other generation methods included where cash balances
     are the only domain object requiring them. """
 
+    CASH_BALANCE_PURPOSES = ['Cash Balance', 'P&L', 'Fees']
+
     def generate(self, record_count, start_id):
         """ Generate a set number of cash balances
 
@@ -41,7 +43,7 @@ class CashBalance(Generatable):
 
         return {
             'amount': self.generate_random_integer(),
-            'curr': self.generate_currency(),
+            'currency': self.generate_currency(),
             'account_num': self.generate_random_integer(length=8),
             'purpose': self.generate_purpose(),
             'time_stamp': datetime.now(),
@@ -56,4 +58,4 @@ class CashBalance(Generatable):
             One of three possible purposes relevant for cash balances
         """
 
-        return random.choice(['Cash Balance', 'P&L', 'Fees'])
+        return random.choice(self.CASH_BALANCE_PURPOSES)

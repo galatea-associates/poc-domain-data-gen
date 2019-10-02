@@ -14,6 +14,9 @@ class SwapContract(Generatable):
     range, and generate a record for each swap.
     """
 
+    SWAP_TYPES = ['Equity', 'Portfolio']
+    REFERENCE_RATES = ['LIBOR']
+
     def generate(self, record_count, start_id):
         """ Generate a set number of swap contracts
 
@@ -137,7 +140,7 @@ class SwapContract(Generatable):
 
         """
 
-        return random.choice(['Equity', 'Portfolio'])
+        return random.choice(self.SWAP_TYPES)
 
     def generate_reference_rate(self):
         """ Generate the reference rate
@@ -148,7 +151,7 @@ class SwapContract(Generatable):
             Randomly chosen reference rate
         """
 
-        return random.choice(['LIBOR'])
+        return random.choice(self.REFERENCE_RATES)
 
     def generate_status(self):
         """ Generate the current status of the swap

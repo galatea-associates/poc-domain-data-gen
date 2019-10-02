@@ -105,7 +105,7 @@ def process_domain_object(obj_config, file_builder, shared_config):
 
     obj_class = get_class('domainobjects', obj_config['module_name'],
                           obj_config['class_name'])
-    domain_obj = obj_class(file_builder, obj_config)
+    domain_obj = obj_class(obj_config)
     custom_args = obj_config['custom_args']
 
     coordinator = Coordinator(obj_config['max_objects_per_file'], file_builder)
