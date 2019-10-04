@@ -1,61 +1,102 @@
 import argparse
 import importlib
-import json
-import os
+import ujson
+import timeit
 import logging
-import pandas as pd
-from datetime import datetime
+# import random # uncomment for seeded behaviour
 from cache import Cache
-from google_drive_connector import GoogleDriveConnector
+from sqlite_database import Sqlite_Database
+# from GoogleDriveAccessor import GoogleDriveAccessor
 
-def process_domain_object(domain_obj_config, cache):
-    domain_obj_class = getattr(importlib.import_module('domainobjects.' + domain_obj_config['module_name']), domain_obj_config['class_name'])
-    domain_obj = domain_obj_class(cache)
+
+def get_class(package_name, module_name, class_name):
+    return getattr(importlib.import_module(package_name+'.'+module_name),
+                   class_name)
+
+
+# Create list comprehension of the file builder config which matches a name
+def get_file_builder_config(file_builders, file_builder_name):
+    return list(filter(
+            lambda file_builder: file_builder['name'] == file_builder_name,
+            file_builders
+            ))[0]
+
+
+# Facillitate the domain object generation procedure
+def process_domain_object(domain_obj_config, cache,
+                          dependency_db, file_builder):
+
+    domain_obj_class = get_class('domainobjects',
+                                 domain_obj_config['module_name'],
+                                 domain_obj_config['class_name'])
+
+    domain_obj = domain_obj_class(cache, dependency_db, file_builder,
+                                  domain_obj_config)
+
     record_count = int(domain_obj_config['record_count'])
     custom_args = domain_obj_config['custom_args']
-    return domain_obj.generate(record_count, custom_args)
+    domain_obj.generate(record_count, custom_args)
 
-def get_file_builder_config(file_builders, file_builder_name):
-    return list(filter(lambda file_builder: file_builder['name'] == file_builder_name, file_builders))[0]
 
-def get_file_builder(file_builder_config):
-    return getattr(importlib.import_module('filebuilders.' + file_builder_config['module_name']), file_builder_config['class_name'])    
-
+# Configure a parser for CL argument retrieval, and retrieve arguments
 def get_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default=r'src\config.json', help='JSON config file location')
-    parser.add_argument('--g-drive-root', default='root', help='Google Drive root folder ID')
-    return parser.parse_args()
+    parser = argparse.ArgumentParser(description='''Generate Random Data for
+                                      various Domain Objects''')
+    parser.add_argument('--config', default='src/config.json',
+                        help='JSON Config File Location')
+    cl_args = parser.parse_args()
+    return cl_args
 
-def initialise_cache(cache):
-    cache.persist_to_cache('currencies', ['USD', 'CAD', 'EUR', 'GBP'])
-    cache.persist_to_cache('tickers', pd.read_csv('tickers.csv')['Symbol'].drop_duplicates().values.tolist())
-    cache.persist_to_cache('exchanges_countries', 
-        [('L', 'UK'), ('N', 'US'),  ('O', 'US'), ('SI', 'SG'), ('VI', 'AT'), ('BM', 'DE'), ('BR', 'BE'), ('TO', 'CA'), ('HK', 'HK'), ('SS', 'CN'),
-                                    ('F', 'DE'), ('BE', 'DE'), ('PA', 'FR'), ('NZ', 'NZ')])
 
 def main():
-    args = get_args()  
-    cache = Cache()    
-    initialise_cache(cache)
-    google_drive_connector = GoogleDriveConnector(args.g_drive_root)
+
+    # TODO: Random seeding for consistency in tests, REMOVE THIS IN RELEASES
+    # random.seed(100)
+
+    start_time = timeit.default_timer()
+    logging.basicConfig(filename='generator.log', filemode='w',
+                        format='%(levelname)s : %(message)s',
+                        level=logging.INFO)
+
+    cache = Cache()                     # Store global generation attributes
+    dependency_db = Sqlite_Database()   # Store global generation dependencies
+    args = get_args()                   # Stores command line arguments
+    # google_drive_accessor = GoogleDriveAccessor(args.g_drive_root)
 
     with open(args.config) as config_file:
-        config = json.load(config_file)
+        config = ujson.load(config_file)
 
     domain_object_configs = config['domain_objects']
-    file_builders = config['file_builders']
-    shared_domain_obj_args = config['shared_domain_object_args']
+    file_builder_configs = config['file_builders']
 
-    logging.basicConfig(level=logging.INFO)
+    for domain_object_config in domain_object_configs:
 
-    for domain_object_config in domain_object_configs:  
-        logging.info("Generating %s Object(s) of Domain Object %s in %s Format",domain_object_config['record_count'],
-            domain_object_config['module_name'],domain_object_config['file_builder_name'])              
-        domain_obj_result = process_domain_object(domain_object_config, cache)
-        file_builder_config = get_file_builder_config(file_builders, domain_object_config['file_builder_name'])      
-        file_builder = get_file_builder(file_builder_config)(google_drive_connector)     
-        file_builder.build(file_builder_config['file_extension'], domain_obj_result, domain_object_config)        
+        logging.info("Now Generating Domain Object: "
+                     + domain_object_config['class_name'])
 
-if __name__ == '__main__':   
+        gen_start_time = timeit.default_timer()
+
+        file_builder_name = domain_object_config['file_builder_name']
+        file_builder_config = get_file_builder_config(file_builder_configs,
+                                                      file_builder_name)
+
+        file_builder_class =\
+            get_class('filebuilders', file_builder_config['module_name'],
+                      file_builder_config['class_name'])
+
+        file_builder = file_builder_class(None, domain_object_config)
+
+        process_domain_object(domain_object_config, cache,
+                              dependency_db, file_builder)
+
+        gen_end_time = timeit.default_timer()
+        logging.info("Domain Object: " + domain_object_config['class_name']
+                     + " took " + str(gen_end_time-gen_start_time)
+                     + " seconds to generate.")
+
+    end_time = timeit.default_timer()
+    logging.info("Overall runtime: "+str(end_time-start_time))
+
+
+if __name__ == '__main__':
     main()

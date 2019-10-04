@@ -5,12 +5,18 @@ from datetime import datetime
 
 class Counterparty(Generatable):
     
-    def generate(self, record_count, custom_args):        
+    def generate(self, record_count, custom_args):
+        config = self.get_object_config()
+        records_per_file = config['max_objects_per_file']
+        file_num = 1
+
+        database = self.get_database()
         records = []
-                
-        for i in range(0, record_count):                 
+
+        for i in range(1, record_count+1):
             records.append({
-                'counterparty_id':i+1,
+                'counterparty_id': i,
+                'book': self.generate_random_string(5, include_numbers=False),
                 'counterparty_field1': self.generate_random_string(10),
                 'counterparty_field2': self.generate_random_string(10),
                 'counterparty_field3': self.generate_random_string(10),
@@ -21,9 +27,18 @@ class Counterparty(Generatable):
                 'counterparty_field8': self.generate_random_string(10),
                 'counterparty_field9': self.generate_random_string(10),
                 'counterparty_field10': self.generate_random_string(10),
-                'time_stamp':datetime.now()})
-        
-        self.cache.persist_to_cache('counterparties', records)
-        return records
+                'time_stamp': datetime.now()})
+
+            if (i % int(records_per_file) == 0):
+                self.write_to_file(file_num, records)
+                file_num += 1
+                records = []
+
+            database.persist("counterparties", [str(i+1)])
+
+        if records != []:
+            self.write_to_file(file_num, records)
+
+        database.commit_changes()
 
    
