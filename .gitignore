@@ -15,6 +15,7 @@ token.pickle
 data/*
 src/out/*
 src/data/*
+src/config.json
 .coverage
 report/*
 docs/*
