@@ -1,5 +1,7 @@
 FROM alpine:3.7
-COPY . /src
+COPY ./src /src
+COPY ./requirements.txt /src
+COPY ./out /src
 WORKDIR /src
 RUN apk add make automake gcc g++ python3-dev py3-pip nano\
         && rm -rf /var/lib/apk/lists/*
