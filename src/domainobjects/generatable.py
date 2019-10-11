@@ -482,7 +482,8 @@ class Generatable(ABC):
             Name of the table to persist records to
         """
 
-        if(self.__database is None): self.establish_db_connection()
+        if(self.__database is None): 
+            self.establish_db_connection()
         self.__database.persist_batch(table_name, self.__persisting_records)
         self.__database.commit_changes()
 
@@ -501,7 +502,8 @@ class Generatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if(self.__database is None): self.establish_db_connection()
+        if(self.__database is None): 
+            self.establish_db_connection()
         return self.__database.retrieve(table_name)
 
     def retrieve_batch_records(self, table_name, amount, start_pos):
@@ -524,7 +526,8 @@ class Generatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if(self.__database is None): self.establish_db_connection()
+        if(self.__database is None): 
+            self.establish_db_connection()
         return self.__database.retrieve_batch(table_name, amount, start_pos)
 
     def get_database(self):

@@ -1,8 +1,9 @@
 import sys
-sys.path.insert(0, 'tests/')
 import pytest
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
+
+sys.path.insert(0, 'tests/')
 
 def test_stock_loan_positions():
     records, domain_obj = helper.set_up_stock_loan_position_tests()
@@ -24,17 +25,21 @@ def test_stock_loan_positions():
         is_callable_valid(record)
         return_type_valid(record, domain_obj.RETURN_TYPES)
 
+
 def td_quantity_valid(record):
     quantity = record['td_qty']
     assert 1 <= quantity <= 10000
+
 
 def sd_quantity_valid(record):
     quantity = record['sd_qty']
     assert 1 <= quantity <= 10000
 
+
 def collateral_type_valid(record, collateral_types):
     collateral_type = record['collateral_type']
     assert collateral_type in collateral_types
+
 
 def haircut_valid(record):
     collateral_type = record['collateral_type']
@@ -44,6 +49,7 @@ def haircut_valid(record):
     else:
         assert haircut == None
 
+
 def collateral_margin_valid(record):
     collateral_type = record['collateral_type']
     collateral_margin = record['collateral_margin']
@@ -51,6 +57,7 @@ def collateral_margin_valid(record):
         assert collateral_margin == '140.00%'
     else:
         assert collateral_margin == None
+
 
 def rebate_rate_valid(record):
     collateral_type = record['collateral_type']
@@ -60,6 +67,7 @@ def rebate_rate_valid(record):
     else:
         assert rebate_rate == None
 
+
 def borrow_fee_valid(record):
     collateral_type = record['collateral_type']
     borrow_fee = record['borrow_fee']
@@ -68,8 +76,10 @@ def borrow_fee_valid(record):
     else:
         assert borrow_fee == None
 
+
 def is_callable_valid(record):
     assert record['is_callable'] in [True, False]
+
 
 def return_type_valid(record, return_types):
     return_type = record['return_type']

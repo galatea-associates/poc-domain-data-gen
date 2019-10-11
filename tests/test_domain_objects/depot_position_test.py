@@ -1,8 +1,11 @@
 import sys
-sys.path.insert(0, 'tests/')
 import pytest
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
+
+
+sys.path.insert(0, 'tests/')
+
 
 def test_depot_position():
     records, domain_obj = helper.set_up_depot_position_tests()
@@ -18,6 +21,7 @@ def test_depot_position():
         shared.quantity_valid(record)
         shared.purpose_valid(record, domain_obj.DEPOT_POSITION_PURPOSES)
         depot_id_valid(record)
+
 
 def depot_id_valid(record):
     id = record['depot_id']
