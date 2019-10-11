@@ -16,8 +16,10 @@ def test_swap_contracts():
         is_short_mtm_financed_valid(record)
         accounting_area_valid(record)
         status_valid(record)
-        # start_date_valid(record) Random date from a range of potential start dates
-        # end_date_valid(record)   Five years on from the chosen start date
+        # start_date_valid(record)
+        # ABOVE: Random date from a range of potential start dates
+        # end_date_valid(record)
+        # ABOVE: Five years on from the chosen start date
         swap_type_valid(record, domain_obj.SWAP_TYPES)
         reference_rate_valid(record, domain_obj.REFERENCE_RATES)
         shared.dummy_fields_valid(record, 'swap_contract')

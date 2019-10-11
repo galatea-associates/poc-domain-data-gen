@@ -20,9 +20,9 @@
     batch, such that we are likely to result in a number of objects per
     generation process that is close to the specified job size.
     """
-
 import math
 from datetime import datetime
+
 
 def get(obj_name, custom_args, default_job_size):
     """Entry point. Defers functionality depending on given object name.
@@ -61,6 +61,7 @@ def get(obj_name, custom_args, default_job_size):
         return cashflow_size(custom_args, default_job_size)
     else:
         print("Object not found")
+
 
 def swap_contract_size(custom_args, target_num_records):
     """Calculates the size of database batch retrievals when generating Swap
@@ -145,6 +146,7 @@ def swap_position_size(custom_args, target_num_records):
     batch_size = math.ceil((2*target_num_records) /
                            (3*num_dates*(ins_min+ins_max)))
     return batch_size
+
 
 def cashflow_size(custom_args, target_num_records):
     """Calculates the size of database retrievals when generating Cashflows.

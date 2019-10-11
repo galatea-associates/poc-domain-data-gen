@@ -6,6 +6,7 @@ from google.auth.transport.requests import Request
 from googleapiclient.http import MediaFileUpload
 from datetime import datetime
 
+
 class GoogleDriveConnector():
     # If modifying these scopes, delete the file token.pickle.
     SCOPES = ['https://www.googleapis.com/auth/drive']
@@ -17,9 +18,9 @@ class GoogleDriveConnector():
 
     def build_creds(self):
         creds = None
-        # The file token.pickle stores the user's access and refresh tokens, and is
-        # created automatically when the authorization flow completes for the first
-        # time.
+        # The file token.pickle stores the user's access and refresh tokens,
+        # and is created automatically when the authorization flow completes
+        # for the first time.
         if os.path.exists('token.pickle'):
             with open('token.pickle', 'rb') as token:
                 creds = pickle.load(token)
@@ -28,7 +29,9 @@ class GoogleDriveConnector():
             if creds and creds.expired and creds.refresh_token:
                 creds.refresh(Request())
             else:
-                flow = InstalledAppFlow.from_client_secrets_file('credentials.json', self.SCOPES)
+                flow = InstalledAppFlow.from_client_secrets_file(
+                    'credentials.json', self.SCOPES
+                )
                 creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
             with open('token.pickle', 'wb') as token:
@@ -42,18 +45,21 @@ class GoogleDriveConnector():
             'mimeType': 'application/vnd.google-apps.folder',
             'parents': [parent_folder_id]
         }
-        return self.service.files().create(body=folder_metadata, fields='id').execute().get('id')
+        return self.service.files().create(body=folder_metadata, fields='id')\
+                   .execute().get('id')
 
     def get_folder_id(self, folder_name, parent_folder_id):
-        q = "mimeType='application/vnd.google-apps.folder' and name='{0}' and trashed=false"
+        q = """mimeType='application/vnd.google-apps.folder'
+               and name='{0}' and trashed=false"""
 
         if parent_folder_id is not None:
             q +=  " and parents in '{0}'".format(parent_folder_id)
 
-        folders = self.service.files().list(q=q.format(folder_name),
-                                            spaces='drive',
-                                            fields='nextPageToken, files(id, name)',
-                                            ).execute().get('files', [])
+        folders = self.service.files()\
+                      .list(q=q.format(folder_name),
+                            spaces='drive',
+                            fields='nextPageToken, files(id, name)',
+                            ).execute().get('files', [])
 
         return folders[0].get('id') if len(folders) > 0 else None
 
@@ -63,10 +69,11 @@ class GoogleDriveConnector():
         if parent_folder_id is not None:
             q +=  " and parents in '{0}'".format(parent_folder_id)
 
-        files = self.service.files().list(q=q.format(file_name),
-                                            spaces='drive',
-                                            fields='nextPageToken, files(id, name)',
-                                            ).execute().get('files', [])
+        files = self.service.files()\
+                    .list(q=q.format(file_name),
+                          spaces='drive',
+                          fields='nextPageToken, files(id, name)',
+                          ).execute().get('files', [])
 
         return files[0].get('id') if len(files) > 0 else None
 
@@ -78,7 +85,8 @@ class GoogleDriveConnector():
             }
 
         media = MediaFileUpload(file_location, resumable=True)
-        request = self.service.files().create(media_body=media, body=file_metadata)
+        request = self.service.files().create(media_body=media,
+                                              body=file_metadata)
         response = None
         while response is None:
             status, response = request.next_chunk()
@@ -88,4 +96,5 @@ class GoogleDriveConnector():
     def update_file(self, file_path, file_name, file_id):
         file_location = os.path.join(file_path, file_name)
         media_body = MediaFileUpload(file_location, resumable=True)
-        self.service.files().update(fileId=file_id, media_body=media_body).execute()
+        self.service.files().update(fileId=file_id,
+                                    media_body=media_body).execute()

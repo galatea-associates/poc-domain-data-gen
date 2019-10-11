@@ -28,8 +28,8 @@ class Coordinator():
         Holds writing job queue, taking jobs from which and formatting them
         before writing files of the user-given size.
     processes : list
-        Adds started processes (Generator and Writer) for the purpose of knowing
-        once they're finished.
+        Adds started processes (Generator and Writer) for the purpose of
+        knowing once they're finished.
 
     Methods
     -------

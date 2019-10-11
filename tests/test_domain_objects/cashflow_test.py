@@ -1,5 +1,4 @@
 import sys
-import pytest
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
 
@@ -25,7 +24,8 @@ def test_cashflows():
 
 def effective_date_exists(record):
     formatted_effective_date = record['effective_date'].strftime("%Y-%m-%d")
-    shared.attribute_exists(formatted_effective_date, 'effective_date', 'swap_positions')
+    shared.attribute_exists(formatted_effective_date,
+                            'effective_date', 'swap_positions')
 
 
 def pay_date_valid(record):

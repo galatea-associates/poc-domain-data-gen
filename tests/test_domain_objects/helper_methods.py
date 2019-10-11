@@ -12,7 +12,7 @@ from domainobjects import stock_loan_position, swap_contract, swap_position
 sys.path.insert(0, 'src/')
 
 
-#Helper Methods
+# Helper Methods
 def delete_local_database():
     if os.path.exists('dependencies.db'):
         os.remove('dependencies.db')
@@ -106,8 +106,6 @@ def generate_swap_position(amount=1):
 
 
 # Set-up Methods
-
-
 def set_up_back_office_position_tests():
     delete_local_database()
     generate_instrument(50)
