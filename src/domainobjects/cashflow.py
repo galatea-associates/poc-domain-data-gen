@@ -33,7 +33,7 @@ class Cashflow(Generatable):
         """
 
         swap_position_batch =\
-            self.retrieve_batch_records('swap_positions', 
+            self.retrieve_batch_records('swap_positions',
                                         record_count, start_id)
         cashflow_gen_args = self.get_cashflow_gen_args()
 
