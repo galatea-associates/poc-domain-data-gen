@@ -75,7 +75,6 @@ class StockLoanPosition(Generatable):
                 'time_stamp': datetime.now()
             }
 
-
     def generate_haircut(self, collateral_type):
         """ Generate a haircut value based on collateral type
 

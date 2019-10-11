@@ -1,10 +1,8 @@
-import sys, pytest
-import pytest
+import sys
 from datetime import datetime, timedelta
 
 from test_domain_objects import helper_methods as helper
 from utils.cache import Cache
-from utils.sqlite_database import Sqlite_Database
 from domainobjects import instrument
 
 
@@ -14,8 +12,8 @@ sys.path.insert(0, 'src/')
 ### Shared Tests ###
 ####################
 
-# Access to defined constant lists in the parent class
-# generatable, otherwise uninstantiable as it is abstract
+# domain_obj gives access to defined constant lists in the parent class
+# generatable, this is otherwise uninstantiable as it is abstract
 domain_obj = instrument.Instrument(None)
 
 
@@ -186,10 +184,8 @@ def price_valid(record):
     decimal = string_price.split(".")[1]
     assert 10 < price < 10000 and len(decimal) <= 2
 
-#######################
-### General Methods ###
-#######################
 
+#  General Methods
 def is_int(obj):
     return type(obj) == int
 

@@ -1,5 +1,4 @@
 import sys
-import pytest
 from utils.cache import Cache
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper

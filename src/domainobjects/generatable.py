@@ -152,11 +152,11 @@ class Generatable(ABC):
 
     @abstractmethod
     def generate(self, record_count, start_id):
-       """ Generate a set number of records for a domain object, where ID's
-       are sequential, start from a given id. Concrete implementations
-       provided by each domain object """
+        """ Generate a set number of records for a domain object, where ID's
+        are sequential, start from a given id. Concrete implementations
+        provided by each domain object """
 
-       pass
+        pass
 
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
@@ -456,9 +456,8 @@ class Generatable(ABC):
             Single record from the instruments table of the database
         """
 
-        if self.instruments == None: self.instruments = self.retrieve_records(
-            'instruments'
-        )
+        if self.instruments is None:
+            self.instruments = self.retrieve_records('instruments')
         return random.choice(self.instruments)
 
     def persist_record(self, record):
@@ -482,7 +481,7 @@ class Generatable(ABC):
             Name of the table to persist records to
         """
 
-        if(self.__database is None): 
+        if(self.__database is None):
             self.establish_db_connection()
         self.__database.persist_batch(table_name, self.__persisting_records)
         self.__database.commit_changes()
@@ -502,7 +501,7 @@ class Generatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if(self.__database is None): 
+        if(self.__database is None):
             self.establish_db_connection()
         return self.__database.retrieve(table_name)
 
@@ -526,7 +525,7 @@ class Generatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if(self.__database is None): 
+        if(self.__database is None):
             self.establish_db_connection()
         return self.__database.retrieve_batch(table_name, amount, start_pos)
 

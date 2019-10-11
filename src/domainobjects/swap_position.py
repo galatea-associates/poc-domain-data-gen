@@ -39,14 +39,15 @@ class SwapPosition(Generatable):
 
         start_date = datetime.strptime(self.get_start_date(), '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
-        swap_contract_batch = self.retrieve_batch_records('swap_contracts',
-                                                      record_count, start_id)
+        swap_contract_batch =\
+            self.retrieve_batch_records('swap_contracts',
+                                        record_count, start_id)
 
         records = [self.generate_record(swap_contract, instrument,
-                                        position_type, date)\
-                   for swap_contract in swap_contract_batch\
-                   for instrument in self.get_random_instruments()\
-                   for position_type in self.POSITION_TYPES\
+                                        position_type, date)
+                   for swap_contract in swap_contract_batch
+                   for instrument in self.get_random_instruments()
+                   for position_type in self.POSITION_TYPES
                    for date in date_range]
 
         self.persist_records('swap_positions')

@@ -1,9 +1,10 @@
 import sys
-import pytest
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
 
+
 sys.path.insert(0, 'tests/')
+
 
 def test_swap_contracts():
     records, domain_obj = helper.set_up_swap_contract_tests()
