@@ -33,12 +33,12 @@ class Cashflow(Generatable):
         """
 
         swap_position_batch =\
-         self.retrieve_batch_records('swap_positions', record_count, start_id)
+            self.retrieve_batch_records('swap_positions', record_count, start_id)
         cashflow_gen_args = self.get_cashflow_gen_args()
 
-        records = [self.generate_record(swap_position, cf_arg)\
-                   for swap_position in swap_position_batch\
-                   for cf_arg in cashflow_gen_args\
+        records = [self.generate_record(swap_position, cf_arg)
+                   for swap_position in swap_position_batch
+                   for cf_arg in cashflow_gen_args
                    if swap_position['position_type'] == 'E']
         records = filter(None, records)
         return records
@@ -74,7 +74,7 @@ class Cashflow(Generatable):
             record['long_short'] = swap_position['long_short']
             record['cashflow_type'] = cf_arg['cashFlowType']
             record['pay_date'] = datetime.strftime(p_date_func(effective_date),
-                                              '%Y-%m-%d')
+                                                   '%Y-%m-%d')
             record['currency'] = self.generate_currency()
             record['amount'] = self.generate_random_integer()
 
