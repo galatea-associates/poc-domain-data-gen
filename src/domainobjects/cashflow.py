@@ -7,7 +7,7 @@ import calendar
 class Cashflow(Generatable):
     """ Class to generate cashflows. Generate method will generate a set
     amount of cashflows. Other generation methods are included where cashflows
-    are the only domain object requiring them. 
+    are the only domain object requiring them.
 
     Process of generating cashflows dependent on Swap Positions, for each of
     these positions, simulate whether each cashflow type (defined by the user
@@ -82,7 +82,7 @@ class Cashflow(Generatable):
 
     def effective_date(self, effective_date):
         """ Parse string time into Datetime type
-        
+
         Parameters
         ----------
         effective_date : String
@@ -99,7 +99,7 @@ class Cashflow(Generatable):
     def get_cashflow_gen_args(self):
         """ Retrieve the user-defined cashflow generation arguments from
         config. These are the definitions of cashflow type and the attributes
-        thereof. 
+        thereof.
 
         Returns
         -------
@@ -151,7 +151,7 @@ class Cashflow(Generatable):
         Parameters
         ----------
         pay_date_period : String
-            User-defined period of payment, either end of month or half. 
+            User-defined period of payment, either end of month or half.
 
         Returns
         -------
@@ -192,7 +192,7 @@ class Cashflow(Generatable):
         elif accrual == "CHANCE_ACCRUAL" and \
                 random.random() < (int(probability) / 100):
             return True
-    
+
     def instantiate_record(self):
         return {
             'swap_contract_id': None,

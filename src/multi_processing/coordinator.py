@@ -40,7 +40,7 @@ class Coordinator():
         Begin the generation coordinator as a subprocess, with job pool size
 
     start_writer(pool_size)
-        Begin the writing coordinator as a subprocess, with job pool size 
+        Begin the writing coordinator as a subprocess, with job pool size
 
     get_generation_coordinator()
         Return the generation coordinator
@@ -130,7 +130,7 @@ class Coordinator():
 
     def start_generator(self, obj_class, pool_size):
         """ Starts the generation coordinator as a subprocess
- 
+
         Parameters
         ----------
         obj_class : String

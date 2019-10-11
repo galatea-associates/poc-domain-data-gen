@@ -8,11 +8,11 @@ from datetime import datetime
 
 class GoogleDriveConnector():
     # If modifying these scopes, delete the file token.pickle.
-    SCOPES = ['https://www.googleapis.com/auth/drive']    
+    SCOPES = ['https://www.googleapis.com/auth/drive']
 
-    def __init__(self, root_folder_id):         
+    def __init__(self, root_folder_id):
         creds = self.build_creds()
-        self.service = build('drive', 'v3', credentials=creds)        
+        self.service = build('drive', 'v3', credentials=creds)
         self.root_folder_id = root_folder_id
 
     def build_creds(self):
@@ -33,23 +33,23 @@ class GoogleDriveConnector():
             # Save the credentials for the next run
             with open('token.pickle', 'wb') as token:
                 pickle.dump(creds, token)
-        
+
         return creds
 
-    def create_folder(self, folder_name, parent_folder_id):   
+    def create_folder(self, folder_name, parent_folder_id):
         folder_metadata = {
             'name': folder_name,
             'mimeType': 'application/vnd.google-apps.folder',
             'parents': [parent_folder_id]
         }
-        return self.service.files().create(body=folder_metadata, fields='id').execute().get('id')    
+        return self.service.files().create(body=folder_metadata, fields='id').execute().get('id')
 
     def get_folder_id(self, folder_name, parent_folder_id):
         q = "mimeType='application/vnd.google-apps.folder' and name='{0}' and trashed=false"
-        
+
         if parent_folder_id is not None:
             q +=  " and parents in '{0}'".format(parent_folder_id)
-        
+
         folders = self.service.files().list(q=q.format(folder_name),
                                             spaces='drive',
                                             fields='nextPageToken, files(id, name)',
@@ -77,15 +77,15 @@ class GoogleDriveConnector():
             'parents': [google_folder_id]
             }
 
-        media = MediaFileUpload(file_location, resumable=True)    
+        media = MediaFileUpload(file_location, resumable=True)
         request = self.service.files().create(media_body=media, body=file_metadata)
         response = None
         while response is None:
             status, response = request.next_chunk()
             if status:
-                print("Uploaded %d%%." % int(status.progress() * 100))        
+                print("Uploaded %d%%." % int(status.progress() * 100))
 
     def update_file(self, file_path, file_name, file_id):
-        file_location = os.path.join(file_path, file_name)      
-        media_body = MediaFileUpload(file_location, resumable=True)    
-        self.service.files().update(fileId=file_id, media_body=media_body).execute()           
+        file_location = os.path.join(file_path, file_name)
+        media_body = MediaFileUpload(file_location, resumable=True)
+        self.service.files().update(fileId=file_id, media_body=media_body).execute()

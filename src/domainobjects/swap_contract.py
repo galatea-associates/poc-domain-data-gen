@@ -91,7 +91,7 @@ class SwapContract(Generatable):
 
     def get_number_of_swaps(self):
         """ Randomly calculate a value between the user-provided minimums
-        and maximums. 
+        and maximums.
 
         Returns
         -------

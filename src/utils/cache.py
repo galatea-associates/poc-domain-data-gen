@@ -1,6 +1,6 @@
 """Utility class containing instrument-specific information. This information
 is used to generate domain-valid currencies, ticker symbols, exchange codes,
-countries of origin, and any combination thereof such as RICs 
+countries of origin, and any combination thereof such as RICs
 """
 
 import pandas as pd
@@ -24,7 +24,7 @@ class Cache:
         Stores the given value in the pseudo-cache(dict) under the given key
 
     retrieve_from_cache(field_name)
-        Returns the value stored under given key 
+        Returns the value stored under given key
 
     """
 
