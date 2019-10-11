@@ -59,7 +59,7 @@ class Generatable(ABC):
     generate_random_boolean()
         Select a random boolean value
 
-    generate_random_date(from_year, to_year, from_month, 
+    generate_random_date(from_year, to_year, from_month,
                          to_month, from_day, to_day)
         Select a random date between a given range
 
