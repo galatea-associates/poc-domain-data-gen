@@ -8,9 +8,8 @@ from domainobjects import instrument
 
 sys.path.insert(0, 'src/')
 
-####################
-### Shared Tests ###
-####################
+
+#Shared Tests
 
 # domain_obj gives access to defined constant lists in the parent class
 # generatable, this is otherwise uninstantiable as it is abstract
