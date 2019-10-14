@@ -51,9 +51,12 @@ def main():
     # Open and retrieve configurations
     with open(args.config) as config_file:
         config = ujson.load(config_file)
-    sys.tracebacklimit = 5
 
     config_validator.validate(config)
+
+    # Trace back limit reduced when validating config file, reset to a
+    # reasonable value here.
+    sys.tracebacklimit = 5
 
     domain_object_configs = config['domain_objects']
     file_builder_configs = config['file_builders']
