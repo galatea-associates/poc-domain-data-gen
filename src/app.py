@@ -33,10 +33,12 @@
 import importlib
 import ujson
 import os
+import sys
 from argparse import ArgumentParser
 from utils.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
 import multi_processing.batch_size_calc as batch_size_calc
+import utils.config_validator as config_validator
 
 
 def main():
@@ -49,6 +51,10 @@ def main():
     # Open and retrieve configurations
     with open(args.config) as config_file:
         config = ujson.load(config_file)
+    sys.tracebacklimit = 5
+
+    config_validator.validate(config)
+
     domain_object_configs = config['domain_objects']
     file_builder_configs = config['file_builders']
     shared_config = config['shared_args']
