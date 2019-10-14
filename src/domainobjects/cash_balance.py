@@ -22,7 +22,7 @@ class CashBalance(Generatable):
         Returns
         -------
         List
-            Containing 'record_count' cash balances 
+            Containing 'record_count' cash balances
         """
 
         records = []

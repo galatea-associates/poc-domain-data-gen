@@ -3,16 +3,16 @@
     Calculates the job sizes where domain objects have nondeterministic output
     amount. Nondeterministic domain object are those which are dependent on
     prior outputs. For instance:
-    
+
     Swap Contracts are based on the number of counterparties as well as
     the 'Swaps per Counterparty' range set by the user in config.
     Swap Positions are based on the number of Swap Contracts, the
     'instruments per swap' and the date ranges set by the user in config.
     Cashflows are based on the number of Swap Positions and whether
     user-defined cashflow types accrue (in the case of percentage chance)
-    
-    The user-provided job size (number of objects each processes should 
-    generate) is inaccurate when dealing with these dependent objects. The 
+
+    The user-provided job size (number of objects each processes should
+    generate) is inaccurate when dealing with these dependent objects. The
     amount generated for each of the above hinges on both randomness, and
     the amount of its dependent objects that have been generated. Therefore,
     when dealing with nondeterministic objects, rather than using job size,
@@ -20,15 +20,15 @@
     batch, such that we are likely to result in a number of objects per
     generation process that is close to the specified job size.
     """
-
 import math
 from datetime import datetime, timedelta
 
+
 def get(obj_name, custom_args, default_job_size):
     """Entry point. Defers functionality depending on given object name.
-    
+
     Entry point of these scripts. If the input domain objects generation
-    amount is nondeterministic, then the calculation is deferred to the 
+    amount is nondeterministic, then the calculation is deferred to the
     batch size calculation for that domain object. Otherwise we can trivially
     return the user-provided job size.
 
@@ -48,7 +48,7 @@ def get(obj_name, custom_args, default_job_size):
         The number of objects each processes should generate where object has
         a known amount to generate. Or the number of objects each process
         should retrieve from the database for generation where the objects has
-        an unknown amount to generate.  
+        an unknown amount to generate.
     """
     nondeterministic_objects = ['SwapContract', 'SwapPosition', 'Cashflow']
     if obj_name not in nondeterministic_objects:
@@ -62,9 +62,10 @@ def get(obj_name, custom_args, default_job_size):
     else:
         print("Object not found")
 
+
 def swap_contract_size(custom_args, target_num_records):
     """Calculates the size of database batch retrievals when generating Swap
-    Contracts.  
+    Contracts.
 
     Derived from the range of swaps per counterparts and the generation method
     of Swap Contracts. Trying to find number of counterparties to retrieve.
@@ -207,6 +208,7 @@ def get_end_date(custom_args):
         date_string = custom_args['end_date']
         return datetime.strptime(date_string, '%Y%m%d')
 
+
 def cashflow_size(custom_args, target_num_records):
     """Calculates the size of database retrievals when generating Cashflows.
 
@@ -227,7 +229,7 @@ def cashflow_size(custom_args, target_num_records):
     int
         The number of counterparties to retrieve in each batch to generate
         roughly the number of objects to generate per process.
-    """    
+    """
     cashflow_args = custom_args['cashflow_generation']
     sum_probability = 0
 

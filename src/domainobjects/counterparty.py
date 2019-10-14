@@ -4,7 +4,7 @@ import string
 from datetime import datetime
 
 class Counterparty(Generatable):
-    """ A class to generate counterparties. Generate method will generate a 
+    """ A class to generate counterparties. Generate method will generate a
     set amount of positions. """
 
     def generate(self, record_count, start_id):
