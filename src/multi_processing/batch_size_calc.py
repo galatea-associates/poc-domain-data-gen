@@ -22,7 +22,7 @@
     """
 
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def get(obj_name, custom_args, default_job_size):
     """Entry point. Defers functionality depending on given object name.
@@ -134,9 +134,8 @@ def swap_position_size(custom_args, target_num_records):
         The number of counterparties to retrieve in each batch to generate
         roughly the number of objects to generate per process.
     """
-    start_date = custom_args['start_date']
-    start_date = datetime.strptime(start_date, '%Y%m%d')
-    end_date = datetime.today()
+    start_date = get_start_date(custom_args)
+    end_date = get_end_date(custom_args)
     num_dates = ((end_date-start_date).days)+1
     ins_per_swap = custom_args['ins_per_swap']
     ins_min = int(ins_per_swap['min'])
@@ -145,6 +144,68 @@ def swap_position_size(custom_args, target_num_records):
     batch_size = math.ceil((2*target_num_records) /
                            (3*num_dates*(ins_min+ins_max)))
     return batch_size
+
+
+def get_start_date(custom_args):
+    """ Retrieve the start date from user-written configuration, defaulting to
+    4 days prior to today where not supplied.
+
+    Parameters
+    ----------
+    custom_args : dict
+        Dictionary of the custom arguments for the current domain object being
+        generated, will be Swap Positions.
+
+    Returns
+    -------
+    datetime
+        Datetime formatted date of user-provided date if given, otherwise the
+        day 4 days before todays date.
+    """
+
+    if 'start_date' not in custom_args:
+            if 'end_date' in custom_args:
+                # No start date but end date given
+                end_date = datetime.strptime(custom_args['end_date'],
+                                             "%Y%m%d")
+                return end_date - timedelta(days=4)
+            else:
+                # No start date or end date given
+                return datetime.today() - timedelta(days=4)
+    else:
+        date_string = custom_args['start_date']
+        return datetime.strptime(date_string, '%Y%m%d')
+
+
+def get_end_date(custom_args):
+    """ Retrieve the end date from user-written configuration, defaulting to
+    4 days prior to today where not supplied.
+
+    Parameters
+    ----------
+    custom_args : dict
+        Dictionary of the custom arguments for the current domain object being
+        generated, will be Swap Positions.
+
+    Returns
+    -------
+    datetime
+        Datetime formatted date of user-provided date if given, otherwise
+        todays date.
+    """
+
+    if 'end_date' not in custom_args:
+            if 'start_date' in custom_args:
+                # No end date but start date given
+                start_date = datetime.strptime(custom_args['start_date'],
+                                               "%Y%m%d")
+                return start_date + timedelta(days=4)
+            else:
+                # No end date or start date given
+                return datetime.today()
+    else: 
+        date_string = custom_args['end_date']
+        return datetime.strptime(date_string, '%Y%m%d')
 
 def cashflow_size(custom_args, target_num_records):
     """Calculates the size of database retrievals when generating Cashflows.

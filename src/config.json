@@ -49,7 +49,7 @@
     {
       "module_name": "back_office_position",
       "class_name": "BackOfficePosition",
-      "record_count": "500",
+      "record_count": "0",
       "max_objects_per_file": "1000000",
       "file_name": "back_office_positions",
       "root_element_name": "back_office_positions",
@@ -72,7 +72,7 @@
     {
       "module_name": "cash_balance",
       "class_name": "CashBalance",
-      "record_count": "500",
+      "record_count": "0",
       "max_objects_per_file": "1000000",
       "file_name": "cash_balances",
       "root_element_name": "cash_balances",
@@ -95,7 +95,7 @@
     {
       "module_name": "depot_position",
       "class_name": "DepotPosition",
-      "record_count": "500",
+      "record_count": "0",
       "max_objects_per_file": "1000000",
       "file_name": "depot_positions",
       "root_element_name": "depot_positions",
@@ -118,7 +118,7 @@
     {
       "module_name": "front_office_position",
       "class_name": "FrontOfficePosition",
-      "record_count": "500",
+      "record_count": "0",
       "max_objects_per_file": "1000000",
       "file_name": "front_office_positions",
       "root_element_name": "front_office_positions",
@@ -141,7 +141,7 @@
     {
       "module_name": "order_execution",
       "class_name": "OrderExecution",
-      "record_count": "500",
+      "record_count": "0",
       "max_objects_per_file": "1000000",
       "file_name": "order_executions",
       "root_element_name": "order_executions",
@@ -164,7 +164,7 @@
     {
       "module_name": "price",
       "class_name": "Price",
-      "record_count": "500",
+      "record_count": "0",
       "max_objects_per_file": "1000000",
       "file_name": "prices",
       "root_element_name": "prices",
@@ -187,7 +187,7 @@
     {
       "module_name": "stock_loan_position",
       "class_name": "StockLoanPosition",
-      "record_count": "500",
+      "record_count": "0",
       "max_objects_per_file": "1000000",
       "file_name": "stock_loan_positions",
       "root_element_name": "stock_loan_positions",
@@ -261,7 +261,6 @@
         }
       ],
       "custom_args": {
-        "start_date": "20191002",
         "ins_per_swap": {
           "min": "1",
           "max": "19"
@@ -291,7 +290,6 @@
         }
       ],
       "custom_args": {
-        "start_date": "20190910",
         "cashflow_generation": [
           {
             "cashFlowType": "INT_1",

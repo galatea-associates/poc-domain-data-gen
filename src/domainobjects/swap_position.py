@@ -13,7 +13,9 @@ class SwapPosition(Generatable):
     of these positions, choose a random number of instruments from those
     generated prior, then for each position type (start of day, intraday,
     end of day), generate a record for every date from the user specified
-    start-date until today's date.
+    start-date until the specified end-date. 
+    
+    In the case either/or start or end dates are not given, default to todays date.
     """
 
     PURPOSES = ['Outright']
@@ -37,8 +39,9 @@ class SwapPosition(Generatable):
 
         self.all_instruments = self.retrieve_records('instruments')
 
-        start_date = datetime.strptime(self.get_start_date(), '%Y%m%d')
-        date_range = pd.date_range(start_date, datetime.today(), freq='D')
+        start_date = self.get_start_date()
+        end_date = self.get_end_date()
+        date_range = pd.date_range(start_date, end_date, freq='D')
         swap_contract_batch = self.retrieve_batch_records('swap_contracts',
                                                       record_count, start_id)
 
@@ -129,16 +132,56 @@ class SwapPosition(Generatable):
         return random.randint(min_ins, max_ins)
 
     def get_start_date(self):
-        """ Get the user-specified start date
+        """ Get the user-specified start date, or return to a default value of
+        4 days ago where one isn't provided.
 
         Returns
         -------
-        String
-            String format of the user-specified start date for generation
+        Datetime
+            Datetime format of the user-specified start date for generation,
+            or today where not provided in configuration.
         """
 
         custom_args = self.get_custom_args()
-        return custom_args['start_date']
+        if 'start_date' not in custom_args:
+            if 'end_date' in custom_args:
+                # No start date but end date given
+                end_date = datetime.strptime(custom_args['end_date'],
+                                             "%Y%m%d")
+                return end_date - timedelta(days=4)
+            else:
+                # No start date or end date given
+                return datetime.today() - timedelta(days=4)
+        else:
+            # Start date given
+            date_string = custom_args['start_date']
+            return datetime.strptime(date_string, "%Y%m%d")
+
+    def get_end_date(self):
+        """ Get the user-specified end date, or return a default value of
+        today where one isn't provided.
+
+        Returns
+        -------
+        Datetime
+            Datetime format of the user-specified end date for generation, or
+            today where not provided in configuration.
+        """
+
+        custom_args = self.get_custom_args()
+        if 'end_date' not in custom_args:
+            if 'start_date' in custom_args:
+                # No end date but start date given
+                start_date = datetime.strptime(custom_args['start_date'],
+                                               "%Y%m%d")
+                return start_date + timedelta(days=4)
+            else:
+                # No end date or start date given
+                return datetime.today()
+        else:
+            # End date given
+            date_string = custom_args['end_date']
+            return datetime.strptime(date_string, "%Y%m%d")
 
     def generate_account(self):
         """ Generate an account identifier
