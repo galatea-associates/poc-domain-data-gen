@@ -203,7 +203,7 @@ def get_end_date(custom_args):
             else:
                 # No end date or start date given
                 return datetime.today()
-    else: 
+    else:
         date_string = custom_args['end_date']
         return datetime.strptime(date_string, '%Y%m%d')
 

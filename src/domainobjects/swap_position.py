@@ -13,9 +13,12 @@ class SwapPosition(Generatable):
     of these positions, choose a random number of instruments from those
     generated prior, then for each position type (start of day, intraday,
     end of day), generate a record for every date from the user specified
-    start-date until the specified end-date. 
-    
-    In the case either/or start or end dates are not given, default to todays date.
+    start-date until the specified end-date.
+
+    Where neither start date or end date are given, default the end date to
+    todays date, and start to 4 days prior. If just end date is given, default
+    start date to 4 days prior. If just start date is given, default end date
+    to 4 days in the future.
     """
 
     PURPOSES = ['Outright']
