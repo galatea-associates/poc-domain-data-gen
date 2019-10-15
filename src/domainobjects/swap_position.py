@@ -9,15 +9,15 @@ class SwapPosition(Generatable):
     amount of swap positions. Other generation methods are included where swap
     positions are the only domain object requiring them.
     
-    Process of generating swap positions dependent on swap contracts, for each
-    of these positions, choose a random number of instruments from those
-    generated prior, then for each position type (start of day, intraday,
-    end of day), generate a record for every date from the user specified
-    start-date until today's date.
+    Process of generating swap positions dependent on swap contracts.  A position
+    with a random number of instruments will be generated for each possible
+    combination of previously generated swap contracts, position type (start of
+    day, intraday, end of day) and date from the user specified start-date until
+    today's date
     """
 
     PURPOSES = ['Outright']
-    POSITION_TYPES = ['S', 'I', 'E']
+    DEFAULT_SWAP_POSITION_POSITION_TYPES = ['SoD', 'Intraday', 'EoD']
 
     def generate(self, record_count, start_id):
         """ Generate a set number of swap positions
@@ -46,7 +46,7 @@ class SwapPosition(Generatable):
                                         position_type, date)\
                    for swap_contract in swap_contract_batch\
                    for instrument in self.get_random_instruments()\
-                   for position_type in self.POSITION_TYPES\
+                   for position_type in self.DEFAULT_SWAP_POSITION_POSITION_TYPES\
                    for date in date_range]
 
         self.persist_records('swap_positions')
@@ -88,7 +88,7 @@ class SwapPosition(Generatable):
         record['account'] = self.generate_account()
         record['time_stamp'] = datetime.now()
 
-        if (position_type == 'E'):
+        if (position_type == 'EoD'):
             self.persist_record(
                 [str(swap_contract['id']),
                  instrument['ric'],

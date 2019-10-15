@@ -9,7 +9,7 @@ def test_swap_positions():
     for record in records:
         shared.ric_exists(record)
         shared.swap_contract_id_exists(record)
-        swap_position_type_valid(record, domain_obj.POSITION_TYPES)
+        swap_position_type_valid(record, domain_obj.DEFAULT_SWAP_POSITION_POSITION_TYPES)
         #knowledge_date_valid(record)
         shared.settlement_position_effective_date_valid(record)
         shared.account_valid(record, domain_obj.ACCOUNT_TYPES)

@@ -39,7 +39,7 @@ class Cashflow(Generatable):
         records = [self.generate_record(swap_position, cf_arg)\
                    for swap_position in swap_position_batch\
                    for cf_arg in cashflow_gen_args\
-                   if swap_position['position_type'] == 'E']
+                   if swap_position['position_type'] == 'EoD']
         records = filter(None, records)
         return records
 
