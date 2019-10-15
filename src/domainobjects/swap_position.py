@@ -46,7 +46,7 @@ class SwapPosition(Generatable):
                                         position_type, date)\
                    for swap_contract in swap_contract_batch\
                    for instrument in self.get_random_instruments()\
-                   for position_type in self.DEFAULT_SWAP_POSITION_POSITION_TYPES\
+                   for position_type in self.get_position_types()\
                    for date in date_range]
 
         self.persist_records('swap_positions')
@@ -139,6 +139,19 @@ class SwapPosition(Generatable):
 
         custom_args = self.get_custom_args()
         return custom_args['start_date']
+
+    def get_position_types(self):
+        """ Get the user-specified position types (using defaults if user hasn't provided any)
+
+        Returns
+        -------
+        List
+            List containing all position types for which swap positions will be created
+        """
+
+        custom_args = self.get_custom_args()
+        return custom_args.get("position_types", self.DEFAULT_SWAP_POSITION_POSITION_TYPES)
+
 
     def generate_account(self):
         """ Generate an account identifier
