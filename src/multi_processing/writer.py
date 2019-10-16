@@ -115,7 +115,7 @@ class Writer():
     def handle_jobs(self, pool_size):
         """ Takes items from the Multiprocess safe queue, if a terminate
         instruction, the appropriate flag is set. If not, it must be a list
-        of records, thus it formatted.
+        of records, thus it is formatted.
 
         Parameters
         ----------
