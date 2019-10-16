@@ -8,6 +8,7 @@ the configuration as-is is insufficient for successful operation.
 
 
 import sys
+from datetime import datetime, timedelta
 
 
 def validate(config):
@@ -194,15 +195,17 @@ def validate_swap_contract_range(swap_contract_config):
     """
 
     error = None
+    record_count = int(swap_contract_config['record_count'])
+    
+    if record_count > 0:
+        custom_args = swap_contract_config['custom_args']
+        swaps_per_counterparty = custom_args['swap_per_counterparty']
+        swap_min = swaps_per_counterparty['min']
+        swap_max = swaps_per_counterparty['max']
 
-    custom_args = swap_contract_config['custom_args']
-    swaps_per_counterparty = custom_args['swap_per_counterparty']
-    swap_min = swaps_per_counterparty['min']
-    swap_max = swaps_per_counterparty['max']
-
-    if swap_max < swap_min:
-        error = ["- Swap contract's swap minimum value greater"+\
-                    " than swap maximum"]
+        if swap_max < swap_min:
+            error = ["- Swap Contract's swap minimum value greater"+\
+                        " than swap maximum"]
     return error
 
 
@@ -220,28 +223,164 @@ def validate_swap_position_date_range(swap_position_config):
     List
         An error where the range is invalid, None otherwise
     """
+
+    error = None
+    record_count = int(swap_position_config['record_count'])
     
-    return
+    if record_count > 0:
+        custom_args = swap_position_config['custom_args']
+        arg_keys = custom_args.keys()
+
+        if 'start_date' in arg_keys and 'end_date' in arg_keys:
+            start_date = datetime.strptime(custom_args['start_date'],
+                                           '%Y%m%d')
+            end_date = datetime.strptime(custom_args['end_date'],
+                                         '%Y%m%d')
+
+            if start_date > end_date:
+                error = ["- Swap Position's start date\
+                         comes after its end date"]
+
+    return error
 
 
 def validate_swap_position_range(swap_position_config):
-    return
+    """ Ensure the swap position "ins per swap" is a valid range
+
+    Parameters
+    ----------
+    swap_position_config : dict
+        The configuration section for the swap position object only
+
+    Returns
+    -------
+    List
+        An error where the range is invalid, None otherwise
+    """
+
+    error = None
+    record_count = int(swap_position_config['record_count'])
+
+    if record_count > 0:
+        custom_args = swap_position_config['custom_args']
+        instruments_per_swap = custom_args['ins_per_swap']
+        instrument_min = instruments_per_swap['min']
+        instrument_max = instruments_per_swap['max']
+
+        if instrument_max < instrument_min:
+            error = ["- Swap Positions's swap minimum value greater"+\
+                        " than swap maximum"]
+    return error
 
 
 def validate_cash_flow_defined(cash_flow_config):
-    return
+    """ Ensures that if cash flows are to be generated, that there are
+    definitions of them provided.
+
+    Parameters
+    ----------
+    cash_flow_config : dict
+        The configuration section for the Cash Flow object
+
+    Returns
+    -------
+    List
+        An error where no cash flow generation section seen, empty otherwise
+    """
+    errors = []
+
+    record_count = int(cash_flow_config['record_count'])
+    custom_args = cash_flow_config['custom_args']
+    arg_keys = custom_args.keys()
+
+    if record_count > 0 and "cashflow_generation" not in arg_keys:
+        errors.append("- No Cashflow Generation section defined")
+    return errors
 
 
 def validate_cash_flow_definitions(cash_flow_config):
-    return
+    """ Ensures that all cash flow definitions contain the four required
+    keys for successful generation. 
+
+    Parameters
+    ----------
+    cash_flow_config : dict
+        The configuration section for the Cash Flow object
+
+    Returns
+    -------
+    List
+        An error where arguments are missing, empty otherwise
+    """
+    errors = []
+
+    record_count = int(cash_flow_config['record_count'])
+    custom_args = cash_flow_config['custom_args']
+    arg_keys = custom_args.keys()
+
+    if record_count > 0 and "cashflow_generation" in arg_keys:
+        i = 1
+        for definition in custom_args['cashflow_generation']:
+            definition_keys = definition.keys()
+            pre_def = "Cash Flow Definition "+str(i)+" is missing key: "
+            if "cashFlowType" not in definition_keys:
+                errors.append(pre_def+"cashFlowType")
+            if "cashFlowAccrual" not in definition_keys:
+                errors.append(pre_def+"cashFlowAccrual")
+            if "cashFlowAccrualProbability" not in definition_keys:
+                errors.append(pre_def+"cashFlowAccrualProbability")
+            if "cashFlowPaydatePeriod" not in definition_keys:
+                errors.append(pre_def+"cashFlowPaydatePeriod")
+            i = i+1
+    return errors
 
 
 def validate_pool_sizes_non_zero(shared_config):
-    return
+    """ Verifies that pool sizes for both generation and writing pools are
+    non-zero and positive.
+
+    Parameters
+    ----------
+    shared_config : dict
+        Dictionary of the "shared_config" section of the config file
+
+    Returns
+    -------
+    List
+        Errors where relevant, or empty if none found
+    """
+
+    errors = []
+
+    gen_pool_size = shared_config['gen_pools']
+    write_pool_size = shared_config['write_pools']
+    if gen_pool_size <= 0:
+        errors.append("- Generation Pool size must be a positive value.")
+    if write_pool_size <= 0:
+        errors.append("- Writing Pool size must be a positive value.")
+    return errors
 
 
 def validate_job_size_non_zero(shared_config):
-    return
+    """ Ensure the specified job size is a non-zero numbers.
+
+    Parameters
+    ----------
+    shared_config : dict
+        Dictionary of the "shared_config" section of the config file
+
+    Returns
+    -------
+    list
+        List of a single object, an error message, if job size strictly
+        less than zero, contains nothing otherwise.
+    """
+
+    error = None
+    job_size = shared_config['job_size']
+    if job_size <= 0:
+        error = ["- Job_Size in shared arguments must be a positive value"]
+    return error
 
 
 class ConfigError(Exception):
