@@ -58,10 +58,10 @@ class Instrument(Generatable):
 
         asset_class = self.generate_asset_class()
         ticker = self.generate_ticker(cache)
-        coi = self.generate_coi(cache)
+        country_of_issuance = self.generate_country_of_issuance(cache)
         exchange_code = id
         cusip = self.generate_random_integer(length=9)
-        isin = self.generate_isin(coi, cusip)
+        isin = self.generate_isin(country_of_issuance, cusip)
         ric = self.generate_ric(ticker, exchange_code)
         sedol = self.generate_random_integer(length=7)
         return {
@@ -72,7 +72,7 @@ class Instrument(Generatable):
                 'ticker': ticker,
                 'cusip': cusip,
                 'asset_class': asset_class,
-                'coi': coi,
+                'country_of_issuance': country_of_issuance,
                 'time_stamp': datetime.now()
             }
 
@@ -87,7 +87,7 @@ class Instrument(Generatable):
 
         return 'Stock'
 
-    def generate_coi(self, cache):
+    def generate_country_of_issuance(self, cache):
         """ Generate a random country of issuance
 
         Parameters
@@ -102,7 +102,9 @@ class Instrument(Generatable):
             Randomly selected country code from those in the cache
         """
 
-        return random.choice(cache.retrieve_from_cache('cois'))
+        return random.choice(
+            cache.retrieve_from_cache('countries_of_issuance')
+        )
 
     def generate_ticker(self, cache):
         """ Generate a random ticker

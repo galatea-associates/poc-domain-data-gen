@@ -39,10 +39,10 @@ def isin_exists(record):
     assert record['isin'] in isins
 
 def isin_valid(record):
-    """ Valid ISIN is in format '"COI""CUSIP""4"' """
-    coi = record['coi']
+    """ Valid ISIN is in format '"country_of_issuance""CUSIP""4"' """
+    country_of_issuance = record['country_of_issuance']
     cusip = str(record['cusip'])
-    expected_isin = coi + cusip + '4'
+    expected_isin = country_of_issuance + cusip + '4'
     assert record['isin'] == expected_isin
 
 def ric_exists(record):

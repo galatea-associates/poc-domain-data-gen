@@ -79,7 +79,7 @@ class Generatable(ABC):
     generate_ric(ticker, exchange_code)
         Create a RIC value from given ticker and exchange values
 
-    generate_isin(coi, cusip)
+    generate_isin(country_of_issuance, cusip)
         Create an ISIN value from given county of issuance and CUSIP values
 
     generate_credit_debit()
@@ -319,12 +319,12 @@ class Generatable(ABC):
 
         return '{0}.{1}'.format(ticker, exchange_code)
 
-    def generate_isin(self, coi, cusip):
-        """ Appends two input values to "'coi''cusip''4'"
+    def generate_isin(self, country_of_issuance, cusip):
+        """ Appends two input values to "'country_of_issuance''cusip''4'"
 
         Parameters
         ----------
-        coi : String
+        country_of_issuance : String
             a country of issuance code
         cusip : int
             a CUSIP value
@@ -334,7 +334,7 @@ class Generatable(ABC):
         String
 
         """
-        return ''.join([coi, str(cusip), '4'])
+        return ''.join([country_of_issuance, str(cusip), '4'])
 
     def generate_credit_debit(self):
         """ Generate a random credit or debit value

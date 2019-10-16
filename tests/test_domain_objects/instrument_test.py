@@ -19,7 +19,7 @@ def test_instruments():
         ticker_valid(record)
         shared.cusip_valid(record)
         asset_class_valid(record)
-        coi_valid(record)
+        country_of_issuance_valid(record)
 
 def sedol_valid(record):
     """ SEDOLs must both: be integers, and of length 7 """
@@ -39,9 +39,12 @@ def asset_class_valid(record):
     asset_class = record['asset_class']
     assert asset_class == 'Stock'
 
-def coi_valid(record):
-    """ COI must be within the set as provided within cache """
+def country_of_issuance_valid(record):
+    """ country_of_issuance must be within the set as provided within 
+    cache """
+
     cache = Cache()
-    cois = cache.retrieve_from_cache('cois')
-    coi = record['coi']
-    assert coi in cois
+    countries_of_issuance =\
+        cache.retrieve_from_cache('countries_of_issuance')
+    country_of_issuance = record['country_of_issuance']
+    assert country_of_issuance in countries_of_issuance
