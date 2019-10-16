@@ -1,8 +1,10 @@
 import sys
-sys.path.insert(0, 'tests/')
-import pytest
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
+
+
+sys.path.insert(0, 'tests/')
+
 
 def test_cash_balance():
     """Ensure all generated cashflow attributes adhere to their

@@ -28,8 +28,8 @@ class Coordinator():
         Holds writing job queue, taking jobs from which and formatting them
         before writing files of the user-given size.
     processes : list
-        Adds started processes (Generator and Writer) for the purpose of knowing
-        once they're finished.
+        Adds started processes (Generator and Writer) for the purpose of
+        knowing once they're finished.
 
     Methods
     -------
@@ -40,7 +40,7 @@ class Coordinator():
         Begin the generation coordinator as a subprocess, with job pool size
 
     start_writer(pool_size)
-        Begin the writing coordinator as a subprocess, with job pool size 
+        Begin the writing coordinator as a subprocess, with job pool size
 
     get_generation_coordinator()
         Return the generation coordinator
@@ -130,7 +130,7 @@ class Coordinator():
 
     def start_generator(self, obj_class, pool_size):
         """ Starts the generation coordinator as a subprocess
- 
+
         Parameters
         ----------
         obj_class : String

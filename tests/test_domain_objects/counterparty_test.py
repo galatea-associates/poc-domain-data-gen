@@ -1,8 +1,10 @@
 import sys
-sys.path.insert(0, 'tests/')
-import pytest
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
+
+
+sys.path.insert(0, 'tests/')
+
 
 def test_counterparty():
     records = helper.set_up_counterparty_tests()
@@ -10,6 +12,7 @@ def test_counterparty():
     for record in records:
         book_valid(record)
         shared.dummy_fields_valid(record, 'counterparty')
+
 
 def book_valid(record):
     book = record['book']

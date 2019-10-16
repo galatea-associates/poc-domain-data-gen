@@ -10,12 +10,12 @@ class Generatable(ABC):
     methods, and defines an abstract method for generation. Pre-defines
     lists of potential values for some variations to minimise number of
     list constructions.
-    
+
     Attributes
     ----------
     LONG_SHORT : List
         Possible values for objects long or short attribute
-    
+
     ACCOUNT_TYPES : List
         Possible values for objects account_type attribute
 
@@ -59,7 +59,8 @@ class Generatable(ABC):
     generate_random_boolean()
         Select a random boolean value
 
-    generate_random_date(from_year, to_year, from_month, to_month, from_day, to_day)
+    generate_random_date(from_year, to_year, from_month,
+                         to_month, from_day, to_day)
         Select a random date between a given range
 
     generate_random_integer(min, max, length, negative)
@@ -152,11 +153,11 @@ class Generatable(ABC):
 
     @abstractmethod
     def generate(self, record_count, start_id):
-       """ Generate a set number of records for a domain object, where ID's
-       are sequential, start from a given id. Concrete implementations
-       provided by each domain object """
+        """ Generate a set number of records for a domain object, where ID's
+        are sequential, start from a given id. Concrete implementations
+        provided by each domain object """
 
-       pass
+        pass
 
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
@@ -222,7 +223,7 @@ class Generatable(ABC):
         Date
             Random date between the provided ranges
         """
-        
+
         year = random.randint(from_year, to_year)
         month = random.randint(from_month, to_month)
         day = random.randint(from_day, to_day)
@@ -395,7 +396,7 @@ class Generatable(ABC):
     def generate_effective_date(self, n_days_to_add=3,
                                 knowledge_date=None, position_type=None):
         """ Generates an Effective Date value
-        
+
         Parameters
         ----------
         n_days_to_add : int
@@ -442,7 +443,7 @@ class Generatable(ABC):
         String
             Random return type chosen from a pre-determined list
         """
- 
+
         return random.choice(self.RETURN_TYPES)
 
     # THESE ARE NON-GENERATING, UTILITY METHODS USED WHERE NECESSARY #
@@ -456,14 +457,13 @@ class Generatable(ABC):
             Single record from the instruments table of the database
         """
 
-        if self.instruments == None: self.instruments = self.retrieve_records(
-            'instruments'
-        )
+        if self.instruments is None:
+            self.instruments = self.retrieve_records('instruments')
         return random.choice(self.instruments)
 
     def persist_record(self, record):
         """ Adds a given record to the list of records to persist in storage
-        
+
         Parameters
         ----------
         record : list
@@ -482,26 +482,28 @@ class Generatable(ABC):
             Name of the table to persist records to
         """
 
-        if(self.__database is None): self.establish_db_connection()
+        if(self.__database is None):
+            self.establish_db_connection()
         self.__database.persist_batch(table_name, self.__persisting_records)
         self.__database.commit_changes()
 
     def retrieve_records(self, table_name):
         """ Selects all records from a given database table
-        
+
         Parameters
         ----------
         table_name
             Name of the table to retrieve all records of
-        
+
         Returns
         -------
         SQLite3 Row
             Row object which is iterable, each element contains a Row Object
-            the data inwhich can be retrieved as though it's a dictionary 
+            the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if(self.__database is None): self.establish_db_connection()
+        if(self.__database is None):
+            self.establish_db_connection()
         return self.__database.retrieve(table_name)
 
     def retrieve_batch_records(self, table_name, amount, start_pos):
@@ -515,20 +517,21 @@ class Generatable(ABC):
         amount : int
             Number of records to retrieve in the batch
         start_pos : int
-            Position from which to start the retrieval 
+            Position from which to start the retrieval
 
         Returns
         -------
         SQLite3 Row
             Row object which is iterable, each element contains a Row Object
-            the data inwhich can be retrieved as though it's a dictionary 
+            the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if(self.__database is None): self.establish_db_connection()
+        if(self.__database is None):
+            self.establish_db_connection()
         return self.__database.retrieve_batch(table_name, amount, start_pos)
 
     def get_database(self):
-        """ Returns the database connection object 
+        """ Returns the database connection object
 
         Returns
         -------
@@ -539,7 +542,7 @@ class Generatable(ABC):
         return self.__database
 
     def establish_db_connection(self):
-        """ Establishes and returns the database connection object 
+        """ Establishes and returns the database connection object
 
         Returns
         -------
@@ -560,7 +563,7 @@ class Generatable(ABC):
         """
 
         return self.__config
-    
+
     def get_custom_args(self):
         """ Returns the current objects user-specified custom arguments
 

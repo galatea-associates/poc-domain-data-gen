@@ -1,10 +1,12 @@
 import sys
-sys.path.insert(0, 'tests/')
-sys.path.insert(0, 'src/')
-import pytest
 from utils.cache import Cache
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
+
+
+sys.path.insert(0, 'tests/')
+sys.path.insert(0, 'src/')
+
 
 def test_instruments():
     """ Ensure all generated instrument attributes adhere to their
@@ -21,11 +23,13 @@ def test_instruments():
         asset_class_valid(record)
         country_of_issuance_valid(record)
 
+
 def sedol_valid(record):
     """ SEDOLs must both: be integers, and of length 7 """
     sedol = record['sedol']
     assert shared.is_int(sedol)\
         and shared.is_length(7, sedol)
+
 
 def ticker_valid(record):
     """ Ticker must be within the set as provided within cache """
@@ -33,6 +37,7 @@ def ticker_valid(record):
     tickers = cache.retrieve_from_cache('tickers')
     ticker = record['ticker']
     assert ticker in tickers
+
 
 def asset_class_valid(record):
     """ Asset class must equal 'stock' """
