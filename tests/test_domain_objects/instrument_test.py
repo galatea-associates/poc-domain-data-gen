@@ -44,8 +44,9 @@ def asset_class_valid(record):
     asset_class = record['asset_class']
     assert asset_class == 'Stock'
 
+
 def country_of_issuance_valid(record):
-    """ country_of_issuance must be within the set as provided within 
+    """ country_of_issuance must be within the set as provided within
     cache """
 
     cache = Cache()
