@@ -85,10 +85,11 @@ class Coordinator():
     def create_jobs(self, domain_obj, record_count, job_size):
         """Populate the generation queue with jobs.
 
-        Continually places jobs into the queue, counting down record_count until
-        it's value is 0. Where record_count larger than job size, a job is spawned
-        of job size, and record_count decremented that amount. Where record_count less
-        than job size, a job is spawned of size record_count.
+        Continually places jobs into the queue, counting down record_count
+        until it's value is 0. Where record_count larger than job size, a job
+        is spawned of job size, and record_count decremented that amount.
+        Where record_count less than job size, a job is spawned of size
+        record_count.
 
         A job is a 3-element dictionary. Domain object name provided for the
         purpose of keeping track. Amount and Start_ID are arguments for the
