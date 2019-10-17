@@ -1,44 +1,63 @@
-from domainobjects.generatable  import Generatable
+from domainobjects.generatable import Generatable
 import random
 import string
 from datetime import datetime
 
 class Counterparty(Generatable):
-    
-    def generate(self, record_count, custom_args):
-        config = self.get_object_config()
-        records_per_file = config['max_objects_per_file']
-        file_num = 1
+    """ A class to generate counterparties. Generate method will generate a
+    set amount of positions. """
 
-        database = self.get_database()
+    def generate(self, record_count, start_id):
+        """ Generate a set number of counterparties.
+
+        Parameters
+        ----------
+        record_count : int
+            Number of counterparties to generate
+        start_id : int
+            Starting id to generate from
+
+        Returns
+        -------
+        List
+            Containing 'record_count' counterparties
+        """
+
         records = []
 
-        for i in range(1, record_count+1):
-            records.append({
-                'counterparty_id': i,
-                'book': self.generate_random_string(5, include_numbers=False),
-                'counterparty_field1': self.generate_random_string(10),
-                'counterparty_field2': self.generate_random_string(10),
-                'counterparty_field3': self.generate_random_string(10),
-                'counterparty_field4': self.generate_random_string(10),
-                'counterparty_field5': self.generate_random_string(10),
-                'counterparty_field6': self.generate_random_string(10),
-                'counterparty_field7': self.generate_random_string(10),
-                'counterparty_field8': self.generate_random_string(10),
-                'counterparty_field9': self.generate_random_string(10),
-                'counterparty_field10': self.generate_random_string(10),
-                'time_stamp': datetime.now()})
+        for i in range(start_id, record_count+start_id):
+            records.append(self.get_record(i))
+            self.persist_record([str(i)])
 
-            if (i % int(records_per_file) == 0):
-                self.write_to_file(file_num, records)
-                file_num += 1
-                records = []
+        self.persist_records("counterparties")
+        return records
 
-            database.persist("counterparties", [str(i+1)])
+    def get_record(self, current_id):
+        """ Generate a single counterparty record
 
-        if records != []:
-            self.write_to_file(file_num, records)
+        Parameters
+        ----------
+        current_id : int
+            Current id of the counterparty being generated
 
-        database.commit_changes()
+        Returns
+        -------
+        dict
+            A single counterparty objects
+        """
 
-   
+        return {
+            'counterparty_id': current_id,
+            'book': self.generate_random_string(5, include_numbers=False),
+            'counterparty_field1': self.generate_random_string(10),
+            'counterparty_field2': self.generate_random_string(10),
+            'counterparty_field3': self.generate_random_string(10),
+            'counterparty_field4': self.generate_random_string(10),
+            'counterparty_field5': self.generate_random_string(10),
+            'counterparty_field6': self.generate_random_string(10),
+            'counterparty_field7': self.generate_random_string(10),
+            'counterparty_field8': self.generate_random_string(10),
+            'counterparty_field9': self.generate_random_string(10),
+            'counterparty_field10': self.generate_random_string(10),
+            'time_stamp': datetime.now()
+        }

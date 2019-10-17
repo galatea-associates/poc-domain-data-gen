@@ -1,101 +1,230 @@
-import argparse
+""" Random Data Generator for Financial-Domain Objects
+
+    Based on a user provided configuration, generate a set of random data
+    pertaining to said configuration. Currently supported domain objects are:
+
+        * Back Office Position
+        * Cash Balance
+        * Cashflow
+        * Counterparty
+        * Depot Positions
+        * Front Office Position
+        * Instrument
+        * Order Execution
+        * Price
+        * Stock Loan Position
+        * Swap Contract
+        * Swap Position
+
+    Each domain object to be generated (record count > 0) is generated in
+    turn to account for inter-object dependencies. Generation is
+    multiprocessed with a primary coordinator spawning two child process
+    coordinators. One of these children handles object generation, and the
+    second writing of these to file.
+
+    The generation coordinator recieved instruction to generate X number of
+    objects over Y number of subprocesses (Pool Size). Once these jobs are
+    executed and records returned, they are placed into a writing job queue.
+    The writing to file coordinator picks up & formats these tasks before
+    assigning them to execute on a second pool
+
+"""
+
 import importlib
 import ujson
-import timeit
-import logging
-# import random # uncomment for seeded behaviour
-from cache import Cache
-from sqlite_database import Sqlite_Database
-# from GoogleDriveAccessor import GoogleDriveAccessor
-
-
-def get_class(package_name, module_name, class_name):
-    return getattr(importlib.import_module(package_name+'.'+module_name),
-                   class_name)
-
-
-# Create list comprehension of the file builder config which matches a name
-def get_file_builder_config(file_builders, file_builder_name):
-    return list(filter(
-            lambda file_builder: file_builder['name'] == file_builder_name,
-            file_builders
-            ))[0]
-
-
-# Facillitate the domain object generation procedure
-def process_domain_object(domain_obj_config, cache,
-                          dependency_db, file_builder):
-
-    domain_obj_class = get_class('domainobjects',
-                                 domain_obj_config['module_name'],
-                                 domain_obj_config['class_name'])
-
-    domain_obj = domain_obj_class(cache, dependency_db, file_builder,
-                                  domain_obj_config)
-
-    record_count = int(domain_obj_config['record_count'])
-    custom_args = domain_obj_config['custom_args']
-    domain_obj.generate(record_count, custom_args)
-
-
-# Configure a parser for CL argument retrieval, and retrieve arguments
-def get_args():
-    parser = argparse.ArgumentParser(description='''Generate Random Data for
-                                      various Domain Objects''')
-    parser.add_argument('--config', default='src/config.json',
-                        help='JSON Config File Location')
-    cl_args = parser.parse_args()
-    return cl_args
+import os
+from argparse import ArgumentParser
+from utils.sqlite_database import Sqlite_Database
+from multi_processing.coordinator import Coordinator
+import multi_processing.batch_size_calc as batch_size_calc
 
 
 def main():
+    # Delete database if one already exists
+    if os.path.exists('dependencies.db'):
+        os.unlink('dependencies.db')
 
-    # TODO: Random seeding for consistency in tests, REMOVE THIS IN RELEASES
-    # random.seed(100)
+    args = get_args()
 
-    start_time = timeit.default_timer()
-    logging.basicConfig(filename='generator.log', filemode='w',
-                        format='%(levelname)s : %(message)s',
-                        level=logging.INFO)
-
-    cache = Cache()                     # Store global generation attributes
-    dependency_db = Sqlite_Database()   # Store global generation dependencies
-    args = get_args()                   # Stores command line arguments
-    # google_drive_accessor = GoogleDriveAccessor(args.g_drive_root)
-
+    # Open and retrieve configurations
     with open(args.config) as config_file:
         config = ujson.load(config_file)
-
     domain_object_configs = config['domain_objects']
     file_builder_configs = config['file_builders']
+    shared_config = config['shared_args']
 
-    for domain_object_config in domain_object_configs:
+    for obj_config in domain_object_configs:
+        # Skip object where no records required
+        if (int(obj_config['record_count']) < 1):
+            continue
+        file_builder = get_file_builder(obj_config, file_builder_configs)
+        process_domain_object(obj_config, file_builder, shared_config)
 
-        logging.info("Now Generating Domain Object: "
-                     + domain_object_config['class_name'])
 
-        gen_start_time = timeit.default_timer()
+def get_file_builder(obj_config, file_builder_configs):
+    """ Retrieves file builder object from provided configs
 
-        file_builder_name = domain_object_config['file_builder_name']
-        file_builder_config = get_file_builder_config(file_builder_configs,
-                                                      file_builder_name)
+        Parameters
+        ----------
+        obj_config : dict
+            A domain objects configuration as provided by user
+        file_builder_configs: dict
+            All possible file builder configurations
 
-        file_builder_class =\
-            get_class('filebuilders', file_builder_config['module_name'],
-                      file_builder_config['class_name'])
+        Returns
+        -------
+        File_Builder
+            Instantiated file builder as defined by the file builder
+            configurations, as per the user specified output type of
+            the given object configuration
+    """
 
-        file_builder = file_builder_class(None, domain_object_config)
+    fb_name = obj_config['file_builder_name']
+    fb_config = get_fb_config(file_builder_configs, fb_name)
+    file_builder = get_class('filebuilders', fb_config['module_name'],
+                             fb_config['class_name'])
+    return file_builder(None, obj_config)
 
-        process_domain_object(domain_object_config, cache,
-                              dependency_db, file_builder)
 
-        gen_end_time = timeit.default_timer()
-        logging.info("Domain Object: " + domain_object_config['class_name']
-                     + " took " + str(gen_end_time-gen_start_time)
-                     + " seconds to generate.")
+def process_domain_object(obj_config, file_builder, shared_config):
+    """ Instantiates generation and file-writing processes. Populates the
+    generation job queue & starts both generation and writing coordinators.
+    Awaits for both coordinators to terminate before continuing to the next
+    domain object, or finishing execution.
 
-    end_time = timeit.default_timer()
-    logging.info("Overall runtime: "+str(end_time-start_time))
+    Parameters
+    ----------
+    obj_config : dict
+        A domain objects configuration as provided by user
+    file_builder : File_Builder
+        An instantiated filebuilder as per this objects required output
+        file type
+    shared_config : dict
+        User-provided configuration shared between all objects
+    """
+
+    obj_class = get_class('domainobjects', obj_config['module_name'],
+                          obj_config['class_name'])
+    domain_obj = obj_class(obj_config)
+    custom_args = obj_config['custom_args']
+
+    coordinator = Coordinator(obj_config['max_objects_per_file'], file_builder)
+
+    default_job_size = shared_config['job_size']
+    generator_pool_size = shared_config['gen_pools']
+    writer_pool_size = shared_config['write_pools']
+
+    # Start generation & writing subprocesses for this object
+    coordinator.start_generator(domain_obj, generator_pool_size)
+    coordinator.start_writer(writer_pool_size)
+
+    obj_name = obj_config['class_name']
+    record_count = get_record_count(obj_config)
+    job_size = batch_size_calc.get(obj_name, custom_args, default_job_size)
+
+    coordinator.create_jobs(obj_name, record_count, job_size)
+    coordinator.await_termination()
+
+
+def get_record_count(obj_config):
+    """ Returns the number of records to be generated for a given object.
+    Where objects are non-dependent on others, the user-provided configuration
+    amount is used. Otherwise, the record_count is set to be the number of
+    records generated of the domain object the to-generate one is dependent
+    on.
+
+    Parameters
+    ----------
+    obj_config : dict
+        A domain objects configuration as provided by user
+
+    Returns
+    -------
+    int
+        Number of records to generate, or the number of dependent objects
+        generated prior where cur object non-deterministic amount to generate
+    """
+
+    nondeterministic_objects = ['swap_contract', 'swap_position', 'cashflow']
+    object_module = obj_config['module_name']
+
+    if object_module not in nondeterministic_objects:
+        return obj_config['record_count']
+    else:
+        db = Sqlite_Database()
+        if object_module == 'swap_contract':
+            return db.get_table_size('counterparties')
+        elif object_module == 'swap_position':
+            return db.get_table_size('swap_contracts')
+        elif object_module == 'cashflow':
+            return db.get_table_size('swap_positions')
+
+
+def get_args():
+    """ Configure a parser to retrieve & parse command-line arguments
+    input by the user.
+
+    Returns
+    -------
+    namespace
+        Namespace is populated with observed arguments, unless none observed,
+        in which case default values are returned. Access elements via '.'
+        convention, i.e. parser.parse_args().config
+    """
+    # Configure expected command line args & default values thereof
+    parser = ArgumentParser(description='''Random financial data
+                                        generation. For more information,
+                                        see the README''')
+    parser.add_argument('--config', default='src/config.json',
+                        help='JSON Configuration File Location')
+    return parser.parse_args()
+
+
+def get_fb_config(file_builders, file_extension):
+    """ Get the configuration of a specified filebuilder. This expression
+    filters the set of all configs such that only the file builder for
+    the provided file_extension is returned.
+
+    Parameters
+    ----------
+    file_builders : dict
+        Parsed json of provided configuration containing parameters for
+        all possible filebuilders.
+    file_extension: string
+        The file_builder for which the configuration should be returned.
+
+    Returns
+    -------
+    dict
+        The configuration of the required file builder for the output
+        type required.
+    """
+    return list(filter(
+            lambda file_builder: file_builder['name'] == file_extension,
+            file_builders))[0]
+
+
+def get_class(package_name, module_name, class_name):
+    """ Return a given class which sits within a specified heirarchy.
+    Used to return classes of filebuilders and domainobjects to only
+    instantiate as and when that domainobject/filebuilder is required.
+
+    Parameters
+    ----------
+    package_name : string
+        The package the required class is in
+    module_name : string
+        The module within the package the required class is in
+    class_name : string
+        Name of the class
+
+    Returns
+    -------
+    class
+        Uninstantiated requested class
+    """
+    return getattr(importlib.import_module(package_name+'.'+module_name),
+                   class_name)
 
 
 if __name__ == '__main__':
