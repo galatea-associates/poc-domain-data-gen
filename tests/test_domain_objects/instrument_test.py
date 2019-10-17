@@ -1,11 +1,9 @@
 import sys
+sys.path.insert(0, 'tests/')
+sys.path.insert(0, 'src/')
 from utils.cache import Cache
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
-
-
-sys.path.insert(0, 'tests/')
-sys.path.insert(0, 'src/')
 
 
 def test_instruments():

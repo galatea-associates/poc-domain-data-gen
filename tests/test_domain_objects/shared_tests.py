@@ -1,12 +1,9 @@
 import sys
 from datetime import datetime, timedelta
-
+sys.path.insert(0, 'src/')
 from test_domain_objects import helper_methods as helper
 from utils.cache import Cache
 from domainobjects import instrument
-
-
-sys.path.insert(0, 'src/')
 
 
 # Shared Tests

@@ -1,15 +1,12 @@
 import sys
 import os
 import ujson
-
+sys.path.insert(0, 'src/')
 from utils.sqlite_database import Sqlite_Database
 from domainobjects import back_office_position, cash_balance, cashflow
 from domainobjects import counterparty, depot_position, front_office_position
 from domainobjects import instrument, order_execution, price
 from domainobjects import stock_loan_position, swap_contract, swap_position
-
-
-sys.path.insert(0, 'src/')
 
 
 # Helper Methods
