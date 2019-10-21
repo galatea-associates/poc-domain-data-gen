@@ -28,9 +28,6 @@ def validate(config):
         reported at once.
     """
 
-    # Temporarily remove traceback as all raised errors are from config #
-    sys.tracebacklimit = 0
-
     domain_objects = config['domain_objects']
     file_builders = config['file_builders']
     shared_args = config['shared_args']
