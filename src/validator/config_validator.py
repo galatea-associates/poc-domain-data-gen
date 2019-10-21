@@ -9,6 +9,7 @@ the configuration as-is is insufficient for successful operation.
 
 import sys
 from datetime import datetime
+from validator.validation_result import Validation_Result
 
 
 def validate(config):
@@ -28,9 +29,6 @@ def validate(config):
         reported at once.
     """
 
-    # Temporarily remove traceback as all raised errors are from config #
-    sys.tracebacklimit = 0
-
     domain_objects = config['domain_objects']
     file_builders = config['file_builders']
     shared_args = config['shared_args']
@@ -39,42 +37,35 @@ def validate(config):
     swap_position_config = domain_objects[10]
     cash_flow_config = domain_objects[11]
 
-    try:
-        errors = []
-        errors.append(validate_record_counts(domain_objects))
-        errors.append(validate_max_file_size(domain_objects))
-        errors.append(validate_output_file_extensions(file_builders,
-                                                      domain_objects))
 
-        errors.append(validate_swap_contract_range(swap_contract_config))
+    errors = []
+    errors.append(validate_record_counts(domain_objects))
+    errors.append(validate_max_file_size(domain_objects))
+    errors.append(validate_output_file_extensions(file_builders,
+                                                    domain_objects))
 
-        errors.append(validate_swap_position_date_range(swap_position_config))
-        errors.append(validate_swap_position_range(swap_position_config))
+    errors.append(validate_swap_contract_range(swap_contract_config))
 
-        errors.append(validate_cash_flow_defined(cash_flow_config))
-        errors.append(validate_cash_flow_definitions(cash_flow_config))
+    errors.append(validate_swap_position_date_range(swap_position_config))
+    errors.append(validate_swap_position_range(swap_position_config))
 
-        errors.append(validate_pool_sizes_non_zero(shared_args))
-        errors.append(validate_job_size_non_zero(shared_args))
+    errors.append(validate_cash_flow_defined(cash_flow_config))
+    errors.append(validate_cash_flow_definitions(cash_flow_config))
 
-        # Remove instances of None from error list
-        errors = [error for error in errors if error is not None]
-        # Remove instances of empty lists from error list
-        errors = [error for error in errors if error != []]
-        # Flatten list of lists to single list
-        errors = [error for sub_error in errors for error in sub_error]
+    errors.append(validate_pool_sizes_non_zero(shared_args))
+    errors.append(validate_job_size_non_zero(shared_args))
 
-        if len(errors) is not 0:
-            raise ConfigError()
+    # Remove instances of None from error list
+    errors = [error for error in errors if error is not None]
+    # Remove instances of empty lists from error list
+    errors = [error for error in errors if error != []]
+    # Flatten list of lists to single list
+    errors = [error for sub_error in errors for error in sub_error]
 
-    except ConfigError:
-        print("Issue(s) within Config:")
-        for error in errors:
-            print(error)
-        raise
-
+    if len(errors) is not 0:
+        return Validation_Result(False, errors)
     else:
-        print("No issues within Config")
+        return Validation_Result(True, None)
 
 
 def validate_record_counts(domain_object_configs):
@@ -382,13 +373,3 @@ def validate_job_size_non_zero(shared_config):
     if job_size <= 0:
         error = ["- Job_Size in shared arguments must be a positive value"]
     return error
-
-
-class ConfigError(Exception):
-    """ Raised when there is an issue with the user-defined configuration.
-    Due to prior checks compiling a list of these, all are returned and
-    displayed to the user.
-    """
-
-    def __init__(self):
-        pass
