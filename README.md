@@ -1,7 +1,7 @@
 # fuse-test-data-gen
 This project serves two functions:
-- Provides the ability to generate meaningful domain objects to be used for testing purposes
-- Provides the ability to export test domain objects using a variety of formats (AVRO, JSON, XML etc)
+- Provides the ability to generate meaningful domain objects to be used for testing & POC purposes
+- Provides the ability to export these domain objects using a variety of formats (CSV, JSON, XML etc)
 
 This readme will contain an index to features and their location in code.
 
@@ -11,21 +11,83 @@ This readme will contain an index to features and their location in code.
 
 A domain object is an entity that represents a real-world business object, such as a position or a trade.
 
-Each domain object is represented by a single Python module containing a single Python class, these modules reside in the "domainobjects" package.  Each class extends the abstract class "Generatable", which defines a single abstract method "get_template".  If you wish to add a new domain object, simply create a new python module containing a single class which extends the "Generatable" abstract class and implements the abstract method "get_template".  The "get_template" method should return a dictionary that represents the structure of the domain object.  Functions found inside the "common_data_generator" module can be referenced here.
+Each domain object is represented by a single Python module containing a single Python class. These modules reside within the "domainobjects" package. Each class extends the abstract class "Generatable", which defines a single abstract method "generate". This method takes 2 variables as arguments, the number of an object to generate, and the ID from which to start from where sequential IDs are relevant. 
+
+To add a new domain object, create a new python module containing an implementation of the "generate" method. Generate methods should return a list of dictionaries, where these dictionaries represent a single domain object. Functions found inside the "Generatable" class are inherited here for ease, these are frequently occuring random generation methods used elsewhere. 
+
+To generate said new domain object, include a definition for its generation parameters in the configuration file, and processing, generation and writing to a desired format will be handled.
 
 ### Domain Objects Data Dictionary
 
-A data dictionary for all currently supported domain objects will be created and put here in the near future.
+See here a list of all domain objects currently supported. For a breakdown of their attributes, see the documentation at: https://docs.google.com/document/d/1IB_-k16uhSBJWg2_s0pD2Vh3WZjTFALFYV6Ip9jM_4Q/edit?usp=sharing
+
+    * Back Office Position
+    * Cash Balance
+    * Cash Flow
+    * Counterpartie
+    * Depot Position
+    * Front Office Position
+    * Instrument
+    * Order Execution
+    * Price
+    * Stock Loan Position
+    * Swap Contract
+    * Swap Position
+
+Additionally, there are a number of inter-object dependencies listed in the table below. Where these arise, the dependent objects require that their dependencies first be generated. This is implicitly ensured via the ordering of the configuration file, but more detail is included in the Configuration section.
+
+Domain Object | Dependencies
+------------- | ------------
+Back Office Position | Instrument
+Depot Position | Instrument
+Front Office Position | Instrument
+Order Execution | Instrument
+Price | Instrument
+Stock Loan Position | Instrument
+Swap Contract | Counterparty
+Swap Position | Swap Contract
+Cash Flow | Swap Position
 
 ### File Builders
 
-A file builder is a self contained piece of functionality which, given a dataset, will build a file according to a specified data format and output that file to a specified location.  
+A file builder is a self contained piece of fucntionality which, given a list of records, writes a file according to a specified data format and outputs this to a specified location.
 
-Each file builder is represented by a single Python module containing a single Python class, these modules reside in the "filebuilders" package.  Each class extends the abstract class "FileBuilder", which defines a single abstract method "build".  Initially, file builders will be created for JSON, CSV and XML.  If you wish to add a new file builder, simply create a new python module inside the "filebuilders" package containing a single class which extends the "FileBuilder" abstract class and implements the abstract method "build".  The "build" method should accept a list of dictionaries (one dictionary per domain object) and use that dataset to generate a file.
+Each file builder is reprsented by a single Python module containing a single Python class. These modules reside within the "filebuilders" package. Each class extends the abstract class "Filebuilder", which defines a single abstract method "build". Initially, file builders have been created for JSON, JSONL, CSV and XML formats. To add a new file builder, create a new python module inside of the "filebuilders" package containing a single class extending "FileBuilder" and implements the abstract method "build". This method should accept a list of dictionaries, and the current file number, and uses this to create a file names as per the given number.
+
+## Installation
+A comprehensive overview for:
+* The installation process from this repo can be found at: https://docs.google.com/document/d/1RkBaUWfWJPAKJjRUYGRjpISV6IhRxZ-YjoIS4c9HAqg/edit#heading=h.2ucndgcbljzx 
+* Running the generator from a Docker image can be found at: https://docs.google.com/document/d/1AsAcaHiI23mQeq7vs5J2c4M2nlssotJTWMpLn_xj7Sc/edit#heading=h.lnuycosihik6 under Quickstart Guides
+
+### Cloned Repo
+Once the repo has been cloned locally, there are some pre-execution steps required:
+
+- Clone the repo
+- Set up the python environment: ```pip install -r requirements.txt```
+    - ujson requires ```Microsoft Visual C++ 14.0```. This can be downloaded from: ```https://visualstudio.microsoft.com/visual-cpp-build-tools/```. Newer versions are also sufficient.
+
+By default, the application runs using the config.json file at the root of the src directory. This will generate 500 of each domain object, as well as, on average, 5000 swap contracts, 2.4 million swap positions, and 3.4 million cashflows and is run via the command line argument:
+
+```python src/app.py``` 
+
+Alternatively, you can specify your own configuration file as per the guidelines set out below and running:
+
+```python src/app.py --config src/my_custom_config.json```
+
+Your custom config will need to contain at least one domain object configuration and one file builder configuration as show in the configuration section below.
+
+### Docker
+TODO: Complete once the company repo is set up.
+TODO: Transpose information from Dockerumentation to here.
+If running from a Docker container, all prerequisites will be set up for you, further instruction as to running from a Docker container is outlined at the end of: 
 
 ### Configuration
 
-The entire tool is driven by a JSON config file which contains a list of all domain objects and all file builders.  Each domain object needs to contain the following config keys:
+The entire tool is driven by a JSON config file which contains a list of all domain objects and all file builders.  
+
+#### Domain Object Config
+
+Each domain object needs to contain the following config keys:
 
 ```json
 {
@@ -47,7 +109,24 @@ The entire tool is driven by a JSON config file which contains a list of all dom
 }
 ```
 
+Attribute | Changeable? | Meaning
+--------- | ----------- | --------
+Module_Name | No | File path in directory used to find domain object module.
+Class_Name | No | File path in directory used to find domain object class.
+Record_Count | Yes | Number of records to generate for this domain object.
+Max_Objects_Per_File | Yes | Number of records to save to each file.
+File_Name | Yes | Prefix of the file to save records too. Sequentially numbered.
+Root_Element_Name | Yes | For XML, the top-most tag of the file.
+Item_Name | Yes | For XML, the tag around each record.
+File_Builder_Name | Yes | File format to output records as.
+Output_Directory | Yes | The output directory.
+Upload_To_Google_Drive | Yes | Flag of whether to upload or not. __Not merged yet(?).__
+Dummy_Fields | Yes | Description of the dummy data to generate for each record. __Not merged yet(?).__
+Custom_Args | Yes | Custom arguments, these vary per object and are explained below.
+
 Note the naming convention for the module and class names, these reflect the PEP 8 coding style.  The "file_builder_name" value must reflect the "name" attribute of one of the file builder.
+
+#### File Builder Config
 
 Each file builder needs to contain the following config keys:
 
@@ -60,41 +139,29 @@ Each file builder needs to contain the following config keys:
 }
 ```
 
-### Specifying a custom config file
-By default, the application will run using the config.json file in the root of the src directory.  It is possible to maintain multiple config files and specify which to use via an optional command line argument.  For example, running the data generator as follows will use a custom JSON config file:
+Pre-existing filebuilder descriptions should remain unedited and only serve as a basis from which to implement your own file builders.
 
-```python src/app.py --config src/my_custom_config.json```
+Attribute | Changeable? | Decription
+--------- | ----------- | ----------
+Name | No | How this builder is to be referenced in config.
+Module_Name | No | File path in directory used to find file builder module.
+Class_Name | No | File path in directory used to find file builder class.
+File_Extension | No | The file extension of written files.
 
-Your custom config will need to contain at least one domain object configuration and one file builder configuration as show in the configuration section above.
+#### Shared Config
 
-### Running the data generator
-- Clone the repo
-- Set up the python environment: ```pip install -r requirements.txt```
-    - ujson requires ```Microsoft Visual C++ 14.0```. This can be downloaded from: ```https://visualstudio.microsoft.com/visual-cpp-build-tools/```. Newer versions are also sufficient.
-- Run src/app.py: ```python src/app.py```
+Factors pertaining to generation of all objects, may require some trial and error for optimal performance. __Must be set.__ These are to be set in a "shared_args" section of config. 
 
-### Common Data Generator   
-The common data generator class contains functions to generate data that is shared across domain objects.  Templates for domain objects should reference functions within the common data generator class.
+```json
+"shared_args": {
+    "gen_pools": 2,
+    "write_pools": 1,
+    "job_size": 100000
+}
+```
 
-### Uploading to Google Drive
-The uploading of files to Google is optional and controlled at the domain object level.  This is configured by the "upload_to_google_drive" value (true or false), shown in the domain object configuration JSON above.
-
-An optional command line parameter --g-drive-root can be supplied, which represents the Google Drive ID of a folder where you would like the files uploaded to.  If this parameter isn't supplied, the files will be uploaded to the root of your own Google drive.
-
-When files are uploaded to Google drive, they will be uploaded into a folder with today's date (YYYY-MM-DD) as the name.  If the folder doesn't exist for today, it will be created.  If you are re-uploading the same files on a date where they have already been uploaded, the existing version(s) will be kept using the Google Drive versioning functionality.  To see the version history of a given file, you can right-click on a file in Google Drive and select "Manage Versions".
-
-When uploading to Google Drive for the first time, you will be required to login using your Galatea Google account, a browser window should automatically load to allow you do this.  Once you have done this, an authentication token file "token.pickle" will be downloaded onto your machine.  When running the service remotely, it is important to ensure that a valid token.pickle file exists in the same directory as the application.
-
-TODO: Investigate the use of the Google service accounts for Google Drive connectivity
-
-### Jenkins Build
-The Galatea Jenkins server can be found at: https://jenkins.fuse.galatea-associates.com/.
-The FUSE-Test-Data-Gen job is the job for this project.
-#### Pipeline
-The Jenkinsfile defines a pipeline of the stages Jenkins will perform, the order in which to perform them, the commands required to execute them, as well as any options and environment details. The current stages in this project are:
-##### Install Requirements
-Runs ```pip install -r requirements.txt``` to install the necessary plugins to the virtual environment.
-##### Run Unit Tests
-Executes the tests as supplied in the ```tests/unit/``` directory. Names of test files must be preceeded with ```test_```
-#### Discovery Method
-The discovery method is set within the configuration of the job itself rather than any external file. It is currently set to scan the repo & run once daily if not otherwise executed. Branches are automatically detected if they contain a Jenkinsfile. 
+Attribute | Description
+--------- | -----------
+gen_pools | Number of Processes used when generating.
+write_pools | Number of Processes used when writing to file.
+job_size | Number of records assigned to each Process to generate.
