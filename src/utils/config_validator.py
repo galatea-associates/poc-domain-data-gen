@@ -43,7 +43,7 @@ def validate(config):
         errors = []
         errors.append(validate_record_counts(domain_objects))
         errors.append(validate_max_file_size(domain_objects))
-        errors.append(validate_output_file_extensions(file_builders, 
+        errors.append(validate_output_file_extensions(file_builders,
                                                       domain_objects))
 
         errors.append(validate_swap_contract_range(swap_contract_config))
@@ -58,7 +58,7 @@ def validate(config):
         errors.append(validate_job_size_non_zero(shared_args))
 
         # Remove instances of None from error list
-        errors = [error for error in errors if error != None]
+        errors = [error for error in errors if error is not None]
         # Remove instances of empty lists from error list
         errors = [error for error in errors if error != []]
         # Flatten list of lists to single list
@@ -98,7 +98,7 @@ def validate_record_counts(domain_object_configs):
         current_object = config['class_name']
         record_count = int(config['record_count'])
         if record_count < 0:
-            error = "- Record count for "+current_object+\
+            error = "- Record count for " + current_object + \
                     " is less than 0."
             errors.append(error)
     return errors
@@ -125,16 +125,16 @@ def validate_max_file_size(domain_object_configs):
         current_object = config['class_name']
         file_size = int(config['max_objects_per_file'])
         if file_size < 0:
-            error = "- File size for "+current_object+\
+            error = "- File size for " + current_object + \
                     " is less than 0."
             errors.append(error)
     return errors
 
 
-def validate_output_file_extensions(file_builder_configs, 
+def validate_output_file_extensions(file_builder_configs,
                                     domain_object_configs):
     """ Ensure the file extension for each object is valid as per the defined
-    file builders. 
+    file builders.
 
     Parameters
     ----------
@@ -143,7 +143,7 @@ def validate_output_file_extensions(file_builder_configs,
     -------
     List
         List of strings detailing each domain object where the specified file
-        extension 
+        extension
     """
 
     errors = []
@@ -153,8 +153,8 @@ def validate_output_file_extensions(file_builder_configs,
         current_object = config['class_name']
         file_extension = config['file_builder_name']
         if file_extension not in file_extensions:
-            error = "- File Builder, "+file_extension+", for "+\
-                    current_object+" doesn't exist."
+            error = "- File Builder, " + file_extension + ", for " + \
+                    current_object + " doesn't exist."
             errors.append(error)
     return errors
 
@@ -211,7 +211,7 @@ def validate_swap_contract_range(swap_contract_config):
 
 def validate_swap_position_date_range(swap_position_config):
     """ Ensure the swap position date range is valid where both start and
-    end date have been user-provided. 
+    end date have been user-provided.
 
     Parameters
     ----------
@@ -300,7 +300,7 @@ def validate_cash_flow_defined(cash_flow_config):
 
 def validate_cash_flow_definitions(cash_flow_config):
     """ Ensures that all cash flow definitions contain the four required
-    keys for successful generation. 
+    keys for successful generation.
 
     Parameters
     ----------
@@ -322,15 +322,15 @@ def validate_cash_flow_definitions(cash_flow_config):
         i = 1
         for definition in custom_args['cashflow_generation']:
             definition_keys = definition.keys()
-            pre_def = "Cash Flow Definition "+str(i)+" is missing key: "
+            pre_def = "Cash Flow Definition " + str(i) + " is missing key: "
             if "cashFlowType" not in definition_keys:
-                errors.append(pre_def+"cashFlowType")
+                errors.append(pre_def + "cashFlowType")
             if "cashFlowAccrual" not in definition_keys:
-                errors.append(pre_def+"cashFlowAccrual")
+                errors.append(pre_def + "cashFlowAccrual")
             if "cashFlowAccrualProbability" not in definition_keys:
-                errors.append(pre_def+"cashFlowAccrualProbability")
+                errors.append(pre_def + "cashFlowAccrualProbability")
             if "cashFlowPaydatePeriod" not in definition_keys:
-                errors.append(pre_def+"cashFlowPaydatePeriod")
+                errors.append(pre_def + "cashFlowPaydatePeriod")
             i = i+1
     return errors
 
