@@ -1,10 +1,22 @@
+from abc import abstractmethod
+
 from domain_factory.generatable import Generatable
-from abc import ABC, abstractmethod
+
 
 class BrokerageAccount(Generatable):
   """ Abstract Class to generate brokerage accounts. Generate method will generate
-    the attributes shared by all brokerage account child classes. """
+    the attributes shared by all brokerage account child classes.
 
+     Account [dir]
+      ->Brokerage Account [abstract]
+        -> Internal Counterparty [impl]
+        -> External Counterparty [abstract]
+          -> Contra (ECP) [impl]
+          -> ICP Holding [impl]
+          -> Depot Claim [impl]
+        -> Depot [impl]
+
+     """
 
   @abstractmethod
   def generate(self, record_count, start_id):
