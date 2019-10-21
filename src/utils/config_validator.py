@@ -8,8 +8,8 @@ the configuration as-is is insufficient for successful operation.
 
 
 import sys
-from datetime import datetime, timedelta
 from exceptions.config_error import ConfigError
+
 
 def validate(config):
     """ Entry point. Build a list of errors based on a number of tests, when
@@ -39,14 +39,14 @@ def validate(config):
         errors = []
         errors.append(validate_record_counts(domain_objects))
         errors.append(validate_max_file_size(domain_objects))
-        errors.append(validate_output_file_extensions(file_builders, 
+        errors.append(validate_output_file_extensions(file_builders,
                                                       domain_objects))
 
         errors.append(validate_pool_sizes_non_zero(shared_args))
         errors.append(validate_job_size_non_zero(shared_args))
 
         # Remove instances of None from error list
-        errors = [error for error in errors if error != None]
+        errors = [error for error in errors if error is not None]
         # Remove instances of empty lists from error list
         errors = [error for error in errors if error != []]
         # Flatten list of lists to single list
@@ -86,7 +86,7 @@ def validate_record_counts(domain_object_configs):
         current_object = config['class_name']
         record_count = int(config['record_count'])
         if record_count < 0:
-            error = "- Record count for "+current_object+\
+            error = "- Record count for " + current_object + \
                     " is less than 0."
             errors.append(error)
     return errors
@@ -113,16 +113,16 @@ def validate_max_file_size(domain_object_configs):
         current_object = config['class_name']
         file_size = int(config['max_objects_per_file'])
         if file_size < 0:
-            error = "- File size for "+current_object+\
+            error = "- File size for " + current_object + \
                     " is less than 0."
             errors.append(error)
     return errors
 
 
-def validate_output_file_extensions(file_builder_configs, 
+def validate_output_file_extensions(file_builder_configs,
                                     domain_object_configs):
     """ Ensure the file extension for each object is valid as per the defined
-    file builders. 
+    file builders.
 
     Parameters
     ----------
@@ -131,7 +131,7 @@ def validate_output_file_extensions(file_builder_configs,
     -------
     List
         List of strings detailing each domain object where the specified file
-        extension 
+        extension
     """
 
     errors = []
@@ -141,8 +141,8 @@ def validate_output_file_extensions(file_builder_configs,
         current_object = config['class_name']
         file_extension = config['file_builder_name']
         if file_extension not in file_extensions:
-            error = "- File Builder, "+file_extension+", for "+\
-                    current_object+" doesn't exist."
+            error = "- File Builder, " + file_extension + ", for " + \
+                    current_object + " doesn't exist."
             errors.append(error)
     return errors
 
