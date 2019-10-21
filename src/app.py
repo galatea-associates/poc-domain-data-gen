@@ -36,6 +36,7 @@ import os
 from argparse import ArgumentParser
 from utils.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
+from exceptions.config_error import ConfigError
 import multi_processing.batch_size_calc as batch_size_calc
 import validator.config_validator as config_validator
 
@@ -51,7 +52,7 @@ def main():
     with open(args.config) as config_file:
         config = ujson.load(config_file)
 
-    config_validator.validate(config)
+    validate_config(config)
 
     domain_object_configs = config['domain_objects']
     file_builder_configs = config['file_builders']
@@ -229,6 +230,39 @@ def get_class(package_name, module_name, class_name):
     """
     return getattr(importlib.import_module(package_name+'.'+module_name),
                    class_name)
+
+
+def validate_config(config):
+    """ Ensure that the configuration file found adheres to required format
+    to ensure correct generation of domain objects.
+    
+    Parameters
+    ----------
+    config : dict
+        Parsed json of the user-input configuration
+    
+    Excepts
+    -------
+    ConfigError
+        Where an validation of the provided configuration has failed.
+        Raised only at the end of all checks such that all errors can be
+        reported at once.
+    """
+
+    validation_result = config_validator.validate(config)
+    print(type(validation_result))
+    try:
+        if validation_result.check_success():
+            print("No errors found in config")
+        else:
+            raise ConfigError()
+
+    except ConfigError:
+        print("Issue(s) within Config:")
+        for error in validation_result.get_errors():
+            print(error)
+        # Re-raised to halt operation
+        raise ConfigError()
 
 
 if __name__ == '__main__':

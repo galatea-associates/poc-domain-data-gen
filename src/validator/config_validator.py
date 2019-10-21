@@ -5,10 +5,7 @@ of errors.
 Error list to be returned, and used as a basis to feedback to the user that
 the configuration as-is is insufficient for successful operation.
 """
-
-
-from exceptions.config_error import ConfigError
-
+from validator.validation_result import Validation_Result
 
 def validate(config):
     """ Entry point. Build a list of errors based on a number of tests, when
@@ -19,46 +16,36 @@ def validate(config):
     config : dict
         Parsed json of the user-input configuration
 
-    Raises
-    ------
-    ConfigError
-        Where an validation of the provided configuration has failed.
-        Raised only at the end of all checks such that all errors can be
-        reported at once.
+    Returns
+    validation_result : Validation_Result
+        An object containing a boolean flag for success or fail, as well as
+        a list of any errors on the case of failure.
     """
 
     domain_objects = config['domain_objects']
     file_builders = config['file_builders']
     shared_args = config['shared_args']
 
-    try:
-        errors = []
-        errors.append(validate_record_counts(domain_objects))
-        errors.append(validate_max_file_size(domain_objects))
-        errors.append(validate_output_file_extensions(file_builders,
-                                                      domain_objects))
+    errors = []
+    errors.append(validate_record_counts(domain_objects))
+    errors.append(validate_max_file_size(domain_objects))
+    errors.append(validate_output_file_extensions(file_builders,
+                                                    domain_objects))
 
-        errors.append(validate_pool_sizes_non_zero(shared_args))
-        errors.append(validate_job_size_non_zero(shared_args))
+    errors.append(validate_pool_sizes_non_zero(shared_args))
+    errors.append(validate_job_size_non_zero(shared_args))
 
-        # Remove instances of None from error list
-        errors = [error for error in errors if error is not None]
-        # Remove instances of empty lists from error list
-        errors = [error for error in errors if error != []]
-        # Flatten list of lists to single list
-        errors = [error for sub_error in errors for error in sub_error]
+    # Remove instances of None from error list
+    errors = [error for error in errors if error is not None]
+    # Remove instances of empty lists from error list
+    errors = [error for error in errors if error != []]
+    # Flatten list of lists to single list
+    errors = [error for sub_error in errors for error in sub_error]
 
-        if len(errors) is not 0:
-            raise ConfigError()
-
-    except ConfigError:
-        print("Issue(s) within Config:")
-        for error in errors:
-            print(error)
-        raise
-
+    if len(errors) is not 0:
+        return Validation_Result(False, errors)
     else:
-        print("No issues within Config")
+        return Validation_Result(True, None)
 
 
 def validate_record_counts(domain_object_configs):
