@@ -235,12 +235,12 @@ def get_class(package_name, module_name, class_name):
 def validate_config(config):
     """ Ensure that the configuration file found adheres to required format
     to ensure correct generation of domain objects.
-    
+
     Parameters
     ----------
     config : dict
         Parsed json of the user-input configuration
-    
+
     Excepts
     -------
     ConfigError
