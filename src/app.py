@@ -267,7 +267,7 @@ def validate_config(config):
         for error in validation_result.get_errors():
             print(error)
         # Re-raised to halt operation
-        raise ConfigError()
+        raise
 
 if __name__ == '__main__':
     main()
