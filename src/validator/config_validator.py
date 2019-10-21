@@ -7,7 +7,6 @@ the configuration as-is is insufficient for successful operation.
 """
 
 
-import sys
 from datetime import datetime
 from validator.validation_result import Validation_Result
 
@@ -37,12 +36,11 @@ def validate(config):
     swap_position_config = domain_objects[10]
     cash_flow_config = domain_objects[11]
 
-
     errors = []
     errors.append(validate_record_counts(domain_objects))
     errors.append(validate_max_file_size(domain_objects))
     errors.append(validate_output_file_extensions(file_builders,
-                                                    domain_objects))
+                                                  domain_objects))
 
     errors.append(validate_swap_contract_range(swap_contract_config))
 
