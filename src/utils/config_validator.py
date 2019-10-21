@@ -8,7 +8,6 @@ the configuration as-is is insufficient for successful operation.
 
 
 import sys
-from datetime import datetime, timedelta
 
 
 def validate(config):
@@ -180,6 +179,7 @@ def get_file_extensions(file_builder_configs):
         file_extensions.append(config['name'])
     return file_extensions
 
+
 def validate_swap_contract_range(swap_contract_config):
     """ Ensure the swap contract "swaps per counterparty" is a valid range
 
@@ -196,7 +196,7 @@ def validate_swap_contract_range(swap_contract_config):
 
     error = None
     record_count = int(swap_contract_config['record_count'])
-    
+
     if record_count > 0:
         custom_args = swap_contract_config['custom_args']
         swaps_per_counterparty = custom_args['swap_per_counterparty']
@@ -204,8 +204,8 @@ def validate_swap_contract_range(swap_contract_config):
         swap_max = swaps_per_counterparty['max']
 
         if swap_max < swap_min:
-            error = ["- Swap Contract's swap minimum value greater"+\
-                        " than swap maximum"]
+            error = ["- Swap Contract's swap minimum value greater\
+                     than swap maximum"]
     return error
 
 
@@ -226,7 +226,7 @@ def validate_swap_position_date_range(swap_position_config):
 
     error = None
     record_count = int(swap_position_config['record_count'])
-    
+
     if record_count > 0:
         custom_args = swap_position_config['custom_args']
         arg_keys = custom_args.keys()
@@ -268,8 +268,8 @@ def validate_swap_position_range(swap_position_config):
         instrument_max = instruments_per_swap['max']
 
         if instrument_max < instrument_min:
-            error = ["- Swap Positions's swap minimum value greater"+\
-                        " than swap maximum"]
+            error = ["- Swap Positions's swap minimum value greater\
+                     than swap maximum"]
     return error
 
 
