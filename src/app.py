@@ -38,7 +38,7 @@ from argparse import ArgumentParser
 from utils.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
 import multi_processing.batch_size_calc as batch_size_calc
-import utils.config_validator as config_validator
+import validator.config_validator as config_validator
 
 
 def main():
