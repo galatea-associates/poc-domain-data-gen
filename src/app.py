@@ -33,7 +33,6 @@
 import importlib
 import ujson
 import os
-import sys
 from argparse import ArgumentParser
 from utils.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
