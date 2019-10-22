@@ -1,7 +1,6 @@
 {
-    "domain_objects": 
-        [
-            {
+    "domain_objects": [
+        {
             "module_name": "instrument",
             "class_name": "Instrument",
             "record_count": "1",
@@ -23,6 +22,19 @@
                 }
             ],
             "custom_args": {}
-            }
-        ]
+        }
+    ],
+    "file_builders" : [
+        {
+            "name": "CSV",
+            "module_name": "csv_builder",
+            "class_name": "CSVBuilder",
+            "file_extension": ".csv"
+          }
+    ],
+    "shared_args" : {
+        "gen_pools": 1,
+        "write_pools": 1,
+        "job_size": 10
     }
+}
