@@ -16,14 +16,14 @@ class ECPAccount(BrokerageAccount):
             Parameters
             ----------
             record_count : int
-                Number of ecp accounts to generate
+                Number of ECP accounts to generate
             start_id : int
                 Starting id to generate from
 
             Returns
             -------
             List
-                Containing 'record_count' ecp accounts
+                Containing 'record_count' ECP accounts
             """
 
         records = []

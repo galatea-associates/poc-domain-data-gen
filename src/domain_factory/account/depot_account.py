@@ -2,7 +2,7 @@ from domain_factory.account.brokerage_account import BrokerageAccount
 
 
 class DepotAccount(BrokerageAccount):
-    """ Class to generate depot accounts. Generate method will call the
+    """ Class to generate Depot accounts. Generate method will call the
     BrokerageAccount generate method in order to populate fields shared by all
     Brokerage accounts. The generate method in this class will then populate
     the remaining attributes unique to the Depot Account domain factory. """
