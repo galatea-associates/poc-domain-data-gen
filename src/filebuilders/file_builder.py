@@ -6,7 +6,7 @@ class FileBuilder(abc.ABC):
     """ A base class for all file builders. Contains utility functions for
     uploading to google drive, opening and closing files, and various others
     for file extension-specific requirements. Defines an abstract method for
-    which a concrete implementation is provided in all children. 
+    which a concrete implementation is provided in all children.
 
     Attributes
     ----------
@@ -51,7 +51,7 @@ class FileBuilder(abc.ABC):
 
     def __init__(self, google_drive_connector, domain_object_config):
         """ Initialises various values required for correct behaviour when
-        writing out to files. 
+        writing out to files.
 
         Parameters
         ----------
@@ -74,8 +74,8 @@ class FileBuilder(abc.ABC):
     @abc.abstractmethod
     def build(self, file_number, data, upload_to_google_drive):
         """ Method called to write given data to a file. The file name
-        includes the given number for sequential writing. If uploading to 
-        google drive, copies of file are made locally too. 
+        includes the given number for sequential writing. If uploading to
+        google drive, copies of file are made locally too.
 
         Parameters
         ----------
@@ -91,7 +91,7 @@ class FileBuilder(abc.ABC):
     def upload_to_google_drive(self, local_folder_name, file_name):
         """ Checks whether a directory structure exists within a pre-defined
         google drive location, creating such if need be, and uploads the file
-        there, or updates an existing one. 
+        there, or updates an existing one.
 
         Parameters
         ----------
@@ -130,8 +130,8 @@ class FileBuilder(abc.ABC):
         self.file.close()
 
     def get_output_directory(self):
-        """ Return the directory where files are output to 
-        
+        """ Return the directory where files are output to
+
         Returns
         -------
         String
@@ -140,8 +140,8 @@ class FileBuilder(abc.ABC):
         return self.__output_dir
 
     def get_file_name(self):
-        """ Return the name of current file 
-        
+        """ Return the name of current file
+
         Returns
         -------
         String
@@ -150,8 +150,8 @@ class FileBuilder(abc.ABC):
         return self.__file_name
 
     def get_google_drive_connector(self):
-        """ Return the google drive connector object 
-        
+        """ Return the google drive connector object
+
         Returns
         -------
         Google_Drive_Connector
@@ -160,18 +160,18 @@ class FileBuilder(abc.ABC):
         return self.__google_drive_connector
 
     def get_root_element_name(self):
-        """ Return the XML root element name 
-        
+        """ Return the XML root element name
+
         Returns
         -------
         String
             The XML root element name
-        """ 
+        """
         return self.__root_element_name
 
     def get_item_name(self):
-        """ Return the XML item name 
-        
+        """ Return the XML item name
+
         Returns
         -------
         String

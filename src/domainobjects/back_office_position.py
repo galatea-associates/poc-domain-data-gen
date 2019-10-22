@@ -11,8 +11,8 @@ class BackOfficePosition(Generatable):
     BACK_OFFICE_PURPOSES = ['Outright']
 
     def generate(self, record_count, start_id):
-        """ Generate a set number of back office positions 
-        
+        """ Generate a set number of back office positions
+
         Parameters
         ----------
         record_count : int
@@ -23,7 +23,7 @@ class BackOfficePosition(Generatable):
         Returns
         -------
         List
-            Containing 'record_count' back office positions 
+            Containing 'record_count' back office positions
         """
 
         self.instruments = self.retrieve_records('instruments')
@@ -62,7 +62,7 @@ class BackOfficePosition(Generatable):
         }
 
     def generate_purpose(self):
-        """ Generate a purpose for a back office position 
+        """ Generate a purpose for a back office position
 
         Returns
         -------

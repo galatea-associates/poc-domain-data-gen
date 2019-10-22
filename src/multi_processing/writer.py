@@ -37,10 +37,10 @@ class Writer():
     handle_jobs(pool_size)
         Pulls an item from the Multiprocessed Queue if terminate, issues
         termination, otherwise passes the List containing lists of records
-        to the format method. 
+        to the format method.
     format_jobs(record_list)
         Splits jobs into object name & records, then adds to storage & issues
-        instruction to calculate writes. 
+        instruction to calculate writes.
     get_job()
         Retrieve an item from the queue
     issue_termination()
@@ -115,12 +115,12 @@ class Writer():
     def handle_jobs(self, pool_size):
         """ Takes items from the Multiprocess safe queue, if a terminate
         instruction, the appropriate flag is set. If not, it must be a list
-        of records, thus it formatted.
+        of records, thus it is formatted.
 
         Parameters
         ----------
         pool_size : int
-            The number of processes running in the generator's pool 
+            The number of processes running in the generator's pool
         """
 
         while (not self.write_queue.empty()
@@ -138,7 +138,7 @@ class Writer():
         ----------
         record_list
             List of record lists, each arising from an individual writing
-            process. 
+            process.
         """
 
         for job in record_list:
@@ -148,8 +148,8 @@ class Writer():
             self.calculate_writes()
 
     def get_job(self):
-        """ Return the record list at the front of the generate queue 
-        
+        """ Return the record list at the front of the generate queue
+
         Returns
         -------
         list
@@ -186,9 +186,9 @@ class Writer():
         """ Calculates jobs from the currently dequeued information observed.
         For each chunk of stored records of size equal to the maximum file
         size, a new job is created and that data removed from primary store.
-        The job is enqueued once created. 
+        The job is enqueued once created.
         """
-        
+
         # self.max_size indicates largest file size
         # self.all_records contains all records currently received
         file_size = self.max_size
@@ -206,13 +206,13 @@ class Writer():
 
     def get_file_num(self):
         """ Return an incremented integer for sequentially named files
-        
+
         Returns
         -------
         int
             The file number to be written next
          """
-        
+
         cur = self.file_number
         self.file_number = cur+1
         return cur
@@ -220,14 +220,14 @@ class Writer():
     def run_jobs(self, pool_size):
         """ Pass a list of jobs to the job pool coordinator to be executed.
         Jobs contain the file number, the pre-instantiated file builder to
-        use, as well as  the data itself. 
+        use, as well as  the data itself.
         """
-        
+
         mp_p.write(self.job_list, pool_size)
 
     def reset_job_list(self):
         """ Resets the list of records to be written out to file """
-        
+
         self.job_list = []
 
     def calculate_residual_writes(self):
@@ -235,7 +235,7 @@ class Writer():
         where no jobs have been observed on the job queue. Forces the
         remaining data in the store to be written to file regardless of size.
         """
-        
+
         file_builder = self.file_builder
         file_num = self.get_file_num()
         records = self.all_records

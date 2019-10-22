@@ -24,7 +24,7 @@ class StockLoanPosition(Generatable):
         Returns
         -------
         List
-            Containing 'record_count' stock loan positions 
+            Containing 'record_count' stock loan positions
 
         """
         records = []
@@ -75,10 +75,9 @@ class StockLoanPosition(Generatable):
                 'time_stamp': datetime.now()
             }
 
-
     def generate_haircut(self, collateral_type):
-        """ Generate a haircut value based on collateral type 
-            
+        """ Generate a haircut value based on collateral type
+
         Parameters
         ----------
         collateral_type : String
@@ -124,9 +123,9 @@ class StockLoanPosition(Generatable):
 
         Returns
         -------
-        Date 
+        Date
             where end date chosen to exist
-        Nothing 
+        Nothing
             where end date chosen to not exist
         """
 

@@ -2,7 +2,7 @@
 
     Based on a user provided configuration, generate a set of random data
     pertaining to said configuration. Currently supported domain objects are:
-        
+
         * Back Office Position
         * Cash Balance
         * Cashflow
@@ -15,17 +15,17 @@
         * Stock Loan Position
         * Swap Contract
         * Swap Position
-    
-    Each domain object to be generated (record count > 0) is generated in 
-    turn to account for inter-object dependencies. Generation is  
-    multiprocessed with a primary coordinator spawning two child process 
+
+    Each domain object to be generated (record count > 0) is generated in
+    turn to account for inter-object dependencies. Generation is
+    multiprocessed with a primary coordinator spawning two child process
     coordinators. One of these children handles object generation, and the
     second writing of these to file.
 
-    The generation coordinator recieved instruction to generate X number of 
-    objects over Y number of subprocesses (Pool Size). Once these jobs are 
+    The generation coordinator recieved instruction to generate X number of
+    objects over Y number of subprocesses (Pool Size). Once these jobs are
     executed and records returned, they are placed into a writing job queue.
-    The writing to file coordinator picks up & formats these tasks before 
+    The writing to file coordinator picks up & formats these tasks before
     assigning them to execute on a second pool
 
 """
@@ -67,8 +67,8 @@ def main():
 
 
 def get_file_builder(obj_config, file_builder_configs):
-    """ Retrieves file builder object from provided configs 
-        
+    """ Retrieves file builder object from provided configs
+
         Parameters
         ----------
         obj_config : dict
@@ -81,9 +81,9 @@ def get_file_builder(obj_config, file_builder_configs):
         File_Builder
             Instantiated file builder as defined by the file builder
             configurations, as per the user specified output type of
-            the given object configuration 
+            the given object configuration
     """
-    
+
     fb_name = obj_config['file_builder_name']
     fb_config = get_fb_config(file_builder_configs, fb_name)
     file_builder = get_class('filebuilders', fb_config['module_name'],
@@ -102,7 +102,7 @@ def process_domain_object(obj_config, file_builder, shared_config):
     obj_config : dict
         A domain objects configuration as provided by user
     file_builder : File_Builder
-        An instantiated filebuilder as per this objects required output 
+        An instantiated filebuilder as per this objects required output
         file type
     shared_config : dict
         User-provided configuration shared between all objects
@@ -134,7 +134,7 @@ def process_domain_object(obj_config, file_builder, shared_config):
 def get_record_count(obj_config):
     """ Returns the number of records to be generated for a given object.
     Where objects are non-dependent on others, the user-provided configuration
-    amount is used. Otherwise, the record_count is set to be the number of 
+    amount is used. Otherwise, the record_count is set to be the number of
     records generated of the domain object the to-generate one is dependent
     on.
 
@@ -146,7 +146,7 @@ def get_record_count(obj_config):
     Returns
     -------
     int
-        Number of records to generate, or the number of dependent objects 
+        Number of records to generate, or the number of dependent objects
         generated prior where cur object non-deterministic amount to generate
     """
 
@@ -174,7 +174,7 @@ def get_args():
     namespace
         Namespace is populated with observed arguments, unless none observed,
         in which case default values are returned. Access elements via '.'
-        convention, i.e. parser.parse_args().config  
+        convention, i.e. parser.parse_args().config
     """
     # Configure expected command line args & default values thereof
     parser = ArgumentParser(description='''Random financial data
