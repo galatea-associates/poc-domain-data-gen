@@ -4,8 +4,8 @@ from domain_factory.generatable import Generatable
 
 
 class BrokerageAccount(Generatable):
-    """ Abstract Class to generate brokerage accounts. Generate method will generate
-      the attributes shared by all brokerage account child classes.
+    """ Abstract Class to generate brokerage accounts. Generate method will
+    generate the attributes shared by all brokerage account child classes.
 
        Account [dir]
         ->Brokerage Account [abstract]
