@@ -12,14 +12,14 @@ class ECPAccount(BrokerageAccount):
     @abstractmethod
     def generate(self, record_count, start_id):
         """ Generate a set number of ECP accounts
-    
+
             Parameters
             ----------
             record_count : int
                 Number of ecp accounts to generate
             start_id : int
                 Starting id to generate from
-    
+
             Returns
             -------
             List
