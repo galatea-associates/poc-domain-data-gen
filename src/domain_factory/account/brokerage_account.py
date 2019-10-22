@@ -9,12 +9,12 @@ class BrokerageAccount(Generatable):
 
        Account [dir]
         ->Brokerage Account [abstract]
-          -> Internal Counterparty [impl]
+          -> Internal Counterparty [conc]
           -> External Counterparty [abstract]
-            -> Contra (ECP) [impl]
-            -> ICP Holding [impl]
-            -> Depot Claim [impl]
-          -> Depot [impl]
+            -> Contra (ECP) [conc]
+            -> ICP Holding [conc]
+            -> Depot Claim [conc]
+          -> Depot [conc]
 
        """
 
