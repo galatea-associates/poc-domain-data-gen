@@ -1,6 +1,4 @@
-import sys
-import os
-import json
+import sys, os, json
 sys.path.insert(0, 'src/')
 
 from utils.cache import Cache
