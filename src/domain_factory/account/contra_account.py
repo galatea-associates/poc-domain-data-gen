@@ -2,7 +2,7 @@ from domain_factory.account.external_counterparty_account import ECPAccount
 
 
 class ContraAccount(ECPAccount):
-    """ Class to generate contra ecp accounts. Generate method will call the
+    """ Class to generate contra ECP accounts. Generate method will call the
     ECPAccount generate method in order to populate fields shared by all ECP
     accounts. The generate method in this class will then populate the
     remaining attributes unique to the Contra Account domain factory. """
