@@ -1,4 +1,4 @@
-import sys, os, ujson
+import sys, os, json
 sys.path.insert(0, 'src/')
 
 from utils.cache import Cache
@@ -19,7 +19,7 @@ def delete_local_database():
 def get_configuration():
     file_path = 'src/config.json'
     with open(file_path, 'r+') as file:
-        return ujson.load(file)
+        return json.load(file)
 
 def query_db(table_name, attribute=None):
     db = Sqlite_Database()
