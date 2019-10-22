@@ -25,3 +25,4 @@ client_secrets.json
 out
 .pytest_cache
 *.code-workspace
+*.db
