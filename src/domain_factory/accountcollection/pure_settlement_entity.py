@@ -21,7 +21,7 @@ class PureSettlementEntity(BookingSubcompany):
             Returns
             -------
             List
-                Containing 'record_count' Pure Settlement Entities accounts
+                Containing 'record_count' Pure Settlement Entities
             """
 
         records = []

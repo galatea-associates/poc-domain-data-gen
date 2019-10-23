@@ -21,7 +21,7 @@ class BrokerDealerEntity(BookingSubcompany):
             Returns
             -------
             List
-                Containing 'record_count' Broker Dealer Entities accounts
+                Containing 'record_count' Broker Dealer Entities
             """
 
         records = []

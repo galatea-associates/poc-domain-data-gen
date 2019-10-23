@@ -22,7 +22,7 @@ class BookingCompany(BookingEntity):
             Returns
             -------
             List
-                Containing 'record_count' Booking Companies accounts
+                Containing 'record_count' Booking Companies
             """
 
         records = []

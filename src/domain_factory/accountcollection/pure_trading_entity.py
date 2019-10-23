@@ -21,7 +21,7 @@ class PureTradingEntity(BookingSubcompany):
             Returns
             -------
             List
-                Containing 'record_count' Pure Trading Entities accounts
+                Containing 'record_count' Pure Trading Entities
             """
 
         records = []
