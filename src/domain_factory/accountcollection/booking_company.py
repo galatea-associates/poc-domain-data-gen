@@ -1,4 +1,3 @@
-from domain_factory.accountcollection.account_collection import AccountCollection
 from domain_factory.accountcollection.booking_entity import BookingEntity
 
 
