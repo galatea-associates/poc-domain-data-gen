@@ -10,18 +10,18 @@ class ICPAccount(BrokerageAccount):
     def generate(self, record_count, start_id):
         """ Generate a set number of ICP accounts
 
-            Parameters
-            ----------
-            record_count : int
-                Number of ICP accounts to generate
-            start_id : int
-                Starting id to generate from
+        Parameters
+        ----------
+        record_count : int
+            Number of ICP accounts to generate
+        start_id : int
+            Starting id to generate from
 
-            Returns
-            -------
-            List
-                Containing 'record_count' ICP accounts
-            """
+        Returns
+        -------
+        List
+            Containing 'record_count' ICP accounts
+        """
 
         records = []
 
