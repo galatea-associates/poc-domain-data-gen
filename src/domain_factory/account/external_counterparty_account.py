@@ -26,6 +26,4 @@ class ECPAccount(BrokerageAccount):
             Containing 'record_count' ECP accounts
         """
 
-        records = []
-
-        return records
+        pass

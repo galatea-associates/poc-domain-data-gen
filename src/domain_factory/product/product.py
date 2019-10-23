@@ -32,6 +32,4 @@ class Product(Generatable):
             Containing 'record_count' Products
         """
 
-        records = []
-
-        return records
+        pass

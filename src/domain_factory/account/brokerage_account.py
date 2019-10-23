@@ -35,6 +35,4 @@ class BrokerageAccount(Generatable):
             Containing 'record_count' Brokerage accounts
         """
 
-        records = []
-
-        return records
+        pass
