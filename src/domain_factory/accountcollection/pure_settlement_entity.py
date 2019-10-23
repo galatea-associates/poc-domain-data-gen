@@ -1,4 +1,5 @@
-from domain_factory.accountcollection.booking_subcompany import BookingSubcompany
+from domain_factory.accountcollection.booking_subcompany import \
+    BookingSubcompany
 
 
 class PureSettlementEntity(BookingSubcompany):

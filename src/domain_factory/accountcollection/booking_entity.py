@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
-from domain_factory.accountcollection.account_collection import AccountCollection
+from domain_factory.accountcollection.account_collection import \
+    AccountCollection
 
 
 class BookingEntity(AccountCollection):
