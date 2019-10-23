@@ -10,18 +10,18 @@ class Service(Product):
     def generate(self, record_count, start_id):
         """ Generate a set number of products
 
-            Parameters
-            ----------
-            record_count : int
-                Number of Services to generate
-            start_id : int
-                Starting id to generate from
+        Parameters
+        ----------
+        record_count : int
+            Number of Services to generate
+        start_id : int
+            Starting id to generate from
 
-            Returns
-            -------
-            List
-                Containing 'record_count' Services
-            """
+        Returns
+        -------
+        List
+            Containing 'record_count' Services
+        """
 
         records = []
 

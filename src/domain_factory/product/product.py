@@ -19,18 +19,18 @@ class Product(Generatable):
     def generate(self, record_count, start_id):
         """ Generate a set number of products
 
-            Parameters
-            ----------
-            record_count : int
-                Number of Products to generate
-            start_id : int
-                Starting id to generate from
+        Parameters
+        ----------
+        record_count : int
+            Number of Products to generate
+        start_id : int
+            Starting id to generate from
 
-            Returns
-            -------
-            List
-                Containing 'record_count' Products
-            """
+        Returns
+        -------
+        List
+            Containing 'record_count' Products
+        """
 
         records = []
 
