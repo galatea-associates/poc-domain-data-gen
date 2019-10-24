@@ -1,11 +1,11 @@
 from abc import abstractmethod
 
-from domain_factory.generatable import Generatable
+from domain_factory.factory import Factory
 
 
-class Product(Generatable):
+class ProductFactory(Factory):
     """ Abstract Class to generate products. Generate method will
-    generate the attributes shared by all product child classes.
+    generate the attributes shared by all ProductFactory child classes.
 
        Product [dir]
         ->Product[abstract]

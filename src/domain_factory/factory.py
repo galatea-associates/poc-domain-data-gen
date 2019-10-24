@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from utils.sqlite_database import Sqlite_Database
 
 
-class Generatable(ABC):
+class Factory(ABC):
     """ Parents class of all domain objects. Contains shared generation
     methods, and defines an abstract method for generation. Pre-defines
     lists of potential values for some variations to minimise number of

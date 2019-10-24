@@ -1,11 +1,12 @@
 from abc import abstractmethod
 
-from domain_factory.generatable import Generatable
+from domain_factory.factory import Factory
 
 
-class BrokerageAccount(Generatable):
+class BrokerageAccountFactory(Factory):
     """ Abstract Class to generate brokerage accounts. Generate method will
-    generate the attributes shared by all brokerage account child classes.
+    generate the attributes shared by all brokerage account factory child
+    classes.
 
        Account [dir]
         ->Brokerage Account [abstract]
