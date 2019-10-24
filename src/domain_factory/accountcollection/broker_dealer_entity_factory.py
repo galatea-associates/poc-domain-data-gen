@@ -4,10 +4,10 @@ from domain_factory.accountcollection.booking_subcompany_factory import \
 
 class BrokerDealerEntityFactory(BookingSubcompanyFactory):
     """ Class to generate Broker Dealer Entities.  Generate method will call the
-        BookingSubcompanyFactory generate method in order to populate fields
-        shared by all Booking Subcompanies.  The generate method in this class
-         will then populate the remaining attributes unique to the
-         Broker Dealer Entity domain factory. """
+    BookingSubcompanyFactory generate method in order to populate fields
+    shared by all Booking Subcompanies.  The generate method in this class
+    will then populate the remaining attributes unique to the
+    Broker Dealer Entity domain factory. """
 
     def generate(self, record_count, start_id):
         """ Generate a set number of Broker Dealer Entities
