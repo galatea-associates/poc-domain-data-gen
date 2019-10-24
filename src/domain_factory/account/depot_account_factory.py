@@ -5,7 +5,7 @@ from domain_factory.account.brokerage_account_factory import \
 class DepotAccountFactory(BrokerageAccountFactory):
     """ Class to generate Depot accounts. Generate method will call the
     BrokerageAccountFactory generate method in order to populate fields shared
-    by allBrokerage accounts. The generate method in this class will then
+    by all Brokerage accounts. The generate method in this class will then
     populate the remaining attributes unique to the Depot Account domain
     factory. """
 

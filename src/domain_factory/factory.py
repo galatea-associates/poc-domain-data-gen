@@ -160,7 +160,6 @@ class Factory(ABC):
 
         pass
 
-
     def generate_timestamp(self):
         """ Generate the current timestamp
 

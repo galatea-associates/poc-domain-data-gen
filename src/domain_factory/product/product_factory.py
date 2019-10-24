@@ -73,7 +73,7 @@ class ProductFactory(Factory):
             A product xref
         """
 
-        """ Get ticker from the ticker file / database table. Create other 
+        """ Get ticker from the ticker file / database table. Create other
         ids as function of ticker """
 
         ticker = "TEST"
