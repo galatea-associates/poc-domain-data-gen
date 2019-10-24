@@ -3,7 +3,7 @@ from domain_factory.product.product_factory import ProductFactory
 
 class InternalProductFactory(ProductFactory):
     """ Class to generate internal products. Generate method will call the
-    Product Factory generate method in order to populate fields shared by all
+    ProductFactory generate method in order to populate fields shared by all
     products. The generate method in this class will then populate the
     remaining attributes unique to the Internal Product domain factory. """
 
