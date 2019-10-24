@@ -1,9 +1,9 @@
-from domain_factory.product.product import Product
+from domain_factory.product.product_factory import ProductFactory
 
 
-class ExternalProduct(Product):
+class ExternalProductFactory(ProductFactory):
     """ Class to generate external products. Generate method will call the
-    Product generate method in order to populate fields shared by all
+    ProductFactory generate method in order to populate fields shared by all
     products. The generate method in this class will then populate the
     remaining attributes unique to the External Product domain factory. """
 

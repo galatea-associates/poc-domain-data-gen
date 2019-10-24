@@ -1,13 +1,15 @@
 from abc import abstractmethod
 
-from domain_factory.account.brokerage_account import BrokerageAccount
+from domain_factory.account.brokerage_account_factory import \
+    BrokerageAccountFactory
 
 
-class ECPAccount(BrokerageAccount):
+class ECPAccountFactory(BrokerageAccountFactory):
     """ Abstract class to generate ECP accounts. Generate method will call the
-   BrokerageAccount generate method in order to populate fields shared by all
-   Brokerage accounts. The generate method in this class will then populate the
-   remaining attributes unique to the ECP Account domain factory. """
+   BrokerageAccountFactory generate method in order to populate fields shared
+   by all Brokerage accounts. The generate method in this class will then
+   populate the remaining attributes unique to the ECP Account domain
+   factory. """
 
     @abstractmethod
     def generate(self, record_count, start_id):
