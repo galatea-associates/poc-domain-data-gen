@@ -160,6 +160,18 @@ class Factory(ABC):
 
         pass
 
+
+    def generate_timestamp(self):
+        """ Generate the current timestamp
+
+        Returns
+        -------
+        Date
+            current timestamp
+        """
+
+        return datetime.now()
+
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
         """ Generates a random string, of letters or numbers or both.
