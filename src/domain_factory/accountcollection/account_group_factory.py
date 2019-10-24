@@ -1,10 +1,10 @@
-from domain_factory.accountcollection.account_collection import \
-    AccountCollection
+from domain_factory.accountcollection.account_collection_factory import \
+    AccountCollectionFactory
 
 
-class AccountGroup(AccountCollection):
+class AccountGroupFactory(AccountCollectionFactory):
     """ Class to generate Account Groups.  Generate method will call the
-        AccountCollection generate method in order to populate fields
+        AccountCollectionFactory generate method in order to populate fields
         shared by all Account Collections.  The generate method in this class
          will then populate the remaining attributes unique to the
          Account Group domain factory. """

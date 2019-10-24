@@ -1,9 +1,10 @@
-from domain_factory.accountcollection.booking_entity import BookingEntity
+from domain_factory.accountcollection.booking_entity_factory import \
+    BookingEntityFactory
 
 
-class BookingCompany(BookingEntity):
+class BookingCompanyFactoryFactory(BookingEntityFactory):
     """ Class to generate Booking Companies.  Generate method will call the
-        BookingEntity generate method in order to populate fields
+        BookingEntityFactory generate method in order to populate fields
         shared by all Booking Entities.  The generate method in this class
          will then populate the remaining attributes unique to the
          Booking Company domain factory. """

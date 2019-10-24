@@ -1,12 +1,12 @@
 from abc import abstractmethod
 
-from domain_factory.accountcollection.account_collection import \
-    AccountCollection
+from domain_factory.accountcollection.account_collection_factory import \
+    AccountCollectionFactory
 
 
-class BookingEntity(AccountCollection):
+class BookingEntityFactory(AccountCollectionFactory):
     """ Abstract class to generate Booking Entities.  Generate method will call the
-    AccountCollection generate method in order to populate fields
+    AccountCollectionFactory generate method in order to populate fields
     shared by all Account Collections.  The generate method in this class
     will then populate the remaining attributes unique to the
     Booking Entity domain factory. """

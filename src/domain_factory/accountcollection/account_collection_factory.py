@@ -3,7 +3,7 @@ from abc import abstractmethod
 from domain_factory.generatable import Generatable
 
 
-class AccountCollection(Generatable):
+class AccountCollectionFactory(Generatable):
     """ Abstract Class to generate Account Collections.  Generate method will
     generate the attributes shared by all brokerage account child classes.
 

@@ -1,10 +1,10 @@
-from domain_factory.accountcollection.booking_subcompany import \
-    BookingSubcompany
+from domain_factory.accountcollection.booking_subcompany_factory import \
+    BookingSubcompanyFactory
 
 
-class PureTradingEntity(BookingSubcompany):
+class PureTradingEntityFactory(BookingSubcompanyFactory):
     """ Class to generate Pure Trading Entities.  Generate method will call the
-        BookingSubcompany generate method in order to populate fields
+        BookingSubcompanyFactory generate method in order to populate fields
         shared by all Booking Subcompanies.  The generate method in this class
          will then populate the remaining attributes unique to the
          Pure Trading Entity domain factory. """
