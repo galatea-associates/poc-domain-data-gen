@@ -33,9 +33,10 @@ class PriceFactory(Factory):
             Containing 'record_count' Prices
         """
 
+        """ Get random product Id until record count met """
         pass
 
-    def generate_record(self, id):
+    def generate_record(self, product_id):
         """ Generate a single brokerage account
 
         Returns
@@ -45,21 +46,7 @@ class PriceFactory(Factory):
         """
 
         return {
-            'product_id': self.get_instrument_product_id(id),
+            'product_id': product_id,
             'creation_time_stamp': self.generate_timestamp(),
             'updated_time_stamp': self.generate_timestamp()
         }
-
-    def get_instrument_product_id(self, id):
-        """ Get an instrument product id
-
-        Returns
-        -------
-        string
-            A single product Id
-        """
-
-        """ get instrument and return the id """
-        productId = id
-
-        return productId
