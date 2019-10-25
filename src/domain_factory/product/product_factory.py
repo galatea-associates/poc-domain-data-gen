@@ -62,7 +62,7 @@ class ProductFactory(Factory):
             A single product Id
         """
 
-        return 1000 + id
+        return 1000+id
 
     def generate_product_xref(self, id):
         """ Generate a product xref dict
