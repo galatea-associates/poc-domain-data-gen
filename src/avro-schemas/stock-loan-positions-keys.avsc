@@ -1,0 +1,14 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "stock_loan_position_data",
+    "fields": [
+        {"name": "stock_loan_contract_id", "type": "int"},
+        {"name": "ric", "type": "string"},
+        {"name": "collateral_type", "type": "string"},
+        {"name": "knowledge_date", "type": "string"},
+        {"name": "effective_date", "type": "string"},
+        {"name": "account", "type": "string"},
+        {"name": "purpose", "type": "string"}
+    ]
+}

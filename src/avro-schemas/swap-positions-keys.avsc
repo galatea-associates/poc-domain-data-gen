@@ -1,0 +1,14 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "swap_position_data",
+    "fields": [
+        {"name": "ric", "type": "string"},
+        {"name": "swap_contract_id", "type": "int"},
+        {"name": "account", "type": "string"},
+        {"name": "purpose", "type": "string"},
+        {"name": "knowledge_date", "type": "string"},
+        {"name": "effective_date", "type": "string"},
+        {"name": "position_type", "type": "string"}
+    ]
+}

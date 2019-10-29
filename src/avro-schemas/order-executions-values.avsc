@@ -1,0 +1,16 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "order_executions_data",
+    "fields": [
+        {"name": "direction", "type": "string"},
+        {"name": "qty", "type": "int"}
+        {"name": "time_stamp", "type": "int"},
+        {"name": "account_num", "type": "int"},
+        {"name": "ric", "type": "string"},
+        {"name": "curr", "type": "string"},
+        {"name": "sto_id", "type": "int"},
+        {"name": "agent_id", "type": "int"},
+        {"name": "price", "type": "double"}
+    ]
+}

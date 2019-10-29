@@ -1,0 +1,8 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "order_executions_data",
+    "fields": [
+        {"name": "order_id", "type": "int"}
+    ]
+}

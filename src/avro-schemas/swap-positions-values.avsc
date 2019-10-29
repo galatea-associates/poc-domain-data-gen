@@ -1,0 +1,10 @@
+{
+    "namespace": "kafka.poc",
+    "type": "record",
+    "name": "swap_position_data",
+    "fields": [
+        {"name": "qty", "type": "int"},
+        {"name": "direction", "type": "string"},
+        {"name": "time_stamp", "type": "int"}
+    ]
+}

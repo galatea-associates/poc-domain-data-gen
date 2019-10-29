@@ -3,12 +3,11 @@ import csv
 import os
 import dicttoxml
 import logging
+from xml.dom.minidom import parseString
 
 class XMLBuilder(FileBuilder):
-    """ A class to generate an XML file from records. Uses the dicttoxml
-    library to achieve this. """
 
-    def build(self, file_number, data, upload_to_google_drive=False):
+    def build(self, file_number, data):
         output_dir = self.get_output_directory()
         file_name = self.get_file_name()
         root_element_name = self.get_root_element_name()
