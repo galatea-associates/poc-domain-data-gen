@@ -4,7 +4,7 @@
             "fixed_object" : {
                 "max_objects_per_file" : 1,
                 "file_name" : "instruments",
-                "output_file_type": "CSV",
+                "output_file_type": "FileType",
                 "output_directory": "path/to/directory",
                 "generation_type": "fixed",
 				"fixed_args" : {
@@ -26,7 +26,7 @@
             "variable_object" : {
                 "max_objects_per_file" : 1,
                 "file_name" : "position",
-                "output_file_type": "XML",
+                "output_file_type": "FileType",
                 "output_directory": "path/to/directory",
                 "generation_type": "variable",
                 "variable_args": {
@@ -43,11 +43,7 @@
                         "data_type": "type",
                         "field_count": 1
                     }
-                ],
-                "file_type_args" : {
-                    "xml_root_element" : "positions",
-                    "xml_item_name" : "position"
-                }
+                ]
             }
         }
     ],
@@ -55,5 +51,9 @@
 		"generator_pool_size" : 1,
 		"writer_pool_size" : 1,
 		"pool_job_size" : 1
+	},
+	"file_type_args" : {
+		"root_element_name" : "xml_root_element_name",
+		"item_name" : "xml_item_name"
 	}
 }
