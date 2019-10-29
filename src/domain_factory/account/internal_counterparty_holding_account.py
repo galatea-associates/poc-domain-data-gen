@@ -1,10 +1,9 @@
-from domain_factory.account.external_counterparty_account_factory import \
-    ECPAccountFactory
+from domain_factory.account.external_counterparty_account import ECPAccount
 
 
-class ICPHoldingAccountFactory(ECPAccountFactory):
+class ICPHoldingAccount(ECPAccount):
     """ Class to generate ICP accounts. Generate method will call the
-  ECPAccountFactory generate method in order to populate fields shared by all
+  ECPAccount generate method in order to populate fields shared by all
   ECP accounts. The generate method in this class will then populate the
   remaining attributes unique to the ICP Holding Account domain factory. """
 

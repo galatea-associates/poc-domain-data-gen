@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from utils.sqlite_database import Sqlite_Database
 
 
-class Factory(ABC):
+class Generatable(ABC):
     """ Parents class of all domain objects. Contains shared generation
     methods, and defines an abstract method for generation. Pre-defines
     lists of potential values for some variations to minimise number of
@@ -159,17 +159,6 @@ class Factory(ABC):
         provided by each domain object """
 
         pass
-
-    def generate_timestamp(self):
-        """ Generate the current timestamp
-
-        Returns
-        -------
-        Date
-            current timestamp
-        """
-
-        return datetime.now()
 
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):

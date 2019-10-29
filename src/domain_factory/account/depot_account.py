@@ -1,13 +1,11 @@
-from domain_factory.account.brokerage_account_factory import \
-    BrokerageAccountFactory
+from domain_factory.account.brokerage_account import BrokerageAccount
 
 
-class DepotAccountFactory(BrokerageAccountFactory):
+class DepotAccount(BrokerageAccount):
     """ Class to generate Depot accounts. Generate method will call the
-    BrokerageAccountFactory generate method in order to populate fields shared
-    by all Brokerage accounts. The generate method in this class will then
-    populate the remaining attributes unique to the Depot Account domain
-    factory. """
+    BrokerageAccount generate method in order to populate fields shared by all
+    Brokerage accounts. The generate method in this class will then populate
+    the remaining attributes unique to the Depot Account domain factory. """
 
     def generate(self, record_count, start_id):
         """ Generate a set number of Depot accounts
