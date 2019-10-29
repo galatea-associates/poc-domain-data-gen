@@ -7,8 +7,8 @@
                 "output_file_type": "CSV",
                 "output_directory": "path/to/directory",
                 "generation_type": "fixed",
-                "fixed_args" : {
-                    "record_count" : 1
+				"fixed_args" : {
+					"record_count" : 1
                 },
                 "dummy_data_fields":[
                     {
