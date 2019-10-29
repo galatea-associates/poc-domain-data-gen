@@ -54,6 +54,10 @@ def main():
 
     config_validator.validate(config)
 
+    # Trace back limit reduced when validating config file, reset to a
+    # reasonable value here.
+    sys.tracebacklimit = 5
+
     domain_object_configs = config['domain_objects']
     file_builder_configs = config['file_builders']
     shared_config = config['shared_args']
