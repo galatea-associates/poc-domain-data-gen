@@ -1,5 +1,4 @@
 import sys
-
 sys.path.insert(0, 'tests/')
 sys.path.insert(0, 'src/')
 from utils.cache import Cache
@@ -26,8 +25,8 @@ def test_instruments():
 def sedol_valid(record):
     """ SEDOLs must both: be integers, and of length 7 """
     sedol = record['sedol']
-    assert shared.is_int(sedol) \
-           and shared.is_length(7, sedol)
+    assert shared.is_int(sedol)\
+        and shared.is_length(7, sedol)
 
 
 def ticker_valid(record):
@@ -45,9 +44,11 @@ def asset_class_valid(record):
 
 
 def country_of_issuance_valid(record):
-    """ Country Of Issuance must be within the set as provided within cache """
+    """ country_of_issuance must be within the set as provided within
+    cache """
+
     cache = Cache()
-    expected_countries_of_issuance = cache.retrieve_from_cache(
-        'countries_of_issuance')
+    countries_of_issuance =\
+        cache.retrieve_from_cache('countries_of_issuance')
     country_of_issuance = record['country_of_issuance']
-    assert country_of_issuance in expected_countries_of_issuance
+    assert country_of_issuance in countries_of_issuance

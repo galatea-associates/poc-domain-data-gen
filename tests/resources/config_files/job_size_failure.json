@@ -13,12 +13,12 @@
             "upload_to_google_drive": "false",
             "dummy_fields": [
                 {
-                    "data_type": "string",
-                    "field_count": "50"
+                "data_type": "string",
+                "field_count": "50"
                 },
                 {
-                    "data_type": "numeric",
-                    "field_count": "50"
+                "data_type": "numeric",
+                "field_count": "50"
                 }
             ],
             "custom_args": {}
@@ -30,7 +30,7 @@
             "module_name": "csv_builder",
             "class_name": "CSVBuilder",
             "file_extension": ".csv"
-        }
+          }
     ],
     "shared_args" : {
         "gen_pools": 1,

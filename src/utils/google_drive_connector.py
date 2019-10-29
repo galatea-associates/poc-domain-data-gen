@@ -1,10 +1,10 @@
-import os.path
 import pickle
-
-from google.auth.transport.requests import Request
-from google_auth_oauthlib.flow import InstalledAppFlow
+import os.path
 from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
 from googleapiclient.http import MediaFileUpload
+from datetime import datetime
 
 
 class GoogleDriveConnector():
@@ -45,21 +45,21 @@ class GoogleDriveConnector():
             'mimeType': 'application/vnd.google-apps.folder',
             'parents': [parent_folder_id]
         }
-        return self.service.files().create(body=folder_metadata, fields='id') \
-            .execute().get('id')
+        return self.service.files().create(body=folder_metadata, fields='id')\
+                   .execute().get('id')
 
     def get_folder_id(self, folder_name, parent_folder_id):
         q = """mimeType='application/vnd.google-apps.folder'
                and name='{0}' and trashed=false"""
 
         if parent_folder_id is not None:
-            q += " and parents in '{0}'".format(parent_folder_id)
+            q +=  " and parents in '{0}'".format(parent_folder_id)
 
-        folders = self.service.files() \
-            .list(q=q.format(folder_name),
-                  spaces='drive',
-                  fields='nextPageToken, files(id, name)',
-                  ).execute().get('files', [])
+        folders = self.service.files()\
+                      .list(q=q.format(folder_name),
+                            spaces='drive',
+                            fields='nextPageToken, files(id, name)',
+                            ).execute().get('files', [])
 
         return folders[0].get('id') if len(folders) > 0 else None
 
@@ -67,13 +67,13 @@ class GoogleDriveConnector():
         q = "name='{0}' and trashed=false"
 
         if parent_folder_id is not None:
-            q += " and parents in '{0}'".format(parent_folder_id)
+            q +=  " and parents in '{0}'".format(parent_folder_id)
 
-        files = self.service.files() \
-            .list(q=q.format(file_name),
-                  spaces='drive',
-                  fields='nextPageToken, files(id, name)',
-                  ).execute().get('files', [])
+        files = self.service.files()\
+                    .list(q=q.format(file_name),
+                          spaces='drive',
+                          fields='nextPageToken, files(id, name)',
+                          ).execute().get('files', [])
 
         return files[0].get('id') if len(files) > 0 else None
 
@@ -82,7 +82,7 @@ class GoogleDriveConnector():
         file_metadata = {
             'name': file_name,
             'parents': [google_folder_id]
-        }
+            }
 
         media = MediaFileUpload(file_location, resumable=True)
         request = self.service.files().create(media_body=media,

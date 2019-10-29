@@ -22,7 +22,7 @@ class Instrument(Generatable):
         Returns
         -------
         List
-            Containing 'record_count' instruments 
+            Containing 'record_count' instruments
         """
 
         cache = Cache()

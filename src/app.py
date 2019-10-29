@@ -205,8 +205,8 @@ def get_fb_config(file_builders, file_extension):
         type required.
     """
     return list(filter(
-        lambda file_builder: file_builder['name'] == file_extension,
-        file_builders))[0]
+            lambda file_builder: file_builder['name'] == file_extension,
+            file_builders))[0]
 
 
 def get_class(package_name, module_name, class_name):

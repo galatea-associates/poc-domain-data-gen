@@ -1,8 +1,8 @@
 import sys
 sys.path.insert(0, 'tests/')
-import pytest
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
+
 
 def test_order_executions():
     records = helper.set_up_order_execution_tests()
@@ -17,10 +17,12 @@ def test_order_executions():
         shared.ric_exists(record)
         shared.quantity_valid(record)
 
+
 def sto_id_valid(record):
     id = record['sto_id']
     assert shared.is_int(id)\
         and shared.is_length(7, id)
+
 
 def agent_id_valid(record):
     id = record['agent_id']

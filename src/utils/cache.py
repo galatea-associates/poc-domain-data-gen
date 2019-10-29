@@ -1,9 +1,9 @@
 """Utility class containing instrument-specific information. This information
 is used to generate domain-valid currencies, ticker symbols, exchange codes,
-countries of origin, and any combination thereof such as RICs 
+countries of origin, and any combination thereof such as RICs
 """
-
 import pandas as pd
+
 
 class Cache:
     """
@@ -24,7 +24,7 @@ class Cache:
         Stores the given value in the pseudo-cache(dict) under the given key
 
     retrieve_from_cache(field_name)
-        Returns the value stored under given key 
+        Returns the value stored under given key
 
     """
 
@@ -39,8 +39,9 @@ class Cache:
                                                  'BE', 'DE', 'JA', 'DE', 'IL',
                                                  'VX', 'MFM', 'PA', 'ME',
                                                  'NZ'])
-        self.persist_to_cache('countries_of_issuance', ['US', 'GB', 'CA', 'FR',
-                                       'DE', 'CH', 'SG', 'JP'])
+        self.persist_to_cache('countries_of_issuance',
+                              ['US', 'GB', 'CA', 'FR',
+                               'DE', 'CH', 'SG', 'JP'])
 
     def persist_to_cache(self, field_name, field_value):
         """Stores a given value into the cache under a given key.

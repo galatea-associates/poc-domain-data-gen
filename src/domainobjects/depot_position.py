@@ -11,8 +11,8 @@ class DepotPosition(Generatable):
     DEPOT_POSITION_PURPOSES = ['Holdings', 'Seg']
 
     def generate(self, record_count, start_id):
-        """ Generate a set number of depot positions 
-        
+        """ Generate a set number of depot positions
+
         Parameters
         ----------
         record_count : int
@@ -23,7 +23,7 @@ class DepotPosition(Generatable):
         Returns
         -------
         List
-            Containing 'record_count' depot positions 
+            Containing 'record_count' depot positions
         """
 
         self.instruments = self.retrieve_records('instruments')
@@ -63,11 +63,11 @@ class DepotPosition(Generatable):
             'qty': self.generate_random_integer(),
             'purpose': self.generate_purpose(),
             'depot_id': self.generate_random_integer(length=5),
-            'time_stamp': datetime.now()            
+            'time_stamp': datetime.now()
         }
 
     def generate_purpose(self):
-        """ Generate a purpose for a depot position 
+        """ Generate a purpose for a depot position
 
         Returns
         -------
