@@ -62,14 +62,20 @@ class FileBuilder(abc.ABC):
             Dictionary containing the parsed json user-defined configuration
             for the current object.
         """
+
+        file_type = domain_object_config['output_file_type']
         file_name = domain_object_config['file_name']
-        file_extension = domain_object_config['file_builder_name'].lower()
+        file_extension = file_type.lower()
 
         self.__google_drive_connector = google_drive_connector
         self.__file_name = file_name + '_{}.' + file_extension
         self.__output_dir = domain_object_config['output_directory']
-        self.__root_element_name = domain_object_config['root_element_name']
-        self.__item_name = domain_object_config['item_name']
+
+        if file_type == 'XML':
+            file_specific_config = domain_object_config['file_type_args']
+            self.__root_element_name = \
+                file_specific_config['xml_root_element']
+            self.__item_name = file_specific_config['xml_item_name']
 
     @abc.abstractmethod
     def build(self, file_number, data, upload_to_google_drive):

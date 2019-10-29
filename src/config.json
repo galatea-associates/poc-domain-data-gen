@@ -1,38 +1,14 @@
 {
     "domain_objects" : [
         {
-            "fixed_object" : {
-                "max_objects_per_file" : 1,
+            "instrument" : {
+                "max_objects_per_file" : 50,
                 "file_name" : "instruments",
-                "output_file_type": "CSV",
-                "output_directory": "path/to/directory",
+                "output_file_type": "XML",
+                "output_directory": "out",
                 "generation_type": "fixed",
                 "fixed_args" : {
-                    "record_count" : 1
-                },
-                "dummy_data_fields":[
-                    {
-                        "data_type": "type",
-                        "field_count": 1
-                    },
-                    {
-                        "data_type": "type",
-                        "field_count": 1
-                    }
-                ]
-            }
-        },
-        {
-            "variable_object" : {
-                "max_objects_per_file" : 1,
-                "file_name" : "position",
-                "output_file_type": "XML",
-                "output_directory": "path/to/directory",
-                "generation_type": "variable",
-                "variable_args": {
-                    "dependent_object_1" : 1,
-                    "dependent_object_2" : 1,
-                    "generation_chance" : "probability"
+                    "record_count" : 50
                 },
                 "dummy_data_fields":[
                     {
@@ -45,15 +21,41 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "positions",
-                    "xml_item_name" : "position"
+                    "xml_root_element" : "instruments",
+                    "xml_item_name" : "instrument"
+                }
+            }
+        },
+        {
+            "price" : {
+                "max_objects_per_file" : 50,
+                "file_name" : "prices",
+                "output_file_type": "XML",
+                "output_directory": "out",
+                "generation_type": "variable",
+                "fixed_args": {
+                    "record_count" : 50
+                },
+                "dummy_data_fields":[
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    },
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    }
+                ],
+                "file_type_args" : {
+                    "xml_root_element" : "prices",
+                    "xml_item_name" : "price"
                 }
             }
         }
     ],
-	"shared_generation_arguments" : {
-		"generator_pool_size" : 1,
-		"writer_pool_size" : 1,
-		"pool_job_size" : 1
-	}
+    "shared_generation_arguments" : {
+        "generator_pool_size" : 1,
+        "writer_pool_size" : 1,
+        "pool_job_size" : 10000
+    }
 }
