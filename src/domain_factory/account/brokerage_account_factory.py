@@ -48,24 +48,13 @@ class BrokerageAccountFactory(Factory):
         """
 
         return {
-            'account_id': self.generate_account_id(id),
+            'account_id': id,
             'creation_time_stamp': self.generate_timestamp(),
             'updated_time_stamp': self.generate_timestamp(),
             'tax_payer_id': self.generate_tax_payer_id(),
             'account_short_name': self.generate_short_name(),
             'description': self.generate_description()
         }
-
-    def generate_account_id(self, id):
-        """ Generate a single accountId
-
-        Returns
-        -------
-        string
-            A single account Id
-        """
-
-        return 500+id
 
     def generate_tax_payer_id(self, id):
         """ Generate a single productId
@@ -76,7 +65,7 @@ class BrokerageAccountFactory(Factory):
             A single product Id
         """
 
-        return 333 + id
+        return 501 + id
 
     def generate_short_name(self):
         """ Generate a short name
