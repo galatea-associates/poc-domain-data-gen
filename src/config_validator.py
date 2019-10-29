@@ -10,7 +10,7 @@ the configuration as-is is insufficient for successful operation.
 import sys
 
 
-def validate(config):
+def validate(config): 
     """ Entry point. Build a list of errors based on a number of tests, when
     returned can be used to feedback to the user what requires changing.
 
