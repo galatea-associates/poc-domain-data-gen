@@ -1,41 +1,122 @@
+""" The approach used in each of these tests hinges on a pre-written config
+file. This file will either be set up to pass all validation, or fail a single
+point of validation.
+
+The validator returns a "Validation_Result" object, which contains a boolean
+flag on whether the validation failed or succeeded. This value is what is
+asserted against. Where tests are set up to fail, assert that the result is
+False. Where tests are due to succeed, assert against True. """
 import sys
 sys.path.insert(0, 'src/')
-from src.validator import config_validator as validator
+from validator import config_validator as validator
 import json
 
 
-def test_record_count():
-    run_test("record_count")
+def test_record_count_success():
+    """ Ensure a positive integer for record count succeeds """
+
+    config_location = \
+        "tests/resources/config_files/record_count_success.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is True
 
 
-def test_file_size():
-    run_test("file_size")
+def test_record_count_failure():
+    """ Ensure a negative integer for record count fails """
+
+    config_location = \
+        "tests/resources/config_files/record_count_failure.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is False
 
 
-def test_file_extension():
-    run_test("job_size")
+def test_file_size_success():
+    """ Ensure a positive integer for file size succeeds """
+
+    config_location = \
+        "tests/resources/config_files/file_size_success.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is True
 
 
-def test_pool_size():
-    run_test("pool_size")
+def test_file_size_failure():
+    """ Ensure negative integer for file size fails """
+
+    config_location = \
+        "tests/resources/config_files/file_size_failure.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is False
 
 
-def test_job_size():
-    run_test("job_size")
+def test_file_extension_success():
+    """ Ensure a valid file extension succeeds """
+
+    config_location = \
+        "tests/resources/config_files/file_extension_success.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is True
 
 
-def run_test(test_name):
-    success_config = load_file(test_name+"_success.json")
-    failure_config = load_file(test_name+"_fail.json")
-    success_result = run_validation(success_config).check_success()
-    fail_result = run_validation(failure_config).check_success()
-    assert success_result and not fail_result
+def test_file_extension_failure():
+    """ Ensure an invalid file extension fails """
 
-def load_file(file_name):
+    config_location = \
+        "tests/resources/config_files/file_extension_failure.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is False
 
 
-def run_validation(config_file):
-    return validator.validate(config_file)
+def test_pool_size_success():
+    """ Ensure a positive integer for pool sizes succeeds """
 
-def retrieve_configs():
-    return ['testingthetest']
+    config_location = \
+        "tests/resources/config_files/pool_size_success.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is True
+
+
+def test_pool_size_failure():
+    """ Ensure a negative integer for pool sizes fails """
+
+    config_location = \
+        "tests/resources/config_files/pool_size_failure.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is False
+
+
+def test_job_size_success():
+    """ Ensure a positive integer for job size succeeds """
+
+    config_location = \
+        "tests/resources/config_files/job_size_success.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is True
+
+
+def test_job_size_failure():
+    """ Ensure a negative integer for job size fails """
+
+    config_location = \
+        "tests/resources/config_files/job_size_failure.json"
+    with open(config_location) as file:
+        config = json.load(file)
+    success = validator.validate(config).check_success()
+    assert success is False
