@@ -10,18 +10,18 @@ class DepotClaimAccount(ECPAccount):
     def generate(self, record_count, start_id):
         """ Generate a set number of Depot Claim accounts
 
-        Parameters
-        ----------
-        record_count : int
-            Number of Depot Claim accounts to generate
-        start_id : int
-            Starting id to generate from
+            Parameters
+            ----------
+            record_count : int
+                Number of Depot Claim accounts to generate
+            start_id : int
+                Starting id to generate from
 
-        Returns
-        -------
-        List
-            Containing 'record_count' Depot Claim accounts
-        """
+            Returns
+            -------
+            List
+                Containing 'record_count' Depot Claim accounts
+            """
 
         records = []
 

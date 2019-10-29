@@ -10,18 +10,18 @@ class DepotAccount(BrokerageAccount):
     def generate(self, record_count, start_id):
         """ Generate a set number of Depot accounts
 
-        Parameters
-        ----------
-        record_count : int
-            Number of Depot accounts to generate
-        start_id : int
-            Starting id to generate from
+            Parameters
+            ----------
+            record_count : int
+                Number of Depot accounts to generate
+            start_id : int
+                Starting id to generate from
 
-        Returns
-        -------
-        List
-            Containing 'record_count' Depot accounts
-        """
+            Returns
+            -------
+            List
+                Containing 'record_count' Depot accounts
+            """
 
         records = []
 
