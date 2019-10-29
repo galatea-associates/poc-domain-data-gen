@@ -7,6 +7,7 @@ the configuration as-is is insufficient for successful operation.
 """
 
 
+import sys
 from exceptions.config_error import ConfigError
 
 
