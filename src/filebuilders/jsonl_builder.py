@@ -28,4 +28,3 @@ class JSONLBuilder(FileBuilder):
                 self.upload_to_google_drive(output_dir, file_name)
             
             start += max_objects_per_file
-        

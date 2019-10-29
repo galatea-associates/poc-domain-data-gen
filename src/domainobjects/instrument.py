@@ -102,7 +102,9 @@ class Instrument(Generatable):
             Randomly selected country code from those in the cache
         """
 
-        return random.choice(cache.retrieve_from_cache('cois'))
+        return random.choice(
+            cache.retrieve_from_cache('countries_of_issuance')
+        )
 
     def generate_ticker(self, cache):
         """ Generate a random ticker

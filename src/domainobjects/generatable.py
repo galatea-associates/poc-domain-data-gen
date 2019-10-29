@@ -1,8 +1,9 @@
-from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
-from utils.sqlite_database import Sqlite_Database
 import random
 import string
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+
+from utils.sqlite_database import Sqlite_Database
 
 
 class Generatable(ABC):
@@ -59,7 +60,8 @@ class Generatable(ABC):
     generate_random_boolean()
         Select a random boolean value
 
-    generate_random_date(from_year, to_year, from_month, to_month, from_day, to_day)
+    generate_random_date(from_year, to_year, from_month,
+                         to_month, from_day, to_day)
         Select a random date between a given range
 
     generate_random_integer(min, max, length, negative)
@@ -79,7 +81,7 @@ class Generatable(ABC):
     generate_ric(ticker, exchange_code)
         Create a RIC value from given ticker and exchange values
 
-    generate_isin(coi, cusip)
+    generate_isin(country_of_issuance, cusip)
         Create an ISIN value from given county of issuance and CUSIP values
 
     generate_credit_debit()
@@ -152,11 +154,11 @@ class Generatable(ABC):
 
     @abstractmethod
     def generate(self, record_count, start_id):
-       """ Generate a set number of records for a domain object, where ID's
-       are sequential, start from a given id. Concrete implementations
-       provided by each domain object """
+        """ Generate a set number of records for a domain object, where ID's
+        are sequential, start from a given id. Concrete implementations
+        provided by each domain object """
 
-       pass
+        pass
 
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
@@ -198,8 +200,8 @@ class Generatable(ABC):
         return random.choice(self.TRUE_FALSE)
 
     def generate_random_date(self, from_year=2016, to_year=2017,
-                                 from_month=1, to_month=12,
-                                 from_day=1, to_day=28):
+                             from_month=1, to_month=12,
+                             from_day=1, to_day=28):
         """ Generates a random date between two given days
 
         Parameters
@@ -222,7 +224,7 @@ class Generatable(ABC):
         Date
             Random date between the provided ranges
         """
-        
+
         year = random.randint(from_year, to_year)
         month = random.randint(from_month, to_month)
         day = random.randint(from_day, to_day)
@@ -252,8 +254,8 @@ class Generatable(ABC):
         """
 
         if length is not None:
-            min = 10**(length-1)
-            max = (10**length)-1
+            min = 10 ** (length - 1)
+            max = (10 ** length) - 1
 
         value = random.randint(min, max)
         return value if not negative else -value
@@ -319,12 +321,12 @@ class Generatable(ABC):
 
         return '{0}.{1}'.format(ticker, exchange_code)
 
-    def generate_isin(self, coi, cusip):
-        """ Appends two input values to "'coi''cusip''4'"
+    def generate_isin(self, country_of_issuance, cusip):
+        """ Appends two input values to "'country_of_issuance''cusip''4'"
 
         Parameters
         ----------
-        coi : String
+        country_of_issuance : String
             a country of issuance code
         cusip : int
             a CUSIP value
@@ -334,7 +336,7 @@ class Generatable(ABC):
         String
 
         """
-        return ''.join([coi, str(cusip), '4'])
+        return ''.join([country_of_issuance, str(cusip), '4'])
 
     def generate_credit_debit(self):
         """ Generate a random credit or debit value
@@ -442,7 +444,7 @@ class Generatable(ABC):
         String
             Random return type chosen from a pre-determined list
         """
- 
+
         return random.choice(self.RETURN_TYPES)
 
     # THESE ARE NON-GENERATING, UTILITY METHODS USED WHERE NECESSARY #
@@ -482,7 +484,7 @@ class Generatable(ABC):
             Name of the table to persist records to
         """
 
-        if(self.__database is None): self.establish_db_connection()
+        if (self.__database is None): self.establish_db_connection()
         self.__database.persist_batch(table_name, self.__persisting_records)
         self.__database.commit_changes()
 
@@ -501,7 +503,7 @@ class Generatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary 
         """
 
-        if(self.__database is None): self.establish_db_connection()
+        if (self.__database is None): self.establish_db_connection()
         return self.__database.retrieve(table_name)
 
     def retrieve_batch_records(self, table_name, amount, start_pos):
@@ -524,7 +526,7 @@ class Generatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary 
         """
 
-        if(self.__database is None): self.establish_db_connection()
+        if (self.__database is None): self.establish_db_connection()
         return self.__database.retrieve_batch(table_name, amount, start_pos)
 
     def get_database(self):
@@ -560,7 +562,7 @@ class Generatable(ABC):
         """
 
         return self.__config
-    
+
     def get_custom_args(self):
         """ Returns the current objects user-specified custom arguments
 

@@ -39,7 +39,7 @@ class Cache:
                                                  'BE', 'DE', 'JA', 'DE', 'IL',
                                                  'VX', 'MFM', 'PA', 'ME',
                                                  'NZ'])
-        self.persist_to_cache('cois', ['US', 'GB', 'CA', 'FR',
+        self.persist_to_cache('countries_of_issuance', ['US', 'GB', 'CA', 'FR',
                                        'DE', 'CH', 'SG', 'JP'])
 
     def persist_to_cache(self, field_name, field_value):
