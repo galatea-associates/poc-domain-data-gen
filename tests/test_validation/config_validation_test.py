@@ -1,9 +1,9 @@
+import json
 import sys
 
 from validator import config_validator as validator
 
 sys.path.insert(0, 'src/')
-import json
 
 """ The approach used in each of these tests hinges on a pre-written config
 file. This file will either be set up to pass all validation, or fail a single
