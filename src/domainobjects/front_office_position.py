@@ -1,18 +1,20 @@
-from domainobjects.generatable import Generatable
-from datetime import datetime
 import random
+from datetime import datetime
+
+from domainobjects.generatable import Generatable
+
 
 class FrontOfficePosition(Generatable):
     """ Class to generate front office positions. Generate method will
     generate a set amount of positions. Other generation methods included
-    where front office positions are the only domain object requiring them. 
+    where front office positions are the only domain object requiring them.
     """
 
     FRONT_OFFICE_POSITION_PURPOSES = ['Outright']
 
     def generate(self, record_count, start_id):
-        """ Generate a set number of front office positions 
-        
+        """ Generate a set number of front office positions
+
         Parameters
         ----------
         record_count : int
@@ -23,14 +25,14 @@ class FrontOfficePosition(Generatable):
         Returns
         -------
         List
-            Containing 'record_count' front office positions 
+            Containing 'record_count' front office positions
         """
 
         self.instruments = self.retrieve_records('instruments')
 
         records = []
 
-        for _ in range(start_id, start_id+record_count):
+        for _ in range(start_id, start_id + record_count):
             instrument = self.get_random_instrument()
             records.append(self.get_record(instrument))
         return records
@@ -56,7 +58,7 @@ class FrontOfficePosition(Generatable):
             'position_type': position_type,
             'knowledge_date': knowledge_date,
             'effective_date': self.generate_effective_date(
-                                2, knowledge_date, position_type),
+                2, knowledge_date, position_type),
             'account': self.generate_account(),
             'direction': self.generate_credit_debit(),
             'qty': self.generate_random_integer(),
@@ -65,7 +67,7 @@ class FrontOfficePosition(Generatable):
         }
 
     def generate_purpose(self):
-        """ Generate a purpose for a front office position 
+        """ Generate a purpose for a front office position
 
         Returns
         -------
