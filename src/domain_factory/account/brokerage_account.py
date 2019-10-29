@@ -25,14 +25,14 @@ class BrokerageAccount(Generatable):
             Parameters
             ----------
             record_count : int
-                Number of Brokerage accounts to generate
+                Number of depot positions to generate
             start_id : int
                 Starting id to generate from
 
             Returns
             -------
             List
-                Containing 'record_count' Brokerage accounts
+                Containing 'record_count' depot positions
             """
 
         records = []
