@@ -7,7 +7,6 @@ the configuration as-is is insufficient for successful operation.
 """
 from validator.validation_result import Validation_Result
 
-
 def validate(config):
     """ Entry point. Build a list of errors based on a number of tests, when
     returned can be used to feedback to the user what requires changing.
@@ -31,7 +30,7 @@ def validate(config):
     errors.append(validate_record_counts(domain_objects))
     errors.append(validate_max_file_size(domain_objects))
     errors.append(validate_output_file_extensions(file_builders,
-                                                  domain_objects))
+                                                    domain_objects))
 
     errors.append(validate_pool_sizes_non_zero(shared_args))
     errors.append(validate_job_size_non_zero(shared_args))
