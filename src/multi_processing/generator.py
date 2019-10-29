@@ -41,7 +41,7 @@ class Generator():
         generate_queue : Multiprocessed Queue
             Queue containing jobs to generate an amount of domain objects
         write_queue : Multiprocessed Queue
-            Queue containing resultant generated objects for writing to file
+            Queue containing resultant generated objects for writing to file 
         """
 
         self.generate_queue = generate_queue
@@ -49,9 +49,9 @@ class Generator():
         self.terminate = False
 
     def start(self, obj_class, pool_size):
-        """ Begin the cycle of waiting for, formatting, and running jobs,
-        continuing this until an instruction to terminate is observed.
-
+        """ Begin the cycle of waiting for, formatting, and running jobs, 
+        continuing this until an instruction to terminate is observed. 
+        
         Parameters
         ----------
         obj_class : String
@@ -78,7 +78,7 @@ class Generator():
         """ Takes jobs from the Multiprocess Safe Queue and places them into
         a list for later execution. If twice the pool size of jobs are
         formatted, then this list is returned. If the termination flag is
-        observed, then this list is returned. If the queue is empty, then
+        observed, then this list is returned. If the queue is empty, then 
         the list so far is returned.
 
         Parameters
@@ -107,8 +107,8 @@ class Generator():
         return job_list
 
     def get_job(self):
-        """ Return the job at the front of the generate queue
-
+        """ Return the job at the front of the generate queue 
+        
         Returns
         -------
         dict
@@ -142,7 +142,7 @@ class Generator():
 
     def get_generation_queue(self):
         """Return the generation queue
-
+        
         Returns
         -------
         Multiprocessed Queue

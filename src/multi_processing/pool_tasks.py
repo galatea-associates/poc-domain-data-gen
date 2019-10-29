@@ -2,7 +2,7 @@
 responsible for each, a catch-all generate/write method which configures
 the Pool for jobs to be executed on. Additionally included are methods the
 pools use for each job in their respective job lists to perform the actual
-generation/writing tasks.
+generation/writing tasks. 
 """
 
 from multiprocessing import Pool
@@ -15,7 +15,7 @@ def generate(job_list, pool_size):
     Parameters
     ----------
     job_list : list
-        Jobs to be executed on the
+        Jobs to be executed on the 
     pool_size : int
         The number of processes sitting within the pool for execution of jobs
         to be ran on.
@@ -42,13 +42,13 @@ def generate_data(job):
     as well as the starting ID for this set in the case of sequential IDs.
 
     Where objects are generated in nondeterministic amounts, sequential IDs
-    are not possible.
+    are not possible. 
 
     Parameters
     ----------
     job : list
         List of 2 elements, the instruction to generate, and the instantiated
-        domain object.
+        domain object. 
 
     Returns
     -------
@@ -77,7 +77,7 @@ def write(job_list, pool_size):
     Parameters
     ----------
     job_list : list
-        Jobs to be executed on the
+        Jobs to be executed on the 
     pool_size : int
         The number of processes sitting within the pool for execution of jobs
         to be ran on.

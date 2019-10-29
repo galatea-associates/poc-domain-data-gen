@@ -7,7 +7,7 @@ import calendar
 class Cashflow(Generatable):
     """ Class to generate cashflows. Generate method will generate a set
     amount of cashflows. Other generation methods are included where cashflows
-    are the only domain object requiring them.
+    are the only domain object requiring them. 
 
     Process of generating cashflows dependent on Swap Positions, for each of
     these positions, simulate whether each cashflow type (defined by the user
@@ -33,13 +33,12 @@ class Cashflow(Generatable):
         """
 
         swap_position_batch =\
-            self.retrieve_batch_records('swap_positions',
-                                        record_count, start_id)
+         self.retrieve_batch_records('swap_positions', record_count, start_id)
         cashflow_gen_args = self.get_cashflow_gen_args()
 
-        records = [self.generate_record(swap_position, cf_arg)
-                   for swap_position in swap_position_batch
-                   for cf_arg in cashflow_gen_args
+        records = [self.generate_record(swap_position, cf_arg)\
+                   for swap_position in swap_position_batch\
+                   for cf_arg in cashflow_gen_args\
                    if swap_position['position_type'] == 'E']
         records = filter(None, records)
         return records
@@ -75,7 +74,7 @@ class Cashflow(Generatable):
             record['long_short'] = swap_position['long_short']
             record['cashflow_type'] = cf_arg['cashFlowType']
             record['pay_date'] = datetime.strftime(p_date_func(effective_date),
-                                                   '%Y-%m-%d')
+                                              '%Y-%m-%d')
             record['currency'] = self.generate_currency()
             record['amount'] = self.generate_random_integer()
 
@@ -83,7 +82,7 @@ class Cashflow(Generatable):
 
     def effective_date(self, effective_date):
         """ Parse string time into Datetime type
-
+        
         Parameters
         ----------
         effective_date : String
@@ -100,7 +99,7 @@ class Cashflow(Generatable):
     def get_cashflow_gen_args(self):
         """ Retrieve the user-defined cashflow generation arguments from
         config. These are the definitions of cashflow type and the attributes
-        thereof.
+        thereof. 
 
         Returns
         -------
@@ -152,7 +151,7 @@ class Cashflow(Generatable):
         Parameters
         ----------
         pay_date_period : String
-            User-defined period of payment, either end of month or half.
+            User-defined period of payment, either end of month or half. 
 
         Returns
         -------
@@ -193,7 +192,7 @@ class Cashflow(Generatable):
         elif accrual == "CHANCE_ACCRUAL" and \
                 random.random() < (int(probability) / 100):
             return True
-
+    
     def instantiate_record(self):
         return {
             'swap_contract_id': None,

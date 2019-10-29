@@ -7,8 +7,8 @@ class OrderExecution(Generatable):
     set amount of executions. """
 
     def generate(self, record_count, start_id):
-        """ Generate a set number of order executions
-
+        """ Generate a set number of order executions 
+        
         Parameters
         ----------
         record_count : int

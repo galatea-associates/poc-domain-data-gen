@@ -5,14 +5,14 @@ import random
 class FrontOfficePosition(Generatable):
     """ Class to generate front office positions. Generate method will
     generate a set amount of positions. Other generation methods included
-    where front office positions are the only domain object requiring them.
+    where front office positions are the only domain object requiring them. 
     """
 
     FRONT_OFFICE_POSITION_PURPOSES = ['Outright']
 
     def generate(self, record_count, start_id):
-        """ Generate a set number of front office positions
-
+        """ Generate a set number of front office positions 
+        
         Parameters
         ----------
         record_count : int
@@ -23,7 +23,7 @@ class FrontOfficePosition(Generatable):
         Returns
         -------
         List
-            Containing 'record_count' front office positions
+            Containing 'record_count' front office positions 
         """
 
         self.instruments = self.retrieve_records('instruments')
@@ -65,7 +65,7 @@ class FrontOfficePosition(Generatable):
         }
 
     def generate_purpose(self):
-        """ Generate a purpose for a front office position
+        """ Generate a purpose for a front office position 
 
         Returns
         -------

@@ -193,7 +193,7 @@ class Sqlite_Database:
             Amount of records to retrieve in the batch
         offset : int
             The RowID from which to start retrieval
-
+        
         Returns
         -------
         SQLite3 Row
@@ -232,7 +232,7 @@ class Sqlite_Database:
 
     def get_table_size(self, table_name):
         """ Returns the number of records held in a specified table
-
+        
         Parameters
         ----------
         table_name : String
@@ -261,7 +261,7 @@ class Sqlite_Database:
 
     # Create table 'table_name' with attributes in 'attribute_dict'
     def create_table_from_dict(self, table_name, attribute_dict):
-        """ Create a new table as defined by a given dictionary.
+        """ Create a new table as defined by a given dictionary. 
 
         Progressively build up a query to create a new table. This is done by
         storing components of the final query in a list, before joining them

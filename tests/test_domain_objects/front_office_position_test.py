@@ -1,8 +1,8 @@
 import sys
 sys.path.insert(0, 'tests/')
+import pytest
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
-
 
 def test_front_office_position():
     records, domain_obj = helper.set_up_front_office_position_tests()
@@ -17,5 +17,5 @@ def test_front_office_position():
         shared.account_valid(record, domain_obj.ACCOUNT_TYPES)
         shared.direction_valid(record)
         shared.quantity_valid(record)
-        shared.purpose_valid(record,
-                             domain_obj.FRONT_OFFICE_POSITION_PURPOSES)
+        shared.purpose_valid(record, 
+            domain_obj.FRONT_OFFICE_POSITION_PURPOSES)

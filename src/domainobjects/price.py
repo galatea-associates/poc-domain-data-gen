@@ -8,7 +8,7 @@ class Price(Generatable):
 
     def generate(self, record_count, start_id):
         """ Generate a set number of prices
-
+        
         Parameters
         ----------
         record_count : int

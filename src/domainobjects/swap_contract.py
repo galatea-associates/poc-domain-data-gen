@@ -33,12 +33,11 @@ class SwapContract(Generatable):
             Containing 'record_count' swap contract
         """
 
-        counterparties =\
-            self.retrieve_batch_records('counterparties',
-                                        record_count, start_id)
+        counterparties = self.retrieve_batch_records('counterparties',
+                                                 record_count, start_id)
 
-        records = [self.generate_record(counterparty['id'])
-                   for counterparty in counterparties
+        records = [self.generate_record(counterparty['id']) \
+                   for counterparty in counterparties \
                    for _ in range(0, self.get_number_of_swaps())]
 
         self.persist_records("swap_contracts")
@@ -92,7 +91,7 @@ class SwapContract(Generatable):
 
     def get_number_of_swaps(self):
         """ Randomly calculate a value between the user-provided minimums
-        and maximums.
+        and maximums. 
 
         Returns
         -------
@@ -129,7 +128,7 @@ class SwapContract(Generatable):
         """
 
         return None if status == 'Live' else start_date +\
-                       timedelta(days=365 * years_to_add)
+                             timedelta(days=365 * years_to_add)
 
     def generate_swap_type(self):
         """ Generate the type of swap

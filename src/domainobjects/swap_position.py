@@ -8,7 +8,7 @@ class SwapPosition(Generatable):
     """ Class to generate swap positions. Generate method will generate a set
     amount of swap positions. Other generation methods are included where swap
     positions are the only domain object requiring them.
-
+    
     Process of generating swap positions dependent on swap contracts, for each
     of these positions, choose a random number of instruments from those
     generated prior, then for each position type (start of day, intraday,
@@ -39,15 +39,14 @@ class SwapPosition(Generatable):
 
         start_date = datetime.strptime(self.get_start_date(), '%Y%m%d')
         date_range = pd.date_range(start_date, datetime.today(), freq='D')
-        swap_contract_batch =\
-            self.retrieve_batch_records('swap_contracts',
-                                        record_count, start_id)
+        swap_contract_batch = self.retrieve_batch_records('swap_contracts',
+                                                      record_count, start_id)
 
         records = [self.generate_record(swap_contract, instrument,
-                                        position_type, date)
-                   for swap_contract in swap_contract_batch
-                   for instrument in self.get_random_instruments()
-                   for position_type in self.POSITION_TYPES
+                                        position_type, date)\
+                   for swap_contract in swap_contract_batch\
+                   for instrument in self.get_random_instruments()\
+                   for position_type in self.POSITION_TYPES\
                    for date in date_range]
 
         self.persist_records('swap_positions')
@@ -62,7 +61,7 @@ class SwapPosition(Generatable):
             Dictionary containing a partial record of a swap contract, only
             contains the information necessary to generate swap positions
         cf_arg : dict
-            Dictionary defining the particular swap position being generated
+            Dictionary defining the particular swap position being generated 
             for
 
         Returns
@@ -97,7 +96,7 @@ class SwapPosition(Generatable):
                  str(current_date),
                  str(long_short)]
             )
-
+        
         return record
 
     def get_random_instruments(self):
@@ -120,7 +119,7 @@ class SwapPosition(Generatable):
         -------
         int
             Random number between the user-specified limits for the minimum
-            and maximum amount of instruments per swap
+            and maximum amount of instruments per swap 
         """
 
         custom_args = self.get_custom_args()

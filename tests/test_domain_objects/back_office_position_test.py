@@ -1,12 +1,12 @@
 import sys
 sys.path.insert(0, 'tests/')
+import pytest
 from test_domain_objects import shared_tests as shared
 from test_domain_objects import helper_methods as helper
 
-
 def test_back_office_positions():
     """ Ensure all generated back office position attributes adhere to their
-    specification. Dependencies on instruments. """
+    specification. Dependencies on instruments. """ 
 
     records, domain_obj = helper.set_up_back_office_position_tests()
     for record in records:

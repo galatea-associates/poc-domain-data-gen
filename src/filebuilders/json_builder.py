@@ -4,7 +4,7 @@ import os
 
 class JSONBuilder(FileBuilder):
     """ A class to generate a JSON file from records. Uses ujson to process
-    each dictionary into JSON. """
+    each dictionary into JSON. """ 
 
     def build(self, file_number, data, upload_to_google_drive=False):
         output_dir = self.get_output_directory()
