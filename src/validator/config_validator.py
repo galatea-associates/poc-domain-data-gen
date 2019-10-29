@@ -5,9 +5,7 @@ of errors.
 Error list to be returned, and used as a basis to feedback to the user that
 the configuration as-is is insufficient for successful operation.
 """
-
-
-import sys
+from validator.validation_result import Validation_Result
 
 
 def validate(config):
@@ -19,61 +17,36 @@ def validate(config):
     config : dict
         Parsed json of the user-input configuration
 
-    Raises
-    ------
-    ConfigError
-        Where an validation of the provided configuration has failed.
-        Raised only at the end of all checks such that all errors can be
-        reported at once.
+    Returns
+    validation_result : Validation_Result
+        An object containing a boolean flag for success or fail, as well as
+        a list of any errors on the case of failure.
     """
-
-    # Temporarily remove traceback as all raised errors are from config #
-    sys.tracebacklimit = 0
 
     domain_objects = config['domain_objects']
     file_builders = config['file_builders']
     shared_args = config['shared_args']
 
-    swap_contract_config = domain_objects[9]
-    swap_position_config = domain_objects[10]
-    cash_flow_config = domain_objects[11]
+    errors = []
+    errors.append(validate_record_counts(domain_objects))
+    errors.append(validate_max_file_size(domain_objects))
+    errors.append(validate_output_file_extensions(file_builders,
+                                                  domain_objects))
 
-    try:
-        errors = []
-        errors.append(validate_record_counts(domain_objects))
-        errors.append(validate_max_file_size(domain_objects))
-        errors.append(validate_output_file_extensions(file_builders, 
-                                                      domain_objects))
+    errors.append(validate_pool_sizes_non_zero(shared_args))
+    errors.append(validate_job_size_non_zero(shared_args))
 
-        errors.append(validate_swap_contract_range(swap_contract_config))
+    # Remove instances of None from error list
+    errors = [error for error in errors if error is not None]
+    # Remove instances of empty lists from error list
+    errors = [error for error in errors if error != []]
+    # Flatten list of lists to single list
+    errors = [error for sub_error in errors for error in sub_error]
 
-        errors.append(validate_swap_position_date_range(swap_position_config))
-        errors.append(validate_swap_position_range(swap_position_config))
-
-        errors.append(validate_cash_flow_defined(cash_flow_config))
-        errors.append(validate_cash_flow_definitions(cash_flow_config))
-
-        errors.append(validate_pool_sizes_non_zero(shared_args))
-        errors.append(validate_job_size_non_zero(shared_args))
-
-        # Remove instances of None from error list
-        errors = [error for error in errors if error != None]
-        # Remove instances of empty lists from error list
-        errors = [error for error in errors if error != []]
-        # Flatten list of lists to single list
-        errors = [error for sub_error in errors for error in sub_error]
-
-        if len(errors) is not 0:
-            raise ConfigError()
-
-    except ConfigError:
-        print("Issue(s) within Config:")
-        for error in errors:
-            print(error)
-        raise
-
+    if len(errors) is not 0:
+        return Validation_Result(False, errors)
     else:
-        print("No issues within Config")
+        return Validation_Result(True, None)
 
 
 def validate_record_counts(domain_object_configs):
@@ -97,7 +70,7 @@ def validate_record_counts(domain_object_configs):
         current_object = config['class_name']
         record_count = int(config['record_count'])
         if record_count < 0:
-            error = "- Record count for "+current_object+\
+            error = "- Record count for " + current_object + \
                     " is less than 0."
             errors.append(error)
     return errors
@@ -124,16 +97,16 @@ def validate_max_file_size(domain_object_configs):
         current_object = config['class_name']
         file_size = int(config['max_objects_per_file'])
         if file_size < 0:
-            error = "- File size for "+current_object+\
+            error = "- File size for " + current_object + \
                     " is less than 0."
             errors.append(error)
     return errors
 
 
-def validate_output_file_extensions(file_builder_configs, 
+def validate_output_file_extensions(file_builder_configs,
                                     domain_object_configs):
     """ Ensure the file extension for each object is valid as per the defined
-    file builders. 
+    file builders.
 
     Parameters
     ----------
@@ -142,7 +115,7 @@ def validate_output_file_extensions(file_builder_configs,
     -------
     List
         List of strings detailing each domain object where the specified file
-        extension 
+        extension
     """
 
     errors = []
@@ -152,8 +125,8 @@ def validate_output_file_extensions(file_builder_configs,
         current_object = config['class_name']
         file_extension = config['file_builder_name']
         if file_extension not in file_extensions:
-            error = "- File Builder, "+file_extension+", for "+\
-                    current_object+" doesn't exist."
+            error = "- File Builder, " + file_extension + ", for " + \
+                    current_object + " doesn't exist."
             errors.append(error)
     return errors
 
@@ -179,76 +152,50 @@ def get_file_extensions(file_builder_configs):
         file_extensions.append(config['name'])
     return file_extensions
 
-def validate_swap_contract_range(swap_contract_config):
-    """ Ensure the swap contract "swaps per counterparty" is a valid range
-
-    Parameters
-    ----------
-    swap_contract_config : dict
-        The configuration section for the swap contract object only
-
-    Returns
-    -------
-    List
-        An error where the range is invalid, None otherwise
-    """
-
-    error = None
-
-    custom_args = swap_contract_config['custom_args']
-    swaps_per_counterparty = custom_args['swap_per_counterparty']
-    swap_min = swaps_per_counterparty['min']
-    swap_max = swaps_per_counterparty['max']
-
-    if swap_max < swap_min:
-        error = ["- Swap contract's swap minimum value greater"+\
-                    " than swap maximum"]
-    return error
-
-
-def validate_swap_position_date_range(swap_position_config):
-    """ Ensure the swap position date range is valid where both start and
-    end date have been user-provided. 
-
-    Parameters
-    ----------
-    swap_position_config: dict
-        The configuration section for the swap position object only
-
-    Returns
-    -------
-    List
-        An error where the range is invalid, None otherwise
-    """
-    
-    return
-
-
-def validate_swap_position_range(swap_position_config):
-    return
-
-
-def validate_cash_flow_defined(cash_flow_config):
-    return
-
-
-def validate_cash_flow_definitions(cash_flow_config):
-    return
-
 
 def validate_pool_sizes_non_zero(shared_config):
-    return
+    """ Verifies that pool sizes for both generation and writing pools are
+    non-zero and positive.
+
+    Parameters
+    ----------
+    shared_config : dict
+        Dictionary of the "shared_config" section of the config file
+
+    Returns
+    -------
+    List
+        Errors where relevant, or empty if none found
+    """
+
+    errors = []
+
+    gen_pool_size = shared_config['gen_pools']
+    write_pool_size = shared_config['write_pools']
+    if gen_pool_size <= 0:
+        errors.append("- Generation Pool size must be a positive value.")
+    if write_pool_size <= 0:
+        errors.append("- Writing Pool size must be a positive value.")
+    return errors
 
 
 def validate_job_size_non_zero(shared_config):
-    return
+    """ Ensure the specified job size is a non-zero numbers.
 
+    Parameters
+    ----------
+    shared_config : dict
+        Dictionary of the "shared_config" section of the config file
 
-class ConfigError(Exception):
-    """ Raised when there is an issue with the user-defined configuration.
-    Due to prior checks compiling a list of these, all are returned and
-    displayed to the user.
+    Returns
+    -------
+    list
+        List of a single object, an error message, if job size strictly
+        less than zero, contains nothing otherwise.
     """
 
-    def __init__(self):
-        pass
+    error = None
+    job_size = shared_config['job_size']
+    if job_size <= 0:
+        error = ["- Job_Size in shared arguments must be a positive value"]
+    return error
