@@ -70,7 +70,6 @@ Your custom config will need to contain at least one domain object configuration
 ### Running the data generator
 - Clone the repo
 - Set up the python environment: ```pip install -r requirements.txt```
-    - ujson requires ```Microsoft Visual C++ 14.0```. This can be downloaded from: ```https://visualstudio.microsoft.com/visual-cpp-build-tools/```. Newer versions are also sufficient.
 - Run src/app.py: ```python src/app.py```
 
 ### Common Data Generator   
