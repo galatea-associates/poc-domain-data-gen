@@ -1,7 +1,8 @@
-from domainobjects.generatable import Generatable
-from datetime import datetime
-from utils.cache import Cache
 import random
+from datetime import datetime
+
+from domainobjects.generatable import Generatable
+
 
 class Instrument(Generatable):
     """ Class to generate instruments. Generate method generates a set amount
@@ -25,12 +26,10 @@ class Instrument(Generatable):
             Containing 'record_count' instruments
         """
 
-        cache = Cache()
-
         records = []
 
-        for i in range(start_id, start_id+record_count):
-            record = self.generate_record(i, cache)
+        for i in range(start_id, start_id + record_count):
+            record = self.generate_record(i)
             records.append(record)
             self.persist_record(
                 [record['ric'], str(record['cusip']), str(record['isin'])]
@@ -39,7 +38,7 @@ class Instrument(Generatable):
         self.persist_records("instruments")
         return records
 
-    def generate_record(self, id, cache):
+    def generate_record(self, id):
         """ Generate a single instrument
 
         Parameters
@@ -47,8 +46,6 @@ class Instrument(Generatable):
         id : int
             Current id of the instrument to generate, used as a pseudo
             exchange code to ensure uniquely generated instruments
-        cache : dict
-            Storeage medium for tickers and countries of issuance.
 
         Returns
         -------
@@ -57,24 +54,24 @@ class Instrument(Generatable):
         """
 
         asset_class = self.generate_asset_class()
-        ticker = self.generate_ticker(cache)
-        country_of_issuance = self.generate_country_of_issuance(cache)
+        ticker = self.generate_ticker()
+        country_of_issuance = self.generate_country_of_issuance()
         exchange_code = id
         cusip = self.generate_random_integer(length=9)
         isin = self.generate_isin(country_of_issuance, cusip)
         ric = self.generate_ric(ticker, exchange_code)
         sedol = self.generate_random_integer(length=7)
         return {
-                'instrument_id': id,
-                'ric': ric,
-                'isin': isin,
-                'sedol': sedol,
-                'ticker': ticker,
-                'cusip': cusip,
-                'asset_class': asset_class,
-                'country_of_issuance': country_of_issuance,
-                'time_stamp': datetime.now()
-            }
+            'instrument_id': id,
+            'ric': ric,
+            'isin': isin,
+            'sedol': sedol,
+            'ticker': ticker,
+            'cusip': cusip,
+            'asset_class': asset_class,
+            'country_of_issuance': country_of_issuance,
+            'time_stamp': datetime.now()
+        }
 
     def generate_asset_class(self):
         """ Generate a predetermined asset class for instruments
@@ -87,14 +84,8 @@ class Instrument(Generatable):
 
         return 'Stock'
 
-    def generate_country_of_issuance(self, cache):
+    def generate_country_of_issuance(self):
         """ Generate a random country of issuance
-
-        Parameters
-        ----------
-        cache : dict
-            Storeage medium for tickers and countries of issuance and exchange
-            codes
 
         Returns
         -------
@@ -103,17 +94,12 @@ class Instrument(Generatable):
         """
 
         return random.choice(
-            cache.retrieve_from_cache('countries_of_issuance')
+            self.retrieve_column("exchanges",
+                                 "country_of_issuance")
         )
 
-    def generate_ticker(self, cache):
+    def generate_ticker(self):
         """ Generate a random ticker
-
-        Parameters
-        ----------
-        cache : dict
-            Storeage medium for tickers and countries of issuance and exchange
-            codes
 
         Returns
         -------
@@ -121,16 +107,10 @@ class Instrument(Generatable):
             Randomly selected ticker from those in the cache
         """
 
-        return random.choice(cache.retrieve_from_cache('tickers'))
+        return random.choice(self.retrieve_records('tickers'))
 
-    def generate_exchange_code(self, cache):
+    def generate_exchange_code(self):
         """ Generate a random exchange code
-
-        Parameters
-        ----------
-        cache : dict
-            Storeage medium for tickers and countries of issuance and exchange
-            codes
 
         Returns
         -------
@@ -138,4 +118,5 @@ class Instrument(Generatable):
             Randomly selected exchange code from those in the cache
         """
 
-        return random.choice(cache.retrieve_from_cache('exchange_codes'))
+        return random.choice(self.retrieve_column("exchanges",
+                                                  "exchange_code"))

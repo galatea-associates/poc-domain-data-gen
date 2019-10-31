@@ -1,8 +1,9 @@
-from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
-from utils.sqlite_database import Sqlite_Database
 import random
 import string
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+
+from utils.sqlite_database import Sqlite_Database
 
 
 class Generatable(ABC):
@@ -199,8 +200,8 @@ class Generatable(ABC):
         return random.choice(self.TRUE_FALSE)
 
     def generate_random_date(self, from_year=2016, to_year=2017,
-                                 from_month=1, to_month=12,
-                                 from_day=1, to_day=28):
+                             from_month=1, to_month=12,
+                             from_day=1, to_day=28):
         """ Generates a random date between two given days
 
         Parameters
@@ -253,8 +254,8 @@ class Generatable(ABC):
         """
 
         if length is not None:
-            min = 10**(length-1)
-            max = (10**length)-1
+            min = 10 ** (length - 1)
+            max = (10 ** length) - 1
 
         value = random.randint(min, max)
         return value if not negative else -value
@@ -482,7 +483,7 @@ class Generatable(ABC):
             Name of the table to persist records to
         """
 
-        if(self.__database is None):
+        if (self.__database is None):
             self.establish_db_connection()
         self.__database.persist_batch(table_name, self.__persisting_records)
         self.__database.commit_changes()
@@ -502,9 +503,29 @@ class Generatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if(self.__database is None):
+        if (self.__database is None):
             self.establish_db_connection()
         return self.__database.retrieve(table_name)
+
+    def retrieve_column(self, table_name, column_name):
+        """ Selects one column from a given database table
+
+        Parameters
+        ----------
+        table_name
+            Name of the table to retrieve all records of
+        column_name
+            Name of the column to be retrieved
+
+        Returns
+        -------
+        List
+            List containing all the values in the specified table and column
+        """
+
+        if (self.__database is None):
+            self.establish_db_connection()
+        return self.__database.retrieve_column_as_list(table_name, column_name)
 
     def retrieve_batch_records(self, table_name, amount, start_pos):
         """ Selects a batch of records from a given table. Retrieval will
@@ -526,7 +547,7 @@ class Generatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if(self.__database is None):
+        if (self.__database is None):
             self.establish_db_connection()
         return self.__database.retrieve_batch(table_name, amount, start_pos)
 

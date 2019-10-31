@@ -1,5 +1,7 @@
-import sqlite3
 import os.path
+import sqlite3
+
+import pandas as pd
 
 
 class Sqlite_Database:
@@ -15,9 +17,6 @@ class Sqlite_Database:
     -------
     persist_batch(table_name, value_lists)
         Insertion of a set of records into a specified table.
-
-    persist(table_name, value_list)
-        Insertion of a single record into a specified table.
 
     format_list_for_insertion(value_list)
         Utility method for persist methods where given lists are joined into
@@ -82,22 +81,50 @@ class Sqlite_Database:
                                  "effective_date": "text",
                                  "long_short": "text"}
 
+            exchanges_def = {"country_of_issuance": "text",
+                             "exchange_code": "text",
+                             "currency": "text"}
+
+            tickers_def = {"symbol": "text"}
+
             tables_dict = {
                 "instruments": instrument_def,
                 "counterparties": counterparty_def,
                 "swap_contracts": swap_contract_def,
-                "swap_positions": swap_position_def
+                "swap_positions": swap_position_def,
+                "exchanges": exchanges_def,
+                "tickers": tickers_def
             }
 
             for table_name, table_def in tables_dict.items():
                 self.drop_table(table_name)
                 self.create_table_from_dict(table_name, table_def)
 
+            """ Populate exchange info and tickers """
+            self.populate_prerequisite_table("exchanges", "exchange_info.csv")
+            self.populate_prerequisite_table("tickers", "tickers.csv")
+
             self.commit_changes()
         else:
             self.__connection = sqlite3.connect("dependencies.db",
                                                 timeout=30.0)
             self.__connection.row_factory = sqlite3.Row
+
+    def populate_prerequisite_table(self, table_name, file_name):
+        """ Populate a prerequisite table, table_name from a file with name
+        and location from the working directory given by file_name.
+
+        Parameters
+        ----------
+        table_name : String
+            The name of the table to insert into
+        file_name: String
+            Name of the csv file containing data to be inserted. Name should be
+            relative to the working directory
+        """
+
+        value_list = pd.read_csv(file_name).values.tolist()
+        self.persist_batch(table_name, value_list)
 
     def persist_batch(self, table_name, value_lists):
         """ Insert a given list of records into a specified table of the
@@ -125,22 +152,6 @@ class Sqlite_Database:
             formatted_lists.append(self.format_list_for_insertion(list))
         prepared_rows = ",".join(formatted_lists)
         query = " ".join(("INSERT INTO", table_name, "VALUES", prepared_rows))
-        self.__connection.execute(query)
-
-    def persist(self, table_name, value_list):
-        """ Insert a single record into a specified table of the database.
-
-        Parameters
-        ----------
-        table_name : String
-            The name of the table to insert into.
-        value_list: List
-            A single list representing the record to insert.
-        """
-
-        formatted_values = self.format_list_for_insertion(value_list)
-        query = " ".join(("INSERT INTO", table_name,
-                          "VALUES", formatted_values))
         self.__connection.execute(query)
 
     def format_list_for_insertion(self, value_list):
@@ -177,9 +188,31 @@ class Sqlite_Database:
         """
 
         cur = self.__connection.cursor()
-        cur.execute("SELECT * FROM "+table_name)
+        cur.execute("SELECT * FROM " + table_name)
         rows = cur.fetchall()
         return rows
+
+    def retrieve_column_as_list(self, table_name, column_name):
+        """ Retrieves one column of records from a given table.
+
+        Parameters
+        ----------
+        table_name : String
+            The name of the table from which to retrieve records
+        column_name : String
+            The name of the column to retrieve
+
+        Returns
+        -------
+        SQLite3 Row
+            Iterable object containing the row returned by the query
+        """
+
+        cur = self.__connection.cursor()
+        cur.execute("SELECT "+column_name.upper()+" FROM " + table_name)
+        rows = cur.fetchall()
+        list = [row[column_name] for row in rows]
+        return list
 
     def retrieve_batch(self, table_name, batch_size, offset):
         """ Retrieves a batch of records from a specified table of a given
@@ -201,7 +234,7 @@ class Sqlite_Database:
         """
 
         cur = self.__connection.cursor()
-        cur.execute("SELECT * FROM "+table_name+" LIMIT ? OFFSET ?",
+        cur.execute("SELECT * FROM " + table_name + " LIMIT ? OFFSET ?",
                     (batch_size, offset))
         rows = cur.fetchall()
         return rows
@@ -225,8 +258,8 @@ class Sqlite_Database:
         """
 
         cur = self.__connection.cursor()
-        cur.execute("SELECT * FROM "+table_name+""" ORDER BY
-                     RANDOM() LIMIT"""+amount)
+        cur.execute("SELECT * FROM " + table_name + """ ORDER BY
+                     RANDOM() LIMIT""" + amount)
         rows = cur.fetchall()
         return rows
 
@@ -245,7 +278,7 @@ class Sqlite_Database:
         """
 
         cur = self.__connection.cursor()
-        cur.execute("SELECT max(ROWID) from "+table_name)
+        cur.execute("SELECT max(ROWID) from " + table_name)
         return cur.fetchone()[0]
 
     def drop_table(self, table_name):
@@ -257,7 +290,7 @@ class Sqlite_Database:
             Name of the table to drop
         """
 
-        self.__connection.execute("DROP TABLE IF EXISTS "+table_name)
+        self.__connection.execute("DROP TABLE IF EXISTS " + table_name)
 
     # Create table 'table_name' with attributes in 'attribute_dict'
     def create_table_from_dict(self, table_name, attribute_dict):
@@ -275,11 +308,11 @@ class Sqlite_Database:
             Keys are attribute names, and values are attribute types
         """
 
-        table_definition = ["CREATE TABLE IF NOT EXISTS "+table_name+" ("]
+        table_definition = ["CREATE TABLE IF NOT EXISTS " + table_name + " ("]
         attribute_list = []
 
         for attribute, value in attribute_dict.items():
-            attribute_list.append(attribute+" "+value)
+            attribute_list.append(attribute + " " + value)
 
         attribute_list = ",".join(attribute_list)
         table_definition.append(attribute_list)

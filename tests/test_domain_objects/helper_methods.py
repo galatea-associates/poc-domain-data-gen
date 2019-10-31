@@ -20,22 +20,20 @@ def get_configuration():
     with open(file_path, 'r+') as file:
         return ujson.load(file)
 
+def create_db():
+    return Sqlite_Database()
 
 def query_db(table_name, attribute=None):
     db = Sqlite_Database()
     result = db.retrieve(table_name)
     if attribute is not None:
-        returning = []
-        for row in result:
-            returning.append(row[attribute])
+        returning = [row[attribute] for row in result]
         return returning
     else:
         return result
 
 
 # Generation Methods
-
-
 def generate_back_office_position(amount=1):
     obj = back_office_position.BackOfficePosition(None)
     return obj.generate(amount, 0)

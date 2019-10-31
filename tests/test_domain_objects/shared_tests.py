@@ -2,7 +2,6 @@ import sys
 from datetime import datetime, timedelta
 sys.path.insert(0, 'src/')
 from test_domain_objects import helper_methods as helper
-from utils.cache import Cache
 from domainobjects import instrument
 
 
@@ -53,7 +52,7 @@ def ric_exists(record):
     ric = record['ric']
     assert ric in rics
 
-
+""" Modify this test to check the exchange code is valid """
 def ric_valid(record):
     """ RIC Formatting should be a ticker followed by an exchange code.
     In this use case, exchange codes are currently integers. This test
@@ -117,8 +116,9 @@ def account_number_valid(record):
 
 
 def currency_valid(record):
-    cache = Cache()
-    currencies = cache.retrieve_from_cache('currencies')
+    database = helper.create_db()
+    currencies = database.retrieve_column_as_list("exchanges", "currency")
+
     currency = record['currency']
     assert currency in currencies
 
@@ -179,8 +179,20 @@ def price_valid(record):
     decimal = string_price.split(".")[1]
     assert 10 < price < 10000 and len(decimal) <= 2
 
-
 #  General Methods
+def expected_value(expected, actual):
+    """ Expected value matched true value """
+    assert expected == actual
+
+def actual_contains_expected(expected, actual):
+    """ Expected value matched true value """
+    valid = True
+    for obj in expected:
+        if obj not in actual:
+            valid = False
+            print("obj " +obj+ " is not in the list")
+    assert valid
+
 def is_int(obj):
     return type(obj) == int
 
