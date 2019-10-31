@@ -48,16 +48,15 @@ def main():
         os.unlink('dependencies.db')
 
     configurations = parse_config_files()
+    shared_config = configurations['shared_arguments']
+    file_builders = configurations['file_builders']
+    obj_locations = configurations['domain_object_locations']
     #validate_configs(configurations)
 
-    for generation_arguments in configurations['generation_arguments']:
+    for factory_argument in configurations['generation_arguments']:
 
-        shared_config = configurations['shared_arguments']
-        file_builders = configurations['file_builders']
-        obj_locations = configurations['domain_object_locations']
-
-        obj_name = list(generation_arguments.keys())[0]
-        gen_args = generation_arguments[obj_name]
+        obj_name = list(factory_argument.keys())[0]
+        gen_args = factory_argument[obj_name]
         file_builder = get_file_builder(gen_args, file_builders)
         obj_location = get_object_location(obj_name, obj_locations)
 
