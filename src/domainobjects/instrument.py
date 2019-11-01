@@ -56,7 +56,7 @@ class Instrument(Generatable):
         asset_class = self.generate_asset_class()
         ticker = self.generate_ticker()
         country_of_issuance = self.generate_country_of_issuance()
-        exchange_code = id
+        exchange_code = self.generate_exchange_code()
         cusip = self.generate_random_integer(length=9)
         isin = self.generate_isin(country_of_issuance, cusip)
         ric = self.generate_ric(ticker, exchange_code)
@@ -107,7 +107,7 @@ class Instrument(Generatable):
             Randomly selected ticker from those in the cache
         """
 
-        return random.choice(self.retrieve_records('tickers'))
+        return random.choice(self.retrieve_column('tickers', "symbol"))
 
     def generate_exchange_code(self):
         """ Generate a random exchange code
