@@ -12,7 +12,6 @@ class XMLBuilder(FileBuilder):
         output_dir = self.get_output_directory()
         file_name = self.get_file_name()
         root_element_name = self.get_root_element_name()
-        item_name_func = lambda x : self.get_item_name()
 
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
@@ -23,7 +22,8 @@ class XMLBuilder(FileBuilder):
 
             # convert data to bytes
             xml = dicttoxml.dicttoxml(
-                data, custom_root=root_element_name, ids=False, item_func=item_name_func
+                data, custom_root=root_element_name, 
+                ids=False, item_func=item_function
             )
 
             # convert from bytes into string
@@ -32,3 +32,6 @@ class XMLBuilder(FileBuilder):
                 .replace(' type=\"dict\"', '')\
                 .replace(' type=\"int\"', '')
             output_file.write(xml)
+
+    def item_function(self):
+        return self.get_item_name()

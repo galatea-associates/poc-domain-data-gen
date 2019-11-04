@@ -33,7 +33,6 @@
 import importlib
 import ujson
 import os
-import sys
 from argparse import ArgumentParser
 from utils.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
@@ -48,7 +47,7 @@ def main():
         os.unlink('dependencies.db')
 
     configurations = parse_config_files()
-    #validate_configs(configurations)
+    # validate_configs(configurations)
 
     for generation_arguments in configurations['generation_arguments']:
 
@@ -248,10 +247,10 @@ def parse_config_files():
             get_domain_object_location_config(dev_config_file)
 
     return {
-        "generation_arguments" : domain_object_gen_config,
-        "domain_object_locations" : domain_object_location_config,
-        "shared_arguments" : shared_config,
-        "file_builders" : file_builder_configs
+        "generation_arguments": domain_object_gen_config,
+        "domain_object_locations": domain_object_location_config,
+        "shared_arguments": shared_config,
+        "file_builders": file_builder_configs
     }
 
 
@@ -294,7 +293,7 @@ def validate_configs(configurations):
         reported at once.
     """
 
-    validation_result = config_validator.validate(config)
+    validation_result = config_validator.validate(configurations)
     print(type(validation_result))
     try:
         if validation_result.check_success():
