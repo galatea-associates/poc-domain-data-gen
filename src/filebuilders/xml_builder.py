@@ -22,8 +22,8 @@ class XMLBuilder(FileBuilder):
 
             # convert data to bytes
             xml = dicttoxml.dicttoxml(
-                data, custom_root=root_element_name, 
-                ids=False, item_func=item_function
+                data, custom_root=root_element_name,
+                ids=False, item_func=self.item_function
             )
 
             # convert from bytes into string
