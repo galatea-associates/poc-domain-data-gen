@@ -48,22 +48,25 @@ class Generator():
         self.write_queue = write_queue
         self.terminate = False
 
-    def start(self, obj_class, pool_size):
+    def start(self, object_factory):
         """ Begin the cycle of waiting for, formatting, and running jobs,
         continuing this until an instruction to terminate is observed.
 
         Parameters
         ----------
         obj_class : String
-            Instantiated domain object for calling .generate over
+            For keeping track of which domain object is being generated
         pool_size : int
             The number of processes running in the generator's pool
         """
 
+        generation_pool_size =\
+            object_factory.get_shared_args()['generator_pool_size']
+
         while not self.terminate:
             self.wait_for_jobs()
-            job_list = self.format_jobs(obj_class, pool_size)
-            self.run_jobs(job_list, pool_size)
+            job_list = self.format_jobs(object_factory, generation_pool_size)
+            self.run_jobs(job_list, generation_pool_size)
 
         self.write_queue.put("terminate")
 
@@ -74,7 +77,7 @@ class Generator():
             time.sleep(1)
         return
 
-    def format_jobs(self, obj_class, pool_size):
+    def format_jobs(self, object_factory, generation_pool_size):
         """ Takes jobs from the Multiprocess Safe Queue and places them into
         a list for later execution. If twice the pool size of jobs are
         formatted, then this list is returned. If the termination flag is
@@ -98,12 +101,12 @@ class Generator():
 
         job_list = []
         while (not self.generate_queue.empty()
-                and len(job_list) < (pool_size*2)):
+                and len(job_list) < (generation_pool_size*2)):
             job = self.get_job()
             if (job == "terminate"):
                 self.issue_termination()
             else:
-                job_list.append([job, obj_class])
+                job_list.append([job, object_factory])
         return job_list
 
     def get_job(self):

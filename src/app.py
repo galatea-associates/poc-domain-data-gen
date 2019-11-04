@@ -34,10 +34,12 @@ import importlib
 import ujson
 import os
 import sys
+import time
 from argparse import ArgumentParser
 from utils.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
 from exceptions.config_error import ConfigError
+from configuration.configuration import Configuration
 import multi_processing.batch_size_calc as batch_size_calc
 import validator.config_validator as config_validator
 
@@ -48,28 +50,54 @@ def main():
         os.unlink('dependencies.db')
 
     configurations = parse_config_files()
-    shared_config = configurations['shared_arguments']
-    file_builders = configurations['file_builders']
-    obj_locations = configurations['domain_object_locations']
-    #validate_configs(configurations)
+    factories_to_generate_from = \
+        configurations.get_user_generation_args()
+    dev_file_builder_args = configurations.get_dev_file_builder_args()
+    dev_factory_args = configurations.get_dev_factory_args()
+    shared_factory_args = configurations.get_user_shared_generation_args()
 
-    for factory_argument in configurations['generation_arguments']:
-
-        obj_name = list(factory_argument.keys())[0]
-        gen_args = factory_argument[obj_name]
-        file_builder = get_file_builder(gen_args, file_builders)
-        obj_location = get_object_location(obj_name, obj_locations)
-
-        process_domain_object(gen_args, obj_location,
-                              file_builder, shared_config)
-
-
-def get_object_location(obj_name, obj_locations):
-    obj_locations = obj_locations[0]
-    return obj_locations[obj_name]
+    for factory_definition in factories_to_generate_from:
+        file_builder =\
+            get_instantiated_file_builder(factory_definition,
+                                          dev_file_builder_args)
+        print(type(file_builder))
+        object_factory =\
+            get_instantiated_object_factory(dev_factory_args,
+                                            factory_definition,
+                                            shared_factory_args)
+        print(type(object_factory))
+        process_object_factory(file_builder, object_factory)
 
 
-def get_file_builder(obj_config, file_builder_configs):
+def process_object_factory(file_builder, object_factory):
+    """ Instantiates generation and file-writing processes. Populates the
+    generation job queue & starts both generation and writing coordinators.
+    Awaits for both coordinators to terminate before continuing to the next
+    domain object, or finishing execution.
+
+    Parameters
+    ----------
+    file_builder : File_Builder
+        An instantiated filebuilder as per this objects required output
+        file type
+    object_factory : ObjectFactory
+        Instantiated object factory for the object to generate. Contains
+        generation parameters as well as the multiprocessing shared arguments.
+    """
+
+    coordinator = Coordinator(file_builder)
+
+    # Start generation & writing subprocesses for this object
+    coordinator.start_generator(object_factory)
+    coordinator.start_writer(object_factory)
+
+    object_factory.set_batch_size(batch_size_calc.get(object_factory))
+    coordinator.create_jobs(object_factory)
+    coordinator.await_termination()
+
+
+def get_instantiated_file_builder(factory_definition,
+                                  dev_file_builder_args):
     """ Retrieves file builder object from provided configs
 
         Parameters
@@ -86,53 +114,30 @@ def get_file_builder(obj_config, file_builder_configs):
             configurations, as per the user specified output type of
             the given object configuration
     """
+    factory_name = next(iter(factory_definition))
+    factory_args = factory_definition[factory_name]
 
-    fb_name = obj_config['output_file_type']
-    fb_config = get_fb_config(file_builder_configs, fb_name)
-    file_builder = get_class('filebuilders', fb_config['module_name'],
-                             fb_config['class_name'])
-    print(obj_config)
-    return file_builder(None, obj_config)
+    file_builder_name = factory_args['output_file_type']
+    file_builder_config = get_file_builder_config(dev_file_builder_args,
+                                                  file_builder_name)
+    file_builder_class = get_class('filebuilders',
+                                   file_builder_config['module_name'],
+                                   file_builder_config['class_name'])
+    return file_builder_class(None, factory_args)
 
 
-def process_domain_object(obj_config, obj_location,
-                          file_builder, shared_config):
-    """ Instantiates generation and file-writing processes. Populates the
-    generation job queue & starts both generation and writing coordinators.
-    Awaits for both coordinators to terminate before continuing to the next
-    domain object, or finishing execution.
+def get_instantiated_object_factory(dev_factory_args,
+                                    factory_arguments,
+                                    shared_factory_args):
 
-    Parameters
-    ----------
-    obj_config : dict
-        A domain objects configuration as provided by user
-    file_builder : File_Builder
-        An instantiated filebuilder as per this objects required output
-        file type
-    shared_config : dict
-        User-provided configuration shared between all objects
-    """
-
-    obj_class = get_class('domainobjects', obj_location['module_name'],
-                          obj_location['class_name'])
-    domain_obj = obj_class(obj_config)
-
-    coordinator = Coordinator(obj_config['max_objects_per_file'], file_builder)
-
-    default_job_size = shared_config['pool_job_size']
-    generator_pool_size = shared_config['generator_pool_size']
-    writer_pool_size = shared_config['writer_pool_size']
-
-    # Start generation & writing subprocesses for this object
-    coordinator.start_generator(domain_obj, generator_pool_size)
-    coordinator.start_writer(writer_pool_size)
-
-    obj_name = obj_location['class_name']
-    record_count = get_record_count(obj_config, obj_location)
-    job_size = batch_size_calc.get(obj_name, default_job_size)
-
-    coordinator.create_jobs(obj_name, record_count, job_size)
-    coordinator.await_termination()
+    object_factory_name = next(iter(factory_arguments))
+    object_factory_config = get_object_factory_config(dev_factory_args,
+                                                      object_factory_name)
+    object_factory_class = get_class('domainobjects',
+                                     object_factory_config['module_name'],
+                                     object_factory_config['class_name'])
+    return object_factory_class(factory_arguments[object_factory_name], 
+                                shared_factory_args)
 
 
 def get_record_count(obj_config, obj_location):
@@ -169,7 +174,7 @@ def get_record_count(obj_config, obj_location):
             return db.get_table_size('swap_positions')
 
 
-def get_fb_config(file_builders, file_extension):
+def get_file_builder_config(file_builders, file_extension):
     """ Get the configuration of a specified filebuilder. Iterate over the
     set of file builder keys and if one matches the provided file extension
     then return the full configuration of that file builder.
@@ -190,12 +195,13 @@ def get_fb_config(file_builders, file_extension):
         type required.
     """
     file_builder_dict = file_builders[0]
-    file_builder_dict_keys = file_builder_dict.keys()
-
-    for file_builder in list(file_builder_dict_keys):
-        if file_builder == file_extension:
-            return file_builder_dict[file_builder]
+    return file_builder_dict[file_extension]
     # TODO: Raise error if no file builder found for given configuration
+
+
+def get_object_factory_config(dev_factory_args, object_factory_name):
+    dev_factory_args_dict = dev_factory_args[0]
+    return dev_factory_args_dict[object_factory_name]
 
 
 def get_class(package_name, module_name, class_name):
@@ -232,26 +238,24 @@ def parse_config_files():
         both user-facing and dev-facing configuration files.
     """
 
-    command_line_args = get_args()
+    config_location = get_args()
 
-    with open(command_line_args.user_config) as user_config_file:
-        user_config_file = ujson.load(user_config_file)
-        domain_object_gen_config =\
-            get_domain_object_config(user_config_file)
-        shared_config = get_shared_config(user_config_file)
+    with open(config_location.user_config) as user_config:
+        parsed_user_config = ujson.load(user_config)
+        domain_object_gen_config = parsed_user_config['domain_objects']
+        shared_config = parsed_user_config['shared_generation_arguments']
 
-    with open(command_line_args.dev_config) as dev_config_file:
-        dev_config_file = ujson.load(dev_config_file)
-        file_builder_configs = get_file_builder_configs(dev_config_file)
-        domain_object_location_config = \
-            get_domain_object_location_config(dev_config_file)
+    with open(config_location.dev_config) as dev_config:
+        parsed_dev_config = ujson.load(dev_config)
+        file_builder_configs = parsed_dev_config['file_builders']
+        domain_object_location_config = parsed_dev_config['domain_objects']
 
-    return {
+    return Configuration({
         "generation_arguments" : domain_object_gen_config,
-        "domain_object_locations" : domain_object_location_config,
+        "domain_objects" : domain_object_location_config,
         "shared_arguments" : shared_config,
         "file_builders" : file_builder_configs
-    }
+    })
 
 
 def get_args():
@@ -307,76 +311,6 @@ def validate_configs(configurations):
             print(error)
         # Re-raised to halt operation
         raise
-
-
-def get_domain_object_config(config_file):
-    """ Return the domain object section of the given configuration file.
-
-    Parameters
-    ----------
-    config_file : dict
-        Dictionary of parsed json configuration file
-
-    Returns
-    -------
-    dict
-        Domain object configuration of given config
-    """
-
-    return config_file['domain_objects']
-
-
-def get_shared_config(config_file):
-    """ Return the shared configuration section of the given configuration
-    file.
-
-    Parameters
-    ----------
-    config_file : dict
-        Dictionary of parsed json configuration file
-
-    Returns
-    -------
-    dict
-        Shared generation configuration of given config
-    """
-
-    return config_file['shared_generation_arguments']
-
-
-def get_file_builder_configs(config_file):
-    """ Return the file builder section of the given configuration file.
-
-    Parameters
-    ----------
-    config_file : dict
-        Dictionary of parsed json configuration file
-
-    Returns
-    -------
-    dict
-        File builder configuration of given config
-    """
-
-    return config_file['file_builders']
-
-
-def get_domain_object_location_config(config_file):
-    """ Return the domain object file location in the codebase section of the
-    given configuration file.
-
-    Parameters
-    ----------
-    config_file : dict
-        Dictionary of parsed json configuration file
-
-    Returns
-    -------
-    dict
-        Domain object file location in code base section of given config
-    """
-
-    return config_file['domain_objects']
 
 
 if __name__ == '__main__':

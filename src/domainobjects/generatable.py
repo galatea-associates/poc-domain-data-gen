@@ -143,11 +143,12 @@ class Generatable(ABC):
     RETURN_TYPES = ['Outstanding', 'Pending Return', 'Pending Recall',
                     'Partial Return', 'Partial Recall', 'Settled']
 
-    def __init__(self, domain_object_config):
+    def __init__(self, factory_args, shared_factory_args):
         """ Set configuration, default database connection to None and
         instantiate list of records to persist to be empty. """
 
-        self.__config = domain_object_config
+        self.__config = factory_args
+        self.__shared_args = shared_factory_args
         self.__database = None
         self.__persisting_records = []
 
@@ -553,7 +554,7 @@ class Generatable(ABC):
         self.__database = Sqlite_Database()
         return self.__database
 
-    def get_object_config(self):
+    def get_factory_config(self):
         """ Returns the current objects user-specified configuration
 
         Returns
@@ -574,3 +575,34 @@ class Generatable(ABC):
         """
 
         return self.__config['custom_args']
+
+    def get_shared_args(self):
+        """ Returns the shared multiprocessing arguments for multiprocessing.
+
+        Returns
+        -------
+        Dict
+            The arguments shared between factories for multiprocessing.
+        """
+        return self.__shared_args
+
+    def get_record_count(self):
+        """ Returns the number of records the factory is to produce.
+
+        Returns
+        -------
+        int
+            The number of records this factory will produce.
+        """
+        print(self.__config)
+        return int(self.__config['fixed_args']['record_count'])
+
+    def set_batch_size(self, batch_size):
+        """ Sets the batch size value for the factory.
+
+        Parameters
+        ----------
+        batch_size : int
+            The size of the batch to generate objects in
+        """
+        self.batch_size = batch_size

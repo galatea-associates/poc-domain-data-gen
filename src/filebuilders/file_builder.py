@@ -11,7 +11,7 @@ class FileBuilder(abc.ABC):
     Attributes
     ----------
     file_name : String
-        Initially, the domain object, later extended to combine this with
+        Initially, the object factory, later extended to combine this with
         the sequential naming formatting and file extension.
     file_extension : String
         The output file type
@@ -49,7 +49,7 @@ class FileBuilder(abc.ABC):
         Returns the name of each XML item
     """
 
-    def __init__(self, google_drive_connector, domain_object_config):
+    def __init__(self, google_drive_connector, factory_config):
         """ Initialises various values required for correct behaviour when
         writing out to files.
 
@@ -58,21 +58,22 @@ class FileBuilder(abc.ABC):
         google_drive_connector : Google_Drive_Connector
             Instantiated connector object for uploading to a pre-defined
             google drive directory.
-        domain_object_config : Dict
+        factory_config : Dict
             Dictionary containing the parsed json user-defined configuration
-            for the current object.
+            for the current factory.
         """
 
-        file_type = domain_object_config['output_file_type']
-        file_name = domain_object_config['file_name']
+        file_type = factory_config['output_file_type']
+        file_name = factory_config['file_name']
         file_extension = file_type.lower()
 
         self.__google_drive_connector = google_drive_connector
         self.__file_name = file_name + '_{}.' + file_extension
-        self.__output_dir = domain_object_config['output_directory']
+        self.__output_dir = factory_config['output_directory']
+        self.__max_objects_per_file = factory_config['max_objects_per_file']
 
         if file_type == 'XML':
-            file_specific_config = domain_object_config['file_type_args']
+            file_specific_config = factory_config['file_type_args']
             self.__root_element_name = \
                 file_specific_config['xml_root_element']
             self.__item_name = file_specific_config['xml_item_name']
@@ -184,3 +185,13 @@ class FileBuilder(abc.ABC):
             The XML item name
         """
         return self.__item_name
+
+    def get_max_objects_per_file(self):
+        """ Returns the maximum number of objects to write to each file.
+
+        Returns
+        -------
+        int
+            The maximum number of objects to write to each file.
+        """
+        return self.__max_objects_per_file

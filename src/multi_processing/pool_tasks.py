@@ -59,14 +59,13 @@ def generate_data(job):
     """
 
     instructions = job[0]
-    domain_object = job[1]
+    object_factory = job[1]
 
-    domain_object_name = instructions['domain_object']
-    amount = instructions['amount']
+    quantity = instructions['quantity']
     start_id = instructions['start_id']
 
-    records = domain_object.generate(amount, start_id)
-    output = [domain_object_name, records]
+    records = object_factory.generate(quantity, start_id)
+    output = [records]
     return output
 
 
