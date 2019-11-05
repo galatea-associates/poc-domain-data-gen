@@ -51,7 +51,8 @@ class FileBuilder(abc.ABC):
 
     def __init__(self, google_drive_connector, factory_config):
         """ Initialises various values required for correct behaviour when
-        writing out to files.
+        writing out to files. Stores XML-specific data where the specified
+        output type is XML. 
 
         Parameters
         ----------

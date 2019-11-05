@@ -47,15 +47,15 @@ def generate_data(job):
     Parameters
     ----------
     job : list
-        List of 2 elements, the instruction to generate, and the instantiated
-        domain object.
+        List of 2 elements, firstly, the production instructions for objects:
+        quantity to produce and the id to start generation from. The second
+        element is the instantiated factory.
 
     Returns
     -------
     list
-        Two element list. First, the objects name, for the purpose of
-        segmenting records within the write coordinator. The second, a list
-        of records, is the result of the generate call.
+        List containing all the records produced by this factory for this
+        instruction set.
     """
 
     instructions = job[0]
@@ -65,8 +65,7 @@ def generate_data(job):
     start_id = instructions['start_id']
 
     records = object_factory.generate(quantity, start_id)
-    output = [records]
-    return output
+    return records
 
 
 def write(job_list, pool_size):

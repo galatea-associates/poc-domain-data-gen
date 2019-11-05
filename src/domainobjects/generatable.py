@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from utils.sqlite_database import Sqlite_Database
+import multi_processing.batch_size_calc as batch_size_calc
 import random
 import string
 
@@ -145,7 +146,16 @@ class Generatable(ABC):
 
     def __init__(self, factory_args, shared_factory_args):
         """ Set configuration, default database connection to None and
-        instantiate list of records to persist to be empty. """
+        instantiate list of records to persist to be empty. 
+        
+        Parameters
+        ----------
+        factory_args : dict
+            Factory settings as set by the user, such as number of records to
+            generate and any object-specific arguments.
+        shared_factory_args : dict
+            All multiprocessing arguments and their user-assigned values
+        """
 
         self.__config = factory_args
         self.__shared_args = shared_factory_args
@@ -594,10 +604,9 @@ class Generatable(ABC):
         int
             The number of records this factory will produce.
         """
-        print(self.__config)
         return int(self.__config['fixed_args']['record_count'])
 
-    def set_batch_size(self, batch_size):
+    def set_batch_size(self):
         """ Sets the batch size value for the factory.
 
         Parameters
@@ -605,4 +614,4 @@ class Generatable(ABC):
         batch_size : int
             The size of the batch to generate objects in
         """
-        self.batch_size = batch_size
+        self.batch_size = batch_size_calc.get(self)

@@ -54,10 +54,9 @@ class Generator():
 
         Parameters
         ----------
-        obj_class : String
-            For keeping track of which domain object is being generated
-        pool_size : int
-            The number of processes running in the generator's pool
+        object_factory : Generatable
+            Instantiated and pre-configured object factory which produces
+            the current object.
         """
 
         generation_pool_size =\
@@ -86,9 +85,10 @@ class Generator():
 
         Parameters
         ----------
-        obj_class : String
-            For keeping track of which domain object is being generated
-        pool_size : int
+        object_factory : Generatable
+            Instantiated and pre-configured object factory which produces
+            the current object.
+        generator_pool_size : int
             The number of processes running in the generator's pool
 
         Returns
@@ -100,6 +100,7 @@ class Generator():
         """
 
         job_list = []
+
         while (not self.generate_queue.empty()
                 and len(job_list) < (generation_pool_size*2)):
             job = self.get_job()

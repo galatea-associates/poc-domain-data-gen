@@ -165,20 +165,16 @@ class Writer():
         self.terminate = True
 
     def add_to_stored_records(self, records):
-        """ From the dequeued list of lists of records, the record lists are
-        amalgamated within a central store.
+        """ From the dequeued list of records, the record lists are combined
+        within a central store.
 
         Parameters
         ----------
-        domain_object
-            Name of the domain_object the data pertains to. TODO: Irrelevant
-            information in this stage, remove this variable.
-        records
-            The List of lists of records.
+        records : List
+            List of records
         """
 
-        for item in records:
-            self.all_records.append(item)
+        self.all_records.append(records)
 
     def calculate_writes(self):
         """ Calculates jobs from the currently dequeued information observed.
