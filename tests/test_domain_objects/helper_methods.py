@@ -1,8 +1,9 @@
-import sys
 import os
+import sys
 import ujson
+
 sys.path.insert(0, 'src/')
-from utils.sqlite_database import Sqlite_Database
+from database.sqlite_database import Sqlite_Database
 from domainobjects import back_office_position, cash_balance, cashflow
 from domainobjects import counterparty, depot_position, front_office_position
 from domainobjects import instrument, order_execution, price
@@ -20,8 +21,18 @@ def get_configuration():
     with open(file_path, 'r+') as file:
         return ujson.load(file)
 
+
 def create_db():
     return Sqlite_Database()
+
+
+def create_test_table(database, table_name, attribute_dict):
+    database.create_table_from_dict(table_name, attribute_dict)
+
+
+def drop_test_table(database, table_name):
+    database.get_connection().execute("DROP TABLE IF EXISTS " + table_name)
+
 
 def query_db(table_name, attribute=None):
     db = Sqlite_Database()

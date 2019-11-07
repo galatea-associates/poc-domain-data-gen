@@ -3,7 +3,7 @@ import string
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 
-from utils.sqlite_database import Sqlite_Database
+from database.sqlite_database import Sqlite_Database
 
 
 class Generatable(ABC):

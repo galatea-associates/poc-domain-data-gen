@@ -15,6 +15,10 @@ class Sqlite_Database:
 
     Methods
     -------
+    populate_prerequisite_table(table_name, file_name)
+        Populate a prerequisite table, table_name from a file with name
+        and location from the working directory given by file_name.
+
     persist_batch(table_name, value_lists)
         Insertion of a set of records into a specified table.
 
@@ -28,6 +32,9 @@ class Sqlite_Database:
     retrieve_batch(table_name, batch_size, offset)
         Retrieves a given number of records from a specified table from a
         given point onward.
+
+    retrieve_column_as_list(table_name, column_name)
+        Retrieves one column of records from a given table.
 
     retrieve_sample(table_name, amount)
         Retrieves a random sample of given size from a specified table.
@@ -47,6 +54,9 @@ class Sqlite_Database:
 
     close_connection()
         Close the connection to the database.
+
+    get_connection()
+        Return the database connection. For testing purposes mainly
     """
 
     def __init__(self):
@@ -259,7 +269,7 @@ class Sqlite_Database:
 
         cur = self.__connection.cursor()
         cur.execute("SELECT * FROM " + table_name + """ ORDER BY
-                     RANDOM() LIMIT""" + amount)
+                     RANDOM() LIMIT """ + str(amount))
         rows = cur.fetchall()
         return rows
 
@@ -328,3 +338,7 @@ class Sqlite_Database:
     def close_connection(self):
         """ Close the connection to the database. """
         self.__connection.close()
+
+    def get_connection(self):
+        """Return the database connection. For testing purposes mainly """
+        return self.__connection
