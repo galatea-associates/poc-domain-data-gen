@@ -24,8 +24,7 @@ def test_instruments():
 def sedol_valid(record):
     """ SEDOLs must both: be integers, and of length 7 """
     sedol = record['sedol']
-    assert shared.is_int(sedol) \
-           and shared.is_length(7, sedol)
+    assert shared.is_int(sedol) and shared.is_length(7, sedol)
 
 
 def ticker_valid(record):
