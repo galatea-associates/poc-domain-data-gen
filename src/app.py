@@ -294,7 +294,6 @@ def validate_configs(configurations):
     """
 
     validation_result = config_validator.validate(configurations)
-    print(type(validation_result))
     try:
         if validation_result.check_success():
             print("No errors found in config")

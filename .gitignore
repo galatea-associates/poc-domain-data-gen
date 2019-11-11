@@ -25,3 +25,5 @@ client_secrets.json
 out
 .pytest_cache
 *.code-workspace
+dependencies.db
+**.iml
