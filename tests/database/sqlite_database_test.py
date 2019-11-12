@@ -379,4 +379,3 @@ def test_create_table_from_dict():
 
     # table has the correct rows
     shared.expected_value(expected_rows, rows)
-
