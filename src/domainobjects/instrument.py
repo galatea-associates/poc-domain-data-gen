@@ -27,7 +27,7 @@ class Instrument(Generatable):
         """
 
         self.countries_of_issuance = \
-        self.retrieve_column("exchanges", "country_of_issuance")
+            self.retrieve_column("exchanges", "country_of_issuance")
         self.tickers = self.retrieve_column('tickers', "symbol")
         self.exchange_codes = self.retrieve_column("exchanges",
                                                    "exchange_code")
