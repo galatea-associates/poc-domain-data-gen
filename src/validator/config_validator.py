@@ -43,7 +43,7 @@ def validate(config):
     # Flatten list of lists to single list
     errors = [error for sub_error in errors for error in sub_error]
 
-    if len(errors) is not 0:
+    if len(errors) != 0:
         return Validation_Result(False, errors)
     else:
         return Validation_Result(True, None)

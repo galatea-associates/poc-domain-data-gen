@@ -7,6 +7,7 @@ from test_domain_objects import helper_methods as helper
 def test_swap_contracts():
     records, domain_obj = helper.set_up_swap_contract_tests()
     for record in records:
+        shared.attribute_quantity_valid(record, 19)
         shared.attribute_exists(record['counterparty_id'],
                                 'id', 'counterparties')
         uuid_valid(record)

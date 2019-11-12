@@ -10,6 +10,7 @@ def test_cash_balance():
 
     records, domain_obj = helper.set_up_cash_balance_tests()
     for record in records:
+        shared.attribute_quantity_valid(record, 5)
         shared.amount_valid(record)
         shared.currency_valid(record)
         shared.account_number_valid(record)

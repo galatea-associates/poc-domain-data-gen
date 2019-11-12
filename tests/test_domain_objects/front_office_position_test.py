@@ -7,6 +7,7 @@ from test_domain_objects import helper_methods as helper
 def test_front_office_position():
     records, domain_obj = helper.set_up_front_office_position_tests()
     for record in records:
+        shared.attribute_quantity_valid(record, 9)
         shared.ric_exists(record)
         shared.position_type_valid(record)
         shared.knowledge_date_valid(record)
