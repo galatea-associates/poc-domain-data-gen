@@ -26,6 +26,11 @@ class Instrument(Generatable):
             Containing 'record_count' instruments
         """
 
+        self.countries_of_issuance = \
+        self.retrieve_column("exchanges", "country_of_issuance")
+        self.tickers = self.retrieve_column('tickers', "symbol")
+        self.exchange_codes = self.retrieve_column("exchanges",
+                                                   "exchange_code")
         records = []
 
         for i in range(start_id, start_id + record_count):
@@ -93,10 +98,7 @@ class Instrument(Generatable):
             Randomly selected country code from those in the cache
         """
 
-        return random.choice(
-            self.retrieve_column("exchanges",
-                                 "country_of_issuance")
-        )
+        return random.choice(self.countries_of_issuance)
 
     def generate_ticker(self):
         """ Generate a random ticker
@@ -107,7 +109,7 @@ class Instrument(Generatable):
             Randomly selected ticker from those in the cache
         """
 
-        return random.choice(self.retrieve_column('tickers', "symbol"))
+        return random.choice(self.tickers)
 
     def generate_exchange_code(self):
         """ Generate a random exchange code
@@ -118,5 +120,4 @@ class Instrument(Generatable):
             Randomly selected exchange code from those in the cache
         """
 
-        return random.choice(self.retrieve_column("exchanges",
-                                                  "exchange_code"))
+        return random.choice(self.exchange_codes)
