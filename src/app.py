@@ -64,7 +64,6 @@ def main():
                               file_builder, shared_config)
 
 
-
 def get_object_location(obj_name, obj_locations):
     obj_locations = obj_locations[0]
     return obj_locations[obj_name]
