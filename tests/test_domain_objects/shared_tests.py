@@ -14,17 +14,20 @@ domain_obj = instrument.Instrument(None)
 
 def attribute_quantity_valid(record, quantity):
     """
-    Checks to see if number of attributes (domain object dict keys) has changed since tests were last updated.
-    Failure of this test indicates a chance that new attributes have been added to the domain object without
-    test cases existing to validate them. The implementation of this test for each domain object should be
-    updated whenever the number of attributes change, provided tests exist to validate those attributes.
+    Checks to see if number of attributes (domain object dict keys) has
+    changed since tests were last updated. Failure of this test indicates a
+    chance that new attributes have been added to the domain object without
+    test cases existing to validate them. The implementation of this test for
+    each domain object should be updated whenever the number of attributes
+    change, provided tests exist to validate those attributes.
     """
     error_message = f"""
     Test failed on record: {str(record)}
     Number of attributes expected: {quantity}
     Number of attributes found: {len(record)}
     Domain Object attributes have been added since this test was written.
-    Ensure tests have also been provided to validate all newly added attributes of this domain object."""
+    Ensure tests have also been provided to validate all newly added 
+    attributes of this domain object."""
     assert len(record) == quantity, error_message
 
 
