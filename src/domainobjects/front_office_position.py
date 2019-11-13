@@ -1,6 +1,8 @@
-from domainobjects.generatable import Generatable
-from datetime import datetime
 import random
+from datetime import datetime
+
+from domainobjects.generatable import Generatable
+
 
 class FrontOfficePosition(Generatable):
     """ Class to generate front office positions. Generate method will
@@ -30,7 +32,7 @@ class FrontOfficePosition(Generatable):
 
         records = []
 
-        for _ in range(start_id, start_id+record_count):
+        for _ in range(start_id, start_id + record_count):
             instrument = self.get_random_instrument()
             records.append(self.get_record(instrument))
         return records
@@ -56,7 +58,7 @@ class FrontOfficePosition(Generatable):
             'position_type': position_type,
             'knowledge_date': knowledge_date,
             'effective_date': self.generate_effective_date(
-                                2, knowledge_date, position_type),
+                2, knowledge_date, position_type),
             'account': self.generate_account(),
             'direction': self.generate_credit_debit(),
             'qty': self.generate_random_integer(),

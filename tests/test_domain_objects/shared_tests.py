@@ -78,7 +78,7 @@ def unique_ids(records, object_name):
     id_field_name = object_name+'_id'
 
     for record in records:
-            id_set.add(record[id_field_name])
+        id_set.add(record[id_field_name])
     assert len(records) == len(id_set)
 
 
