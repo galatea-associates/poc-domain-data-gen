@@ -264,6 +264,5 @@ def validate_config(config):
         # Re-raised to halt operation
         raise
 
-
 if __name__ == '__main__':
     main()

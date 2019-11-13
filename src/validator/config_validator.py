@@ -152,7 +152,6 @@ def get_file_extensions(file_builder_configs):
         file_extensions.append(config['name'])
     return file_extensions
 
-
 def validate_pool_sizes_non_zero(shared_config):
     """ Verifies that pool sizes for both generation and writing pools are
     non-zero and positive.
