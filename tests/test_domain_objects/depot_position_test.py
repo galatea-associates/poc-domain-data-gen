@@ -7,6 +7,7 @@ from utils import helper_methods as helper
 def test_depot_position():
     records, domain_obj = helper.set_up_depot_position_tests()
     for record in records:
+        shared.attribute_quantity_valid(record, 9)
         shared.isin_exists(record)
         shared.knowledge_date_valid(record)
         shared.position_type_valid(record)

@@ -12,6 +12,7 @@ def test_instruments():
     records = helper.set_up_instrument_tests()
     shared.unique_ids(records, 'instrument')
     for record in records:
+        shared.attribute_quantity_valid(record, 9)
         shared.ric_valid(record)
         shared.isin_valid(record)
         sedol_valid(record)

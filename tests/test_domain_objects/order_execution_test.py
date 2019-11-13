@@ -8,6 +8,7 @@ def test_order_executions():
     records = helper.set_up_order_execution_tests()
     shared.unique_ids(records, 'order')
     for record in records:
+        shared.attribute_quantity_valid(record, 10)
         shared.account_number_valid(record)
         shared.direction_valid(record)
         sto_id_valid(record)
