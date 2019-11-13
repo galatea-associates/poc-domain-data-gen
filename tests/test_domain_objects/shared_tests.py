@@ -26,7 +26,7 @@ def attribute_quantity_valid(record, quantity):
     Number of attributes expected: {quantity}
     Number of attributes found: {len(record)}
     Domain Object attributes have been added since this test was written.
-    Ensure tests have also been provided to validate all newly added 
+    Ensure tests have also been provided to validate all newly added
     attributes of this domain object."""
     assert len(record) == quantity, error_message
 
