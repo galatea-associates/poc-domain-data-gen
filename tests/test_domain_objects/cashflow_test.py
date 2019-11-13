@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, 'tests/')
-from test_domain_objects import shared_tests as shared
-from test_domain_objects import helper_methods as helper
+from utils import shared_tests as shared
+from utils import helper_methods as helper
 
 
 def test_cashflows():

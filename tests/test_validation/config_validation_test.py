@@ -1,3 +1,7 @@
+import json
+import sys
+from validator import config_validator as validator
+
 """ The approach used in each of these tests hinges on a pre-written config
 file. This file will either be set up to pass all validation, or fail a single
 point of validation.
@@ -6,10 +10,6 @@ The validator returns a "Validation_Result" object, which contains a boolean
 flag on whether the validation failed or succeeded. This value is what is
 asserted against. Where tests are set up to fail, assert that the result is
 False. Where tests are due to succeed, assert against True. """
-import sys
-sys.path.insert(0, 'src/')
-from validator import config_validator as validator 
-import json
 
 
 def test_record_count_success():
