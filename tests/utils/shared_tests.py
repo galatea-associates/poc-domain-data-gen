@@ -1,10 +1,9 @@
 import sys
 from datetime import datetime, timedelta
-sys.path.insert(0, 'src/')
-from test_domain_objects import helper_methods as helper
-from utils.cache import Cache
-from domainobjects import instrument
 
+sys.path.insert(0, 'src/')
+from utils import helper_methods as helper
+from domainobjects import instrument
 
 # Shared Tests
 # domain_obj gives access to defined constant lists in the parent class
@@ -53,7 +52,6 @@ def ric_exists(record):
     ric = record['ric']
     assert ric in rics
 
-
 def ric_valid(record):
     """ RIC Formatting should be a ticker followed by an exchange code.
     In this use case, exchange codes are currently integers. This test
@@ -61,21 +59,23 @@ def ric_valid(record):
     exchange codes. """
     ric = record['ric']
     ticker = record['ticker']
-    id = str(record['instrument_id'])
-    assert valid_ric(ticker, ric, id)
+    assert valid_ric(ticker, ric)
 
 
-def valid_ric(ticker, ric, id):
-    """ Valid RIC is in format '"ticker"."id"' """
+def valid_ric(ticker, ric):
+    """ Valid RIC is in format '"ticker"."exchange code"' """
     split_ric = ric.split('.')
     ticker_ = split_ric[0]
-    id_ = split_ric[1]
-    return ticker == ticker_ and id == id_
+    exchange = split_ric[1]
+    database = helper.create_db()
+    exchange_list = database.retrieve_column_as_list("exchanges",
+                                                     "exchange_code")
+    return ticker == ticker_ and exchange in exchange_list
 
 
 def unique_ids(records, object_name):
     id_set = set()
-    id_field_name = object_name+'_id'
+    id_field_name = object_name + '_id'
 
     for record in records:
         id_set.add(record[id_field_name])
@@ -83,7 +83,7 @@ def unique_ids(records, object_name):
 
 
 def dummy_fields_valid(record, object_name):
-    partial_field_name = object_name+'_field'
+    partial_field_name = object_name + '_field'
     dummy_field_names = get_dummy_field_names(record, partial_field_name)
 
     for dummy_field in dummy_field_names:
@@ -117,8 +117,9 @@ def account_number_valid(record):
 
 
 def currency_valid(record):
-    cache = Cache()
-    currencies = cache.retrieve_from_cache('currencies')
+    database = helper.create_db()
+    currencies = database.retrieve_column_as_list("exchanges", "currency")
+
     currency = record['currency']
     assert currency in currencies
 
@@ -181,6 +182,21 @@ def price_valid(record):
 
 
 #  General Methods
+def expected_value(expected, actual):
+    """ Expected value matched true value """
+    assert expected == actual
+
+
+def actual_contains_expected(expected, actual):
+    """ Expected value matched true value """
+    valid = True
+    for obj in expected:
+        if obj not in actual:
+            valid = False
+            print("obj " + obj + " is not in the list")
+    assert valid
+
+
 def is_int(obj):
     return type(obj) == int
 
