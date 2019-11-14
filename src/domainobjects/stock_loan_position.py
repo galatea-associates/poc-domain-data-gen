@@ -52,7 +52,7 @@ class StockLoanPosition(Generatable):
         position_type = self.generate_position_type()
         knowledge_date = self.generate_knowledge_date()
         collateral_type = self.generate_collateral_type()
-        return {
+        record = {
                 'stock_loan_contract_id': id,
                 'ric': instrument['ric'],
                 'knowledge_date': knowledge_date,
@@ -74,6 +74,8 @@ class StockLoanPosition(Generatable):
                 'return_type': self.generate_return_type(),
                 'time_stamp': datetime.now()
             }
+        record.update(self.get_dummy_fields_record())
+        return record
 
     def generate_haircut(self, collateral_type):
         """ Generate a haircut value based on collateral type

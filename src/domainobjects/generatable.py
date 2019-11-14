@@ -160,6 +160,44 @@ class Generatable(ABC):
 
         pass
 
+    def get_dummy_fields_record(self):
+        """ Return dictionary of populated dummy fields based on user
+        specification in config for the domain object subclass calling
+        this function
+
+        Returns
+        -------
+        dummy_fields_record : dict
+            A dictionary of dummy fields as specified in the config for
+            domain object class calling the function
+        """
+        dummy_fields_record = {}
+        obj_name = self.__config["module_name"]
+        min_field_count = max_field_count = 1  # initialise for loop counters
+
+        for dummy_field in self.__config["dummy_fields"]:
+            field_count = int(dummy_field["field_count"])
+            if field_count < 1:
+                continue
+
+            max_field_count += field_count  # set to cumulative total
+
+            data_type = dummy_field["data_type"]
+            data_length = int(dummy_field["data_length"])
+
+            if data_type == "string":
+                data_method = self.generate_random_string
+            elif data_type == "numeric":
+                data_method = self.generate_random_integer
+
+            for count in range(min_field_count, max_field_count):
+                dummy_fields_record[f'{obj_name}_field{count}'] = \
+                    data_method(length=data_length)
+
+            min_field_count = max_field_count  # set to cumulative total
+
+        return dummy_fields_record
+
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
         """ Generates a random string, of letters or numbers or both.

@@ -45,7 +45,7 @@ class OrderExecution(Generatable):
         """
 
         instrument = self.get_random_instrument()
-        return {
+        record = {
                 'order_id': id,
                 'account_num': self.generate_random_integer(length=8),
                 'direction': self.generate_credit_debit(),
@@ -57,3 +57,5 @@ class OrderExecution(Generatable):
                 'qty': self.generate_random_integer(),
                 'time_stamp': datetime.now(),
             }
+        record.update(self.get_dummy_fields_record())
+        return record

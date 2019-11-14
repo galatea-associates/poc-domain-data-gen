@@ -68,7 +68,7 @@ class Cashflow(Generatable):
         if self.cashflow_accrues(effective_date, accrual, probability):
             pay_date_period = cf_arg['cashFlowPaydatePeriod']
             p_date_func = self.get_pay_date_func(pay_date_period)
-            return {
+            record = {
                 'swap_contract_id': swap_position['swap_contract_id'],
                 'ric': swap_position['ric'],
                 'cashflow_type': cf_arg['cashFlowType'],
@@ -79,6 +79,8 @@ class Cashflow(Generatable):
                 'amount': self.generate_random_integer(),
                 'long_short': swap_position['long_short']
             }
+            record.update(self.get_dummy_fields_record())
+            return record
 
     def effective_date(self, effective_date):
         """ Parse string time into Datetime type

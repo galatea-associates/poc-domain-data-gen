@@ -80,14 +80,7 @@ class SwapContract(Generatable):
             'reference_rate': self.generate_reference_rate(),
             'time_stamp': datetime.now()
         }
-
-        # for loop below can be easily changed to iterate over
-        # range(1, num_contracts + 1) where num_contracts is provided in
-        # config.json if we want to let users customise output in this way
-        for index in range(1, 9):
-            record[f'swap_contract_field{index}'] =\
-                self.generate_random_string(10)
-
+        record.update(self.get_dummy_fields_record())
         return record
 
     def get_number_of_swaps(self):

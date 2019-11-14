@@ -14,10 +14,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -37,10 +39,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -60,10 +64,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -83,10 +89,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -104,12 +112,14 @@
       "output_directory": "out",
       "upload_to_google_drive": "false",
       "dummy_fields": [
-        {
+         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -129,10 +139,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -152,10 +164,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -175,10 +189,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -198,10 +214,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -227,10 +245,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -253,10 +273,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
@@ -283,10 +305,12 @@
       "dummy_fields": [
         {
           "data_type": "string",
+          "data_length": "10",
           "field_count": "50"
         },
         {
           "data_type": "numeric",
+          "data_length": "10",
           "field_count": "50"
         }
       ],
