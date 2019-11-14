@@ -4,6 +4,7 @@ import uuid
 from datetime import datetime, timedelta
 from domainobjects.generatable import Generatable
 
+
 class SwapContract(Generatable):
     """ Class to generate swap contracts. Generate method will generate a set
     of swap contracts. Other generation methods are included where swap
@@ -59,34 +60,33 @@ class SwapContract(Generatable):
             A single swap contract object
         """
 
-        record = self.instantiate_record()
-
         status = self.generate_status()
         start_date = self.generate_random_date()
         contract_id = str(uuid.uuid1())
         self.persist_record([contract_id])
 
-        record['counterparty_id'] = counterparty
-        record['swap_contract_id'] = contract_id
-        record['swap_mnemonic'] = self.generate_random_string(10)
-        record['is_short_mtm_financed'] = self.generate_random_boolean()
-        record['accounting_area'] = self.generate_random_string(10)
-        record['status'] = status
-        record['start_date'] = start_date
-        record['end_date'] = self.generate_swap_end_date(
+        record = {
+            'counterparty_id': counterparty,
+            'swap_contract_id': contract_id,
+            'swap_mnemonic': self.generate_random_string(10),
+            'is_short_mtm_financed': self.generate_random_boolean(),
+            'accounting_area': self.generate_random_string(10),
+            'status': status,
+            'start_date': start_date,
+            'end_date': self.generate_swap_end_date(
                                     start_date=start_date,
-                                    status=status)
-        record['swap_type'] = self.generate_swap_type()
-        record['reference_rate'] = self.generate_reference_rate()
-        record['swap_contract_field1'] = self.generate_random_string(10)
-        record['swap_contract_field2'] = self.generate_random_string(10)
-        record['swap_contract_field3'] = self.generate_random_string(10)
-        record['swap_contract_field4'] = self.generate_random_string(10)
-        record['swap_contract_field5'] = self.generate_random_string(10)
-        record['swap_contract_field6'] = self.generate_random_string(10)
-        record['swap_contract_field7'] = self.generate_random_string(10)
-        record['swap_contract_field8'] = self.generate_random_string(10)
-        record['time_stamp'] = datetime.now()
+                                    status=status),
+            'swap_type': self.generate_swap_type(),
+            'reference_rate': self.generate_reference_rate(),
+            'time_stamp': datetime.now()
+        }
+
+        # for loop below can be easily changed to iterate over
+        # range(1, num_contracts + 1) where num_contracts is provided in
+        # config.json if we want to let users customise output in this way
+        for index in range(1, 9):
+            record[f'swap_contract_field{index}'] =\
+                self.generate_random_string(10)
 
         return record
 
@@ -164,25 +164,3 @@ class SwapContract(Generatable):
         """
 
         return random.choice(['Live', 'Dead'])
-
-    def instantiate_record(self):
-        return {
-            'counterparty_id': None,
-            'swap_contract_id': None,
-            'swap_mnemonic': None,
-            'accounting_area': None,
-            'status': None,
-            'start_date': None,
-            'end_date': None,
-            'swap_type': None,
-            'reference_rate': None,
-            'swap_contract_field1': None,
-            'swap_contract_field2': None,
-            'swap_contract_field3': None,
-            'swap_contract_field4': None,
-            'swap_contract_field5': None,
-            'swap_contract_field6': None,
-            'swap_contract_field7': None,
-            'swap_contract_field8': None,
-            'time_stamp': None
-        }

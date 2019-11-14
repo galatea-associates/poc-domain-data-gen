@@ -1,8 +1,9 @@
 from domainobjects.generatable import Generatable
-from datetime import datetime, timedelta
+from datetime import datetime
 import random
 import string
 import pandas as pd
+
 
 class SwapPosition(Generatable):
     """ Class to generate swap positions. Generate method will generate a set
@@ -58,19 +59,25 @@ class SwapPosition(Generatable):
 
         Parameters
         ----------
-        Swap Position : dict
-            Dictionary containing a partial record of a swap contract, only
-            contains the information necessary to generate swap positions
-        cf_arg : dict
-            Dictionary defining the particular swap position being generated
-            for
+        swap_contract : dict
+            Swap contract domain object record
+
+        instrument : dict
+            Instrument domain object record
+
+        position_type : string
+            One of 'S', 'I', or 'E'
+
+        date : datetime
+            Randomly selected date that falls between the user-specified start
+            date and the current date
 
         Returns
         -------
         dict
             A single swap position object
         """
-        record = self.instantiate_record()
+
         long_short = self.generate_long_short()
         purpose = self.generate_purpose()
         quantity = self.generate_random_integer(
@@ -78,18 +85,7 @@ class SwapPosition(Generatable):
                     )
         current_date = datetime.strftime(date, '%Y-%m-%d')
 
-        record['swap_contract_id'] = swap_contract['id']
-        record['ric'] = instrument['ric']
-        record['long_short'] = long_short
-        record['purpose'] = purpose
-        record['td_quantity'] = quantity
-        record['position_type'] = position_type
-        record['knowledge_date'] = current_date
-        record['effective_date'] = current_date
-        record['account'] = self.generate_account()
-        record['time_stamp'] = datetime.now()
-
-        if (position_type == 'E'):
+        if position_type == 'E':
             self.persist_record(
                 [str(swap_contract['id']),
                  instrument['ric'],
@@ -98,7 +94,18 @@ class SwapPosition(Generatable):
                  str(long_short)]
             )
 
-        return record
+        return {
+            'ric': instrument['ric'],
+            'swap_contract_id': swap_contract['id'],
+            'position_type': position_type,
+            'knowledge_date': current_date,
+            'effective_date': current_date,
+            'account': self.generate_account(),
+            'long_short': long_short,
+            'td_quantity': quantity,
+            'purpose': purpose,
+            'time_stamp': datetime.now()
+        }
 
     def get_random_instruments(self):
         """ Retrieves a random batch of instruments
@@ -174,17 +181,3 @@ class SwapPosition(Generatable):
         """
 
         return random.choice(self.PURPOSES)
-
-    def instantiate_record(self):
-        return {
-            'ric': None,
-            'swap_contract_id': None,
-            'position_type': None,
-            'knowledge_date': None,
-            'effective_date': None,
-            'account': None,
-            'long_short': None,
-            'td_quantity': None,
-            'purpose': None,
-            'time_stamp': None
-        }
