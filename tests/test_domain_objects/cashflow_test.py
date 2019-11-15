@@ -7,7 +7,7 @@ from utils import helper_methods as helper
 def test_cashflows():
     """ Ensure all generated cashflow attributes adhere to their
     specification. Dependent on Swap Positions """
-    pass # TODO: implement after variable generation
+    pass  # TODO: implement after variable generation
     """
     records = helper.set_up_cashflow_tests()
     for record in records:
