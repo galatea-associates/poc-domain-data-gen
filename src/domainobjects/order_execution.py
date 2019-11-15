@@ -57,5 +57,8 @@ class OrderExecution(Generatable):
                 'qty': self.generate_random_integer(),
                 'time_stamp': datetime.now(),
             }
-        record.update(self.get_dummy_fields_record())
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
         return record

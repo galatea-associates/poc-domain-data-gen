@@ -15,12 +15,12 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {}
@@ -40,12 +40,12 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {}
@@ -65,12 +65,12 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {}
@@ -90,12 +90,12 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {}
@@ -115,12 +115,12 @@
          {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {}
@@ -140,12 +140,12 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {}
@@ -165,12 +165,12 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {}
@@ -190,12 +190,12 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {}
@@ -215,12 +215,12 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {}
@@ -239,19 +239,19 @@
       "custom_args": {
         "swap_per_counterparty": {
           "min": "1",
-          "max": "19"
+          "max": "10"
         }
       },
       "dummy_fields": [
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "dependencies": [
@@ -274,19 +274,19 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {
         "start_date": "20191002",
         "ins_per_swap": {
           "min": "1",
-          "max": "19"
+          "max": "10"
         }
       }
     },
@@ -306,12 +306,12 @@
         {
           "data_type": "string",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         },
         {
           "data_type": "numeric",
           "data_length": "10",
-          "field_count": "50"
+          "field_count": "10"
         }
       ],
       "custom_args": {

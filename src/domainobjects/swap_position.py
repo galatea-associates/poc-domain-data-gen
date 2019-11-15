@@ -106,7 +106,10 @@ class SwapPosition(Generatable):
             'purpose': purpose,
             'time_stamp': datetime.now()
         }
-        record.update(self.get_dummy_fields_record())
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
         return record
 
     def get_random_instruments(self):

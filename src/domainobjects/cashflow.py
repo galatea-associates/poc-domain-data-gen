@@ -79,7 +79,10 @@ class Cashflow(Generatable):
                 'amount': self.generate_random_integer(),
                 'long_short': swap_position['long_short']
             }
-            record.update(self.get_dummy_fields_record())
+
+            for key, value in self.get_dummy_field_generator():
+                record[key] = value
+
             return record
 
     def effective_date(self, effective_date):

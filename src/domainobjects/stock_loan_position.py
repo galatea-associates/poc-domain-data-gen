@@ -74,7 +74,10 @@ class StockLoanPosition(Generatable):
                 'return_type': self.generate_return_type(),
                 'time_stamp': datetime.now()
             }
-        record.update(self.get_dummy_fields_record())
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
         return record
 
     def generate_haircut(self, collateral_type):

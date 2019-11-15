@@ -77,7 +77,10 @@ class Instrument(Generatable):
             'country_of_issuance': country_of_issuance,
             'time_stamp': datetime.now()
         }
-        record.update(self.get_dummy_fields_record())
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
         return record
 
     def generate_asset_class(self):

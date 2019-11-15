@@ -80,7 +80,10 @@ class SwapContract(Generatable):
             'reference_rate': self.generate_reference_rate(),
             'time_stamp': datetime.now()
         }
-        record.update(self.get_dummy_fields_record())
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
         return record
 
     def get_number_of_swaps(self):

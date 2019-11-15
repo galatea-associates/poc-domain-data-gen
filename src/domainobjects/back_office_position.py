@@ -60,7 +60,10 @@ class BackOfficePosition(Generatable):
             'purpose': self.generate_purpose(),
             'time_stamp': datetime.now(),
         }
-        record.update(self.get_dummy_fields_record())
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
         return record
 
     def generate_purpose(self):

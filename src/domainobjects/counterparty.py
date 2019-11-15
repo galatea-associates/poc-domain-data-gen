@@ -51,5 +51,8 @@ class Counterparty(Generatable):
             'book': self.generate_random_string(5, include_numbers=False),
             'time_stamp': datetime.now()
         }
-        record.update(self.get_dummy_fields_record())
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
         return record
