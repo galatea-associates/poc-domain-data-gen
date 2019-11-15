@@ -1,10 +1,10 @@
 import sys
 from datetime import datetime, timedelta
+import re
 
 sys.path.insert(0, 'src/')
 from utils import helper_methods as helper
 from domainobjects import instrument
-import re
 
 # Shared Tests
 # domain_obj gives access to defined constant lists in the parent class
