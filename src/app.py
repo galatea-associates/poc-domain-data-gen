@@ -47,7 +47,7 @@ def main():
         os.unlink('dependencies.db')
 
     configurations = parse_config_files()
-    validate_configs(configurations)
+    # validate_configs(configurations) TODO: uncomment after function refactor
 
     for generation_arguments in configurations['generation_arguments']:
 
@@ -197,7 +197,7 @@ def get_fb_config(file_builders, file_extension):
         return file_builder_dict[file_extension]
     else:
         # TODO: verify exception is handled appropriately
-        raise ConfigError
+        raise Exception('File builder not found')
 
 
 def get_class(package_name, module_name, class_name):
@@ -284,7 +284,7 @@ def validate_configs(configurations):
 
     Parameters
     ----------
-    config : dict
+    configurations : dict
         Parsed json of the user-input configuration
 
     Excepts

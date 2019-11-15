@@ -21,8 +21,7 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "instruments",
-                    "xml_item_name" : "instrument"
+                    "xml_root_element" : "instruments"
                 }
             }
         },
@@ -32,7 +31,7 @@
                 "file_name" : "prices",
                 "output_file_type": "XML",
                 "output_directory": "out",
-                "generation_type": "variable",
+                "generation_type": "fixed",
                 "fixed_args": {
                     "record_count" : 50
                 },
@@ -47,8 +46,32 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "prices",
-                    "xml_item_name" : "price"
+                    "xml_root_element" : "prices"
+                }
+            }
+        },
+        {
+            "counterparty" : {
+                "max_objects_per_file" : 50,
+                "file_name" : "counterparties",
+                "output_file_type": "XML",
+                "output_directory": "out",
+                "generation_type": "fixed",
+                "fixed_args": {
+                    "record_count" : 50
+                },
+                "dummy_data_fields":[
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    },
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    }
+                ],
+                "file_type_args" : {
+                    "xml_root_element" : "counterparties"
                 }
             }
         }

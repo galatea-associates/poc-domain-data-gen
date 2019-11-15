@@ -19,11 +19,10 @@ class XMLBuilder(FileBuilder):
         with open(os.path.join(output_dir,
                   file_name.format(f'{file_number:03}')),
                   'w', newline='') as output_file:
-
             # convert data to bytes
             xml = dicttoxml.dicttoxml(
                 data, custom_root=root_element_name,
-                ids=False, item_func=self.item_function
+                ids=False, item_func=XMLBuilder.get_item_name
             )
 
             # convert from bytes into string
@@ -33,5 +32,21 @@ class XMLBuilder(FileBuilder):
                 .replace(' type=\"int\"', '')
             output_file.write(xml)
 
-    def item_function(self):
-        return self.get_item_name()
+    @staticmethod
+    def get_item_name(parent_element_name):
+        item_names = {
+            "instruments": "instrument",
+            "prices": "price",
+            "counterparties": "counterparty",
+            "back office positions": "back office position",
+            "front office positions": "front office position",
+            "depot positions": "depot position",
+            "cash balances": "cash balance",
+            "order executions": "order execution",
+            "stock loan positions": "stock loan position",
+            "swap contracts": "swap contract",
+            "swap positions": "swap position",
+            "cashflows": "cashflow"
+        }
+        item_name = item_names[parent_element_name]
+        return item_name
