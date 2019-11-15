@@ -47,7 +47,7 @@ def main():
         os.unlink('dependencies.db')
 
     configurations = parse_config_files()
-    # validate_configs(configurations)
+    validate_configs(configurations)
 
     for generation_arguments in configurations['generation_arguments']:
 
@@ -91,7 +91,6 @@ def get_file_builder(obj_config, file_builder_configs):
     fb_config = get_fb_config(file_builder_configs, fb_name)
     file_builder = get_class('filebuilders', fb_config['module_name'],
                              fb_config['class_name'])
-    print(obj_config)
     return file_builder(None, obj_config)
 
 
@@ -106,6 +105,9 @@ def process_domain_object(obj_config, obj_location,
     ----------
     obj_config : dict
         A domain objects configuration as provided by user
+    obj_location : dict
+        domain object location configuration from dev config, specifying
+        module and class names within the file system
     file_builder : File_Builder
         An instantiated filebuilder as per this objects required output
         file type
@@ -190,12 +192,12 @@ def get_fb_config(file_builders, file_extension):
         type required.
     """
     file_builder_dict = file_builders[0]
-    file_builder_dict_keys = file_builder_dict.keys()
 
-    for file_builder in list(file_builder_dict_keys):
-        if file_builder == file_extension:
-            return file_builder_dict[file_builder]
-    # TODO: Raise error if no file builder found for given configuration
+    if file_extension in file_builder_dict.keys():
+        return file_builder_dict[file_extension]
+    else:
+        # TODO: verify exception is handled appropriately
+        raise ConfigError
 
 
 def get_class(package_name, module_name, class_name):
