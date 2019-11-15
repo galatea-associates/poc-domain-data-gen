@@ -148,6 +148,9 @@ def get_record_count(obj_config, obj_location):
     ----------
     obj_config : dict
         A domain objects configuration as provided by user
+    obj_location : dict
+        domain object location configuration from dev config, specifying
+        module and class names within the file system
 
     Returns
     -------
