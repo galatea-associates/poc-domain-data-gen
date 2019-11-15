@@ -170,8 +170,13 @@ class Generatable(ABC):
         Generator:
             iterable that yields key/value pairs as specified in the config
         """
+        if self.__config is None:
+            # workaround since testing does not always use a config file
+            # eventually a testing config will be created and used
+            # at which point this 'if' statement can be removed
+            return iter(("example_field1", 12345))
 
-        module_name = self.__config["module_name"]
+        domain_object = self.__config["file_name"]
         field_number = 1
 
         for dummy_field in self.__config["dummy_fields"]:
@@ -188,7 +193,7 @@ class Generatable(ABC):
                 data_method = self.generate_random_integer
 
             for _ in range(field_count):
-                yield f'{module_name}_field{field_number}',\
+                yield f'{domain_object}_field{field_number}',\
                       data_method(length=data_length)
                 field_number += 1
 

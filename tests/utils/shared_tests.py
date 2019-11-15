@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 sys.path.insert(0, 'src/')
 from utils import helper_methods as helper
 from domainobjects import instrument
+import re
 
 # Shared Tests
 # domain_obj gives access to defined constant lists in the parent class
@@ -27,7 +28,10 @@ def attribute_quantity_valid(record, quantity):
     Domain Object attributes have been added since this test was written.
     Ensure tests have also been provided to validate all newly added
     attributes of this domain object."""
-    assert len(record) == quantity, error_message
+    pattern = "[a-z]+_field[0-9]+"
+    record_without_dummies = {key: record[key] for key in record.keys()
+                              if not re.match(pattern, key)}
+    assert len(record_without_dummies) == quantity, error_message
 
 
 def attribute_exists(value, attribute, table):

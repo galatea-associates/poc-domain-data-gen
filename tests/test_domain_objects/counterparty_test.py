@@ -8,7 +8,7 @@ def test_counterparty():
     records = helper.set_up_counterparty_tests()
     shared.unique_ids(records, 'counterparty')
     for record in records:
-        shared.attribute_quantity_valid(record, 13)
+        shared.attribute_quantity_valid(record, 3)
         book_valid(record)
         shared.dummy_fields_valid(record, 'counterparty')
 
