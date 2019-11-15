@@ -175,12 +175,12 @@ class Generatable(ABC):
         field_number = 1
 
         for dummy_field in self.__config["dummy_fields"]:
-            field_count = int(dummy_field["field_count"])
+            field_count = dummy_field["field_count"]
             if field_count < 1:
                 continue
 
             data_type = dummy_field["data_type"]
-            data_length = int(dummy_field["data_length"])
+            data_length = dummy_field["data_length"]
 
             if data_type == "string":
                 data_method = self.generate_random_string
