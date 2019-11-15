@@ -74,6 +74,156 @@
                     "xml_root_element" : "counterparties"
                 }
             }
+        },
+        {
+            "back_office_position" : {
+                "max_objects_per_file" : 50,
+                "file_name" : "back_office_positions",
+                "output_file_type": "XML",
+                "output_directory": "out",
+                "generation_type": "fixed",
+                "fixed_args": {
+                    "record_count" : 50
+                },
+                "dummy_data_fields":[
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    },
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    }
+                ],
+                "file_type_args" : {
+                    "xml_root_element" : "back_office_positions"
+                }
+            }
+        },
+        {
+            "front_office_position" : {
+                "max_objects_per_file" : 50,
+                "file_name" : "front_office_positions",
+                "output_file_type": "XML",
+                "output_directory": "out",
+                "generation_type": "fixed",
+                "fixed_args": {
+                    "record_count" : 50
+                },
+                "dummy_data_fields":[
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    },
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    }
+                ],
+                "file_type_args" : {
+                    "xml_root_element" : "front_office_positions"
+                }
+            }
+        },
+        {
+            "depot_position" : {
+                "max_objects_per_file" : 50,
+                "file_name" : "depot_positions",
+                "output_file_type": "XML",
+                "output_directory": "out",
+                "generation_type": "fixed",
+                "fixed_args": {
+                    "record_count" : 50
+                },
+                "dummy_data_fields":[
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    },
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    }
+                ],
+                "file_type_args" : {
+                    "xml_root_element" : "depot_positions"
+                }
+            }
+        },
+        {
+            "stock_loan_position" : {
+                "max_objects_per_file" : 50,
+                "file_name" : "stock_loan_positions",
+                "output_file_type": "XML",
+                "output_directory": "out",
+                "generation_type": "fixed",
+                "fixed_args": {
+                    "record_count" : 50
+                },
+                "dummy_data_fields":[
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    },
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    }
+                ],
+                "file_type_args" : {
+                    "xml_root_element" : "stock_loan_positions"
+                }
+            }
+        },
+        {
+            "cash_balance" : {
+                "max_objects_per_file" : 50,
+                "file_name" : "cash_balances",
+                "output_file_type": "XML",
+                "output_directory": "out",
+                "generation_type": "fixed",
+                "fixed_args": {
+                    "record_count" : 50
+                },
+                "dummy_data_fields":[
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    },
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    }
+                ],
+                "file_type_args" : {
+                    "xml_root_element" : "cash_balances"
+                }
+            }
+        },
+        {
+            "order_execution" : {
+                "max_objects_per_file" : 50,
+                "file_name" : "order_executions",
+                "output_file_type": "XML",
+                "output_directory": "out",
+                "generation_type": "fixed",
+                "fixed_args": {
+                    "record_count" : 50
+                },
+                "dummy_data_fields":[
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    },
+                    {
+                        "data_type": "type",
+                        "field_count": 1
+                    }
+                ],
+                "file_type_args" : {
+                    "xml_root_element" : "order_executions"
+                }
+            }
         }
     ],
     "shared_generation_arguments" : {

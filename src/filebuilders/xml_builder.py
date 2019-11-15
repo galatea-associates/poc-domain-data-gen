@@ -38,14 +38,14 @@ class XMLBuilder(FileBuilder):
             "instruments": "instrument",
             "prices": "price",
             "counterparties": "counterparty",
-            "back office positions": "back office position",
-            "front office positions": "front office position",
-            "depot positions": "depot position",
-            "cash balances": "cash balance",
-            "order executions": "order execution",
-            "stock loan positions": "stock loan position",
-            "swap contracts": "swap contract",
-            "swap positions": "swap position",
+            "back_office_positions": "back_office_position",
+            "front_office_positions": "front_office_position",
+            "depot_positions": "depot_position",
+            "cash_balances": "cash_balance",
+            "order_executions": "order_execution",
+            "stock_loan_positions": "stock_loan_position",
+            "swap_contracts": "swap_contract",
+            "swap_positions": "swap_position",
             "cashflows": "cashflow"
         }
         item_name = item_names[parent_element_name]
