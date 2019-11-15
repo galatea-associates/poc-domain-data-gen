@@ -10,6 +10,7 @@ def test_cashflows():
 
     records = helper.set_up_cashflow_tests()
     for record in records:
+        shared.attribute_quantity_valid(record, 8)
         shared.swap_contract_id_exists(record)
         shared.ric_exists(record)
         cashflow_type_exists(record)

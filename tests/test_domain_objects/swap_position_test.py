@@ -7,6 +7,7 @@ from utils import helper_methods as helper
 def test_swap_positions():
     records, domain_obj = helper.set_up_swap_position_tests()
     for record in records:
+        shared.attribute_quantity_valid(record, 10)
         shared.ric_exists(record)
         shared.swap_contract_id_exists(record)
         swap_position_type_valid(record, domain_obj.POSITION_TYPES)

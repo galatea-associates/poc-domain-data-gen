@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime, date
 import calendar
 
+
 class Cashflow(Generatable):
     """ Class to generate cashflows. Generate method will generate a set
     amount of cashflows. Other generation methods are included where cashflows
@@ -65,21 +66,19 @@ class Cashflow(Generatable):
         probability = cf_arg['cashFlowAccrualProbability']
         effective_date = self.effective_date(swap_position['effective_date'])
         if self.cashflow_accrues(effective_date, accrual, probability):
-            record = self.instantiate_record()
-
             pay_date_period = cf_arg['cashFlowPaydatePeriod']
             p_date_func = self.get_pay_date_func(pay_date_period)
-            record['effective_date'] = effective_date
-            record['swap_contract_id'] = swap_position['swap_contract_id']
-            record['ric'] = swap_position['ric']
-            record['long_short'] = swap_position['long_short']
-            record['cashflow_type'] = cf_arg['cashFlowType']
-            record['pay_date'] = datetime.strftime(p_date_func(effective_date),
-                                                   '%Y-%m-%d')
-            record['currency'] = self.generate_currency()
-            record['amount'] = self.generate_random_integer()
-
-            return record
+            return {
+                'swap_contract_id': swap_position['swap_contract_id'],
+                'ric': swap_position['ric'],
+                'cashflow_type': cf_arg['cashFlowType'],
+                'pay_date': datetime.strftime(p_date_func(effective_date),
+                                              '%Y-%m-%d'),
+                'effective_date': effective_date,
+                'currency': self.generate_currency(),
+                'amount': self.generate_random_integer(),
+                'long_short': swap_position['long_short']
+            }
 
     def effective_date(self, effective_date):
         """ Parse string time into Datetime type
@@ -161,8 +160,8 @@ class Cashflow(Generatable):
         """
 
         return {
-            "END_OF_MONTH":self.calc_eom,
-            "END_OF_HALF":self.calc_eoh
+            "END_OF_MONTH": self.calc_eom,
+            "END_OF_HALF": self.calc_eoh
         }.get(pay_date_period, lambda: "Invalid pay date period")
 
     def cashflow_accrues(self, effective_date, accrual, probability):
@@ -193,15 +192,3 @@ class Cashflow(Generatable):
         elif accrual == "CHANCE_ACCRUAL" and \
                 random.random() < (int(probability) / 100):
             return True
-
-    def instantiate_record(self):
-        return {
-            'swap_contract_id': None,
-            'ric': None,
-            'cashflow_type': None,
-            'pay_date': None,
-            'effective_date': None,
-            'currency': None,
-            'amount': None,
-            'long_short': None
-        }
