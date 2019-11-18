@@ -21,7 +21,8 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "instruments"
+                    "xml_root_element" : "instruments",
+                    "xml_item_name" : "instrument"
                 }
             }
         },
@@ -46,7 +47,8 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "prices"
+                    "xml_root_element" : "prices",
+                    "xml_item_name" : "price"
                 }
             }
         },
@@ -71,7 +73,8 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "counterparties"
+                    "xml_root_element" : "counterparties",
+                    "xml_item_name" : "counterparty"
                 }
             }
         },
@@ -96,7 +99,8 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "back_office_positions"
+                    "xml_root_element" : "back_office_positions",
+                    "xml_item_name" : "back_office_position"
                 }
             }
         },
@@ -121,7 +125,8 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "front_office_positions"
+                    "xml_root_element" : "front_office_positions",
+                    "xml_item_name" : "front_office_position"
                 }
             }
         },
@@ -146,7 +151,8 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "depot_positions"
+                    "xml_root_element" : "depot_positions",
+                    "xml_item_name" : "depot_position"
                 }
             }
         },
@@ -171,7 +177,8 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "stock_loan_positions"
+                    "xml_root_element" : "stock_loan_positions",
+                    "xml_item_name" : "stock_loan_position"
                 }
             }
         },
@@ -196,7 +203,8 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "cash_balances"
+                    "xml_root_element" : "cash_balances",
+                    "xml_item_name" : "cash_balance"
                 }
             }
         },
@@ -221,7 +229,8 @@
                     }
                 ],
                 "file_type_args" : {
-                    "xml_root_element" : "order_executions"
+                    "xml_root_element" : "order_executions",
+                    "xml_item_name" : "order_execution"
                 }
             }
         }

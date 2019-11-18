@@ -22,6 +22,8 @@ class FileBuilder(abc.ABC):
         The directory files are to be written to
     root_element_name : string
         For XML formatting, the top-most, all-encapsulating tag.
+    item_name : String
+        For XML formatting, the tag surrounding each written object.
 
     Methods
     -------
@@ -43,6 +45,8 @@ class FileBuilder(abc.ABC):
         Returns the google drive connector object
     get_root_element_name()
         Returns the name of XML parent tags
+    get_item_name()
+        Returns the name of each XML item
     """
 
     def __init__(self, google_drive_connector, domain_object_config):
@@ -71,6 +75,7 @@ class FileBuilder(abc.ABC):
             file_specific_config = domain_object_config['file_type_args']
             self.__root_element_name = \
                 file_specific_config['xml_root_element']
+            self.__item_name = file_specific_config['xml_item_name']
 
     @abc.abstractmethod
     def build(self, file_number, data, upload_to_google_drive):
@@ -169,3 +174,12 @@ class FileBuilder(abc.ABC):
             The XML root element name
         """
         return self.__root_element_name
+
+    def get_item_name(self):
+        """ Return the XML item name
+        Returns
+        -------
+        String
+            The XML item name
+        """
+        return self.__item_name
