@@ -12,7 +12,7 @@ from domainobjects import instrument
 domain_obj = instrument.Instrument(None)
 
 
-def attribute_quantity_valid(record, quantity):
+def attribute_quantity_valid(object_name, record, quantity):
     """
     Checks to see if number of attributes (domain object dict keys) has
     changed since tests were last updated. Failure of this test indicates a
@@ -28,7 +28,7 @@ def attribute_quantity_valid(record, quantity):
     Domain Object attributes have been added since this test was written.
     Ensure tests have also been provided to validate all newly added
     attributes of this domain object."""
-    pattern = "[a-z]+_field[0-9]+"
+    pattern = f"^{object_name}_field[0-9]+$"
     record_without_dummies = {key: record[key] for key in record.keys()
                               if not re.match(pattern, key)}
     assert len(record_without_dummies) == quantity, error_message

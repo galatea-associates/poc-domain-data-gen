@@ -174,9 +174,9 @@ class Generatable(ABC):
             # workaround since testing does not always use a config file
             # eventually a testing config will be created and used
             # at which point this 'if' statement can be removed
-            return iter(("example_field1", 12345))
+            return iter(())
 
-        domain_object = self.__config["file_name"]
+        object_name = self.__config["file_type_args"]["xml_item_name"]
         field_number = 1
 
         for dummy_field in self.__config["dummy_fields"]:
@@ -193,7 +193,7 @@ class Generatable(ABC):
                 data_method = self.generate_random_integer
 
             for _ in range(field_count):
-                yield f'{domain_object}_field{field_number}',\
+                yield f'{object_name}_field{field_number}',\
                       data_method(length=data_length)
                 field_number += 1
 
