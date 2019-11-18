@@ -24,7 +24,7 @@ import math
 from datetime import datetime
 
 
-def get(obj_name, custom_args, default_job_size):
+def get(obj_name, default_job_size):
     """Entry point. Defers functionality depending on given object name.
 
     Entry point of these scripts. If the input domain objects generation

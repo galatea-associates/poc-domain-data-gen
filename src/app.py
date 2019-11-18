@@ -46,24 +46,27 @@ def main():
     if os.path.exists('dependencies.db'):
         os.unlink('dependencies.db')
 
-    args = get_args()
+    configurations = parse_config_files()
+    # validate_configs(configurations) TODO: uncomment after function refactor
 
-    # Open and retrieve configurations
-    with open(args.config) as config_file:
-        config = ujson.load(config_file)
+    for generation_arguments in configurations['generation_arguments']:
 
-    validate_config(config)
+        shared_config = configurations['shared_arguments']
+        file_builders = configurations['file_builders']
+        obj_locations = configurations['domain_object_locations']
 
-    domain_object_configs = config['domain_objects']
-    file_builder_configs = config['file_builders']
-    shared_config = config['shared_args']
+        obj_name = list(generation_arguments.keys())[0]
+        gen_args = generation_arguments[obj_name]
+        file_builder = get_file_builder(gen_args, file_builders)
+        obj_location = get_object_location(obj_name, obj_locations)
 
-    for obj_config in domain_object_configs:
-        # Skip object where no records required
-        if (int(obj_config['record_count']) < 1):
-            continue
-        file_builder = get_file_builder(obj_config, file_builder_configs)
-        process_domain_object(obj_config, file_builder, shared_config)
+        process_domain_object(gen_args, obj_location,
+                              file_builder, shared_config)
+
+
+def get_object_location(obj_name, obj_locations):
+    obj_locations = obj_locations[0]
+    return obj_locations[obj_name]
 
 
 def get_file_builder(obj_config, file_builder_configs):
@@ -84,14 +87,15 @@ def get_file_builder(obj_config, file_builder_configs):
             the given object configuration
     """
 
-    fb_name = obj_config['file_builder_name']
+    fb_name = obj_config['output_file_type']
     fb_config = get_fb_config(file_builder_configs, fb_name)
     file_builder = get_class('filebuilders', fb_config['module_name'],
                              fb_config['class_name'])
     return file_builder(None, obj_config)
 
 
-def process_domain_object(obj_config, file_builder, shared_config):
+def process_domain_object(obj_config, obj_location,
+                          file_builder, shared_config):
     """ Instantiates generation and file-writing processes. Populates the
     generation job queue & starts both generation and writing coordinators.
     Awaits for both coordinators to terminate before continuing to the next
@@ -101,6 +105,9 @@ def process_domain_object(obj_config, file_builder, shared_config):
     ----------
     obj_config : dict
         A domain objects configuration as provided by user
+    obj_location : dict
+        domain object location configuration from dev config, specifying
+        module and class names within the file system
     file_builder : File_Builder
         An instantiated filebuilder as per this objects required output
         file type
@@ -108,30 +115,29 @@ def process_domain_object(obj_config, file_builder, shared_config):
         User-provided configuration shared between all objects
     """
 
-    obj_class = get_class('domainobjects', obj_config['module_name'],
-                          obj_config['class_name'])
+    obj_class = get_class('domainobjects', obj_location['module_name'],
+                          obj_location['class_name'])
     domain_obj = obj_class(obj_config)
-    custom_args = obj_config['custom_args']
 
     coordinator = Coordinator(obj_config['max_objects_per_file'], file_builder)
 
-    default_job_size = shared_config['job_size']
-    generator_pool_size = shared_config['gen_pools']
-    writer_pool_size = shared_config['write_pools']
+    default_job_size = shared_config['pool_job_size']
+    generator_pool_size = shared_config['generator_pool_size']
+    writer_pool_size = shared_config['writer_pool_size']
 
     # Start generation & writing subprocesses for this object
     coordinator.start_generator(domain_obj, generator_pool_size)
     coordinator.start_writer(writer_pool_size)
 
-    obj_name = obj_config['class_name']
-    record_count = get_record_count(obj_config)
-    job_size = batch_size_calc.get(obj_name, custom_args, default_job_size)
+    obj_name = obj_location['class_name']
+    record_count = get_record_count(obj_config, obj_location)
+    job_size = batch_size_calc.get(obj_name, default_job_size)
 
     coordinator.create_jobs(obj_name, record_count, job_size)
     coordinator.await_termination()
 
 
-def get_record_count(obj_config):
+def get_record_count(obj_config, obj_location):
     """ Returns the number of records to be generated for a given object.
     Where objects are non-dependent on others, the user-provided configuration
     amount is used. Otherwise, the record_count is set to be the number of
@@ -142,6 +148,9 @@ def get_record_count(obj_config):
     ----------
     obj_config : dict
         A domain objects configuration as provided by user
+    obj_location : dict
+        domain object location configuration from dev config, specifying
+        module and class names within the file system
 
     Returns
     -------
@@ -151,10 +160,10 @@ def get_record_count(obj_config):
     """
 
     nondeterministic_objects = ['swap_contract', 'swap_position', 'cashflow']
-    object_module = obj_config['module_name']
+    object_module = obj_location['module_name']
 
     if object_module not in nondeterministic_objects:
-        return obj_config['record_count']
+        return obj_config['fixed_args']['record_count']
     else:
         db = Sqlite_Database()
         if object_module == 'swap_contract':
@@ -165,30 +174,10 @@ def get_record_count(obj_config):
             return db.get_table_size('swap_positions')
 
 
-def get_args():
-    """ Configure a parser to retrieve & parse command-line arguments
-    input by the user.
-
-    Returns
-    -------
-    namespace
-        Namespace is populated with observed arguments, unless none observed,
-        in which case default values are returned. Access elements via '.'
-        convention, i.e. parser.parse_args().config
-    """
-    # Configure expected command line args & default values thereof
-    parser = ArgumentParser(description='''Random financial data
-                                        generation. For more information,
-                                        see the README''')
-    parser.add_argument('--config', default='src/config.json',
-                        help='JSON Configuration File Location')
-    return parser.parse_args()
-
-
 def get_fb_config(file_builders, file_extension):
-    """ Get the configuration of a specified filebuilder. This expression
-    filters the set of all configs such that only the file builder for
-    the provided file_extension is returned.
+    """ Get the configuration of a specified filebuilder. Iterate over the
+    set of file builder keys and if one matches the provided file extension
+    then return the full configuration of that file builder.
 
     Parameters
     ----------
@@ -196,7 +185,8 @@ def get_fb_config(file_builders, file_extension):
         Parsed json of provided configuration containing parameters for
         all possible filebuilders.
     file_extension: string
-        The file_builder for which the configuration should be returned.
+        The extension of the file builder configuration which should be
+        returned
 
     Returns
     -------
@@ -204,9 +194,13 @@ def get_fb_config(file_builders, file_extension):
         The configuration of the required file builder for the output
         type required.
     """
-    return list(filter(
-            lambda file_builder: file_builder['name'] == file_extension,
-            file_builders))[0]
+    file_builder_dict = file_builders[0]
+
+    if file_extension in file_builder_dict.keys():
+        return file_builder_dict[file_extension]
+    else:
+        # TODO: verify exception is handled appropriately
+        raise Exception('File builder not found')
 
 
 def get_class(package_name, module_name, class_name):
@@ -232,13 +226,68 @@ def get_class(package_name, module_name, class_name):
                    class_name)
 
 
-def validate_config(config):
+def parse_config_files():
+    """ Retrieve command line arguments, and extract the 4 core configuration
+    sections from it. Return this information in a dictionary.
+
+    Returns
+    -------
+    dict
+        A four element dictionary containing all configuration sections from
+        both user-facing and dev-facing configuration files.
+    """
+
+    command_line_args = get_args()
+
+    with open(command_line_args.user_config) as user_config_file:
+        user_config_file = ujson.load(user_config_file)
+        domain_object_gen_config =\
+            get_domain_object_config(user_config_file)
+        shared_config = get_shared_config(user_config_file)
+
+    with open(command_line_args.dev_config) as dev_config_file:
+        dev_config_file = ujson.load(dev_config_file)
+        file_builder_configs = get_file_builder_configs(dev_config_file)
+        domain_object_location_config = \
+            get_domain_object_location_config(dev_config_file)
+
+    return {
+        "generation_arguments": domain_object_gen_config,
+        "domain_object_locations": domain_object_location_config,
+        "shared_arguments": shared_config,
+        "file_builders": file_builder_configs
+    }
+
+
+def get_args():
+    """ Configure a parser to retrieve & parse command-line arguments
+    input by the user.
+
+    Returns
+    -------
+    namespace
+        Namespace is populated with observed arguments, unless none observed,
+        in which case default values are returned. Access elements via '.'
+        convention, i.e. parser.parse_args().config
+    """
+
+    parser = ArgumentParser(description='''Random financial data
+                                        generation. For more information,
+                                        see the README''')
+    parser.add_argument('--user_config', default='src/config.json',
+                        help='JSON Configuration File Location')
+    parser.add_argument('--dev_config', default='src/dev_config.json',
+                        help='Developer Configuration File Location')
+    return parser.parse_args()
+
+
+def validate_configs(configurations):
     """ Ensure that the configuration file found adheres to required format
     to ensure correct generation of domain objects.
 
     Parameters
     ----------
-    config : dict
+    configurations : dict
         Parsed json of the user-input configuration
 
     Excepts
@@ -249,8 +298,7 @@ def validate_config(config):
         reported at once.
     """
 
-    validation_result = config_validator.validate(config)
-    print(type(validation_result))
+    validation_result = config_validator.validate(configurations)
     try:
         if validation_result.check_success():
             print("No errors found in config")
@@ -263,6 +311,77 @@ def validate_config(config):
             print(error)
         # Re-raised to halt operation
         raise
+
+
+def get_domain_object_config(config_file):
+    """ Return the domain object section of the given configuration file.
+
+    Parameters
+    ----------
+    config_file : dict
+        Dictionary of parsed json configuration file
+
+    Returns
+    -------
+    dict
+        Domain object configuration of given config
+    """
+
+    return config_file['domain_objects']
+
+
+def get_shared_config(config_file):
+    """ Return the shared configuration section of the given configuration
+    file.
+
+    Parameters
+    ----------
+    config_file : dict
+        Dictionary of parsed json configuration file
+
+    Returns
+    -------
+    dict
+        Shared generation configuration of given config
+    """
+
+    return config_file['shared_generation_arguments']
+
+
+def get_file_builder_configs(config_file):
+    """ Return the file builder section of the given configuration file.
+
+    Parameters
+    ----------
+    config_file : dict
+        Dictionary of parsed json configuration file
+
+    Returns
+    -------
+    dict
+        File builder configuration of given config
+    """
+
+    return config_file['file_builders']
+
+
+def get_domain_object_location_config(config_file):
+    """ Return the domain object file location in the codebase section of the
+    given configuration file.
+
+    Parameters
+    ----------
+    config_file : dict
+        Dictionary of parsed json configuration file
+
+    Returns
+    -------
+    dict
+        Domain object file location in code base section of given config
+    """
+
+    return config_file['domain_objects']
+
 
 if __name__ == '__main__':
     main()

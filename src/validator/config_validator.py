@@ -22,7 +22,7 @@ def validate(config):
         An object containing a boolean flag for success or fail, as well as
         a list of any errors on the case of failure.
     """
-
+    # TODO: refactor for new configurations
     domain_objects = config['domain_objects']
     file_builders = config['file_builders']
     shared_args = config['shared_args']
