@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from utils.sqlite_database import Sqlite_Database
+from database.sqlite_database import Sqlite_Database
 import multi_processing.batch_size_calc as batch_size_calc
 import random
 import string
