@@ -1,13 +1,14 @@
 import sys
 sys.path.insert(0, 'tests/')
-from test_domain_objects import shared_tests as shared
-from test_domain_objects import helper_methods as helper
+from utils import shared_tests as shared
+from utils import helper_methods as helper
 
 
 def test_stock_loan_positions():
     records, domain_obj = helper.set_up_stock_loan_position_tests()
     shared.unique_ids(records, 'stock_loan_contract')
     for record in records:
+        shared.attribute_quantity_valid(record, 17)
         shared.ric_exists(record)
         shared.knowledge_date_valid(record)
         shared.settlement_position_effective_date_valid(record)

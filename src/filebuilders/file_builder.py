@@ -179,7 +179,6 @@ class FileBuilder(abc.ABC):
 
     def get_item_name(self):
         """ Return the XML item name
-
         Returns
         -------
         String

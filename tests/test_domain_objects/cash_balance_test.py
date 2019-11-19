@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, 'tests/')
-from test_domain_objects import shared_tests as shared
-from test_domain_objects import helper_methods as helper
+from utils import shared_tests as shared
+from utils import helper_methods as helper
 
 
 def test_cash_balance():
@@ -10,6 +10,7 @@ def test_cash_balance():
 
     records, domain_obj = helper.set_up_cash_balance_tests()
     for record in records:
+        shared.attribute_quantity_valid(record, 5)
         shared.amount_valid(record)
         shared.currency_valid(record)
         shared.account_number_valid(record)

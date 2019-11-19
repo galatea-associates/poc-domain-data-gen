@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, 'tests/')
-from test_domain_objects import shared_tests as shared
-from test_domain_objects import helper_methods as helper
+from utils import shared_tests as shared
+from utils import helper_methods as helper
 
 
 def test_back_office_positions():
@@ -10,6 +10,7 @@ def test_back_office_positions():
 
     records, domain_obj = helper.set_up_back_office_position_tests()
     for record in records:
+        shared.attribute_quantity_valid(record, 9)
         shared.cusip_exists(record)
         shared.position_type_valid(record)
         shared.knowledge_date_valid(record)

@@ -33,9 +33,8 @@
 import importlib
 import ujson
 import os
-import sys
 from argparse import ArgumentParser
-from utils.sqlite_database import Sqlite_Database
+from database.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
 from exceptions.config_error import ConfigError
 from configuration.configuration import Configuration
@@ -161,6 +160,9 @@ def get_record_count(obj_config, obj_location):
     ----------
     obj_config : dict
         A domain objects configuration as provided by user
+    obj_location : dict
+        domain object location configuration from dev config, specifying
+        module and class names within the file system
 
     Returns
     -------
@@ -313,7 +315,7 @@ def validate_configs(configurations):
 
     Parameters
     ----------
-    config : dict
+    configurations : dict
         Parsed json of the user-input configuration
 
     Excepts
@@ -324,8 +326,7 @@ def validate_configs(configurations):
         reported at once.
     """
 
-    validation_result = config_validator.validate(config)
-    print(type(validation_result))
+    validation_result = config_validator.validate(configurations)
     try:
         if validation_result.check_success():
             print("No errors found in config")

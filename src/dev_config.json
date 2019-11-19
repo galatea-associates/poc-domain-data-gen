@@ -1,78 +1,78 @@
 {
-    "domain_objects" : [
-        {
-            "instrument" : {
-                "module_name" : "instrument",
-                "class_name" : "Instrument"
-            },
-            "counterparty" : {
-                "module_name" : "counterparty",
-                "class_name" : "Counterparty"
-            },
-            "back_office_position" : {
-                "module_name": "back_office_position",
-                "class_name": "BackOfficePosition"
-            },
-            "cash_balance" : {
-                "module_name": "cash_balance",
-                "class_name": "CashBalance"
-            },
-            "depot_position" : {
-                "module_name": "depot_position",
-                "class_name": "DepotPosition"
-            },
-            "front_office_position" : {
-                "module_name": "front_office_position",
-                "class_name": "FrontOfficePosition"
-            },
-            "order_execution" : {
-                "module_name": "order_execution",
-                "class_name": "OrderExecution"
-            },
-            "price" : {
-                "module_name": "price",
-                "class_name": "Price"
-            },
-            "stock_loan_position" : {
-                "module_name": "stock_loan_position",
-                "class_name": "StockLoanPosition"
-            },
-            "swap_contract" : {
-                "module_name": "swap_contract",
-                "class_name": "SwapContract"
-            },
-            "swap_position" : {
-                "module_name": "swap_position",
-                "class_name": "SwapPosition"
-            },
-            "cashflow" : {
-                "module_name": "cashflow",
-                "class_name": "Cashflow"
-            }
-        }
-    ],
-    "file_builders" : [
-        {
-            "CSV" : {
-                "module_name": "csv_builder",
-                "class_name": "CSVBuilder",
-                "file_extension": ".csv"
-            },
-            "JSON" : {
-                "module_name": "json_builder",
-                "class_name": "JSONBuilder",
-                "file_extension": ".json"
-            },
-            "XML" : {
-                "module_name": "xml_builder",
-                "class_name": "XMLBuilder",
-                "file_extension": ".xml"
-            },
-            "JSONL" : {
-                "module_name": "jsonl_builder",
-                "class_name": "JSONLBuilder",
-                "file_extension": ".jsonl"
-            }
-        }
-    ]
+  "domain_objects": [
+    {
+      "instrument": {
+        "module_name": "instrument",
+        "class_name": "Instrument"
+      },
+      "counterparty": {
+        "module_name": "counterparty",
+        "class_name": "Counterparty"
+      },
+      "back_office_position": {
+        "module_name": "back_office_position",
+        "class_name": "BackOfficePosition"
+      },
+      "cash_balance": {
+        "module_name": "cash_balance",
+        "class_name": "CashBalance"
+      },
+      "depot_position": {
+        "module_name": "depot_position",
+        "class_name": "DepotPosition"
+      },
+      "front_office_position": {
+        "module_name": "front_office_position",
+        "class_name": "FrontOfficePosition"
+      },
+      "order_execution": {
+        "module_name": "order_execution",
+        "class_name": "OrderExecution"
+      },
+      "price": {
+        "module_name": "price",
+        "class_name": "Price"
+      },
+      "stock_loan_position": {
+        "module_name": "stock_loan_position",
+        "class_name": "StockLoanPosition"
+      },
+      "swap_contract": {
+        "module_name": "swap_contract",
+        "class_name": "SwapContract"
+      },
+      "swap_position": {
+        "module_name": "swap_position",
+        "class_name": "SwapPosition"
+      },
+      "cashflow": {
+        "module_name": "cashflow",
+        "class_name": "Cashflow"
+      }
+    }
+  ],
+  "file_builders": [
+    {
+      "CSV": {
+        "module_name": "csv_builder",
+        "class_name": "CSVBuilder",
+        "file_extension": ".csv"
+      },
+      "JSON": {
+        "module_name": "json_builder",
+        "class_name": "JSONBuilder",
+        "file_extension": ".json"
+      },
+      "XML": {
+        "module_name": "xml_builder",
+        "class_name": "XMLBuilder",
+        "file_extension": ".xml"
+      },
+      "JSONL": {
+        "module_name": "jsonl_builder",
+        "class_name": "JSONLBuilder",
+        "file_extension": ".jsonl"
+      }
+    }
+  ]
 }

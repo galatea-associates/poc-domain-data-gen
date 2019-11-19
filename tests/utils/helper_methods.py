@@ -1,8 +1,9 @@
-import sys
 import os
+import sys
 import ujson
+
 sys.path.insert(0, 'src/')
-from utils.sqlite_database import Sqlite_Database
+from database.sqlite_database import Sqlite_Database
 from domainobjects import back_office_position, cash_balance, cashflow
 from domainobjects import counterparty, depot_position, front_office_position
 from domainobjects import instrument, order_execution, price
@@ -21,21 +22,29 @@ def get_configuration():
         return ujson.load(file)
 
 
+def create_db():
+    return Sqlite_Database()
+
+
+def create_test_table(database, table_name, attribute_dict):
+    database.create_table_from_dict(table_name, attribute_dict)
+
+
+def drop_test_table(database, table_name):
+    database.get_connection().execute("DROP TABLE IF EXISTS " + table_name)
+
+
 def query_db(table_name, attribute=None):
     db = Sqlite_Database()
     result = db.retrieve(table_name)
     if attribute is not None:
-        returning = []
-        for row in result:
-            returning.append(row[attribute])
+        returning = [row[attribute] for row in result]
         return returning
     else:
         return result
 
 
 # Generation Methods
-
-
 def generate_back_office_position(amount=1):
     obj = back_office_position.BackOfficePosition(None)
     return obj.generate(amount, 0)
