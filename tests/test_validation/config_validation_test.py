@@ -4,7 +4,7 @@ from validator import config_validator as validator
 from tests.resources.config_files.configuration_objects\
     import default_gen_arguments, default_domain_objects,\
     default_shared_arguments, default_file_builders
-""" 
+"""
 In the main method of src/app.py, the user and dev JSON config files are
 converted to Python objects using the ujson library prior to validation. The
 objects loaded from JSON are then bundled into a dictionary and passed to the
