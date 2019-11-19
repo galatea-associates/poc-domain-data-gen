@@ -2,13 +2,13 @@
     "domain_objects" : [
         {
             "instrument" : {
-                "max_objects_per_file" : 50,
+                "max_objects_per_file" : 10000,
                 "file_name" : "instruments",
                 "output_file_type": "XML",
                 "output_directory": "out",
                 "generation_type": "fixed",
                 "fixed_args" : {
-                    "record_count" : 50
+                    "record_count" : 10000
                 },
                 "dummy_data_fields":[
                     {
@@ -28,13 +28,13 @@
         },
         {
             "price" : {
-                "max_objects_per_file" : 50,
+                "max_objects_per_file" : 10000,
                 "file_name" : "prices",
                 "output_file_type": "XML",
                 "output_directory": "out",
                 "generation_type": "fixed",
                 "fixed_args": {
-                    "record_count" : 50
+                    "record_count" : 10000
                 },
                 "dummy_data_fields":[
                     {

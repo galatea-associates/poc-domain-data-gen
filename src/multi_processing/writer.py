@@ -141,10 +141,8 @@ class Writer():
             process.
         """
 
-        for job in record_list:
-            domain_object = job[0]
-            records = job[1]
-            self.add_to_stored_records(domain_object, records)
+        for records in record_list:
+            self.add_to_stored_records(records)
             self.calculate_writes()
 
     def get_job(self):
@@ -166,21 +164,17 @@ class Writer():
 
         self.terminate = True
 
-    def add_to_stored_records(self, domain_object, records):
-        """ From the dequeued list of lists of records, the record lists are
-        amalgamated within a central store.
+    def add_to_stored_records(self, records):
+        """ From the dequeued list of records, the record lists are combined
+        within a central store.
 
         Parameters
         ----------
-        domain_object
-            Name of the domain_object the data pertains to. TODO: Irrelevant
-            information in this stage, remove this variable.
-        records
-            The List of lists of records.
+        records : List
+            List of records
         """
 
-        for item in records:
-            self.all_records.append(item)
+        self.all_records.append(records)
 
     def calculate_writes(self):
         """ Calculates jobs from the currently dequeued information observed.
