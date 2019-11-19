@@ -33,6 +33,7 @@
 import importlib
 import ujson
 import os
+import sys
 from argparse import ArgumentParser
 from database.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
@@ -47,7 +48,7 @@ def main():
         os.unlink('dependencies.db')
 
     configurations = parse_config_files()
-    # validate_configs(configurations) TODO: uncomment after function refactor
+    validate_configs(configurations)
 
     for generation_arguments in configurations['generation_arguments']:
 
@@ -195,12 +196,9 @@ def get_fb_config(file_builders, file_extension):
         type required.
     """
     file_builder_dict = file_builders[0]
-
-    if file_extension in file_builder_dict.keys():
-        return file_builder_dict[file_extension]
-    else:
-        # TODO: verify exception is handled appropriately
-        raise Exception('File builder not found')
+    # no need to validate since this will have happened already in
+    # config validation
+    return file_builder_dict[file_extension]
 
 
 def get_class(package_name, module_name, class_name):
@@ -299,6 +297,7 @@ def validate_configs(configurations):
     """
 
     validation_result = config_validator.validate(configurations)
+
     try:
         if validation_result.check_success():
             print("No errors found in config")
@@ -306,11 +305,10 @@ def validate_configs(configurations):
             raise ConfigError()
 
     except ConfigError:
-        print("Issue(s) within Config:")
+        print("Issue(s) within Config:\n")
         for error in validation_result.get_errors():
             print(error)
-        # Re-raised to halt operation
-        raise
+        sys.exit()
 
 
 def get_domain_object_config(config_file):
