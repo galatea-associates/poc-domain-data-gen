@@ -10,11 +10,11 @@ def test_back_office_positions():
 
     records, domain_obj = helper.set_up_back_office_position_tests()
     for record in records:
-        shared.attribute_quantity_valid(record, 9)
+        shared.attribute_quantity_valid('back_office_position', record, 9)
         shared.cusip_exists(record)
         shared.position_type_valid(record)
         shared.knowledge_date_valid(record)
-        if (record['position_type'] == 'SD'):
+        if record['position_type'] == 'SD':
             shared.settlement_position_effective_date_valid(record)
         else:
             shared.trade_position_effective_date_valid(record)

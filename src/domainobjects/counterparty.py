@@ -46,18 +46,13 @@ class Counterparty(Generatable):
             A single counterparty objects
         """
 
-        return {
+        record = {
             'counterparty_id': current_id,
             'book': self.generate_random_string(5, include_numbers=False),
-            'counterparty_field1': self.generate_random_string(10),
-            'counterparty_field2': self.generate_random_string(10),
-            'counterparty_field3': self.generate_random_string(10),
-            'counterparty_field4': self.generate_random_string(10),
-            'counterparty_field5': self.generate_random_string(10),
-            'counterparty_field6': self.generate_random_string(10),
-            'counterparty_field7': self.generate_random_string(10),
-            'counterparty_field8': self.generate_random_string(10),
-            'counterparty_field9': self.generate_random_string(10),
-            'counterparty_field10': self.generate_random_string(10),
             'time_stamp': datetime.now()
         }
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
+        return record

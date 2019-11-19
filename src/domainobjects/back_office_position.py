@@ -46,7 +46,7 @@ class BackOfficePosition(Generatable):
         instrument = self.get_random_instrument()
         position_type = self.generate_position_type()
         knowledge_date = self.generate_knowledge_date()
-        return {
+        record = {
             'cusip': instrument['cusip'],
             'position_type': position_type,
             'knowledge_date': knowledge_date,
@@ -60,6 +60,11 @@ class BackOfficePosition(Generatable):
             'purpose': self.generate_purpose(),
             'time_stamp': datetime.now(),
         }
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
+        return record
 
     def generate_purpose(self):
         """ Generate a purpose for a back office position

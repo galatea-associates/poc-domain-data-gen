@@ -41,13 +41,18 @@ class CashBalance(Generatable):
             A single cash balance object
         """
 
-        return {
+        record = {
             'amount': self.generate_random_integer(),
             'currency': self.generate_currency(),
             'account_num': self.generate_random_integer(length=8),
             'purpose': self.generate_purpose(),
             'time_stamp': datetime.now(),
         }
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
+        return record
 
     def generate_purpose(self):
         """ Generate a purpose for a cash balance

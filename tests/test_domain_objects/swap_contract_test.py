@@ -9,7 +9,7 @@ def test_swap_contracts():
     """
     records, domain_obj = helper.set_up_swap_contract_tests()
     for record in records:
-        shared.attribute_quantity_valid(record, 19)
+        shared.attribute_quantity_valid('swap_contract', record, 11)
         shared.attribute_exists(record['counterparty_id'],
                                 'id', 'counterparties')
         uuid_valid(record)

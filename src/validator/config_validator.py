@@ -14,31 +14,39 @@ def validate(configurations):
 
     Parameters
     ----------
-    config : dict
-        Parsed json of the user-input configuration
+    configurations : Configuration
+        Configuration object containing all 4 configuration types as specified
+        in user and dev configs.
 
     Returns
+    -------
     validation_result : Validation_Result
         An object containing a boolean flag for success or fail, as well as
         a list of any errors on the case of failure.
     """
 
-    domain_objects = {}
-    for domain_object in configurations['generation_arguments']:
-        domain_objects.update(domain_object)
+    # configurations.get_user_generation_args() and
+    # configurations.get_dev_file_builder_args() each return a list of
+    # dictionaries, with each dictionary containing a single key/value pair.
+    # These are formatted into a single dictionary for validation.
 
-    file_builders = {}
-    for file_builder in configurations['file_builders']:
-        file_builders.update(file_builder)
+    factory_definitions = {}
+    for factory_definition in configurations.get_user_generation_args():
+        factory_definitions.update(factory_definition)
 
-    shared_args = configurations['shared_arguments']
+    dev_file_builder_args = {}
+    for file_builder in configurations.get_dev_file_builder_args():
+        dev_file_builder_args.update(file_builder)
+
+    shared_factory_args = configurations.get_user_shared_generation_args()
 
     errors = [
-        validate_record_counts(domain_objects),
-        validate_max_file_size(domain_objects),
-        validate_output_file_extensions(file_builders, domain_objects),
-        validate_pool_sizes_non_zero(shared_args),
-        validate_job_size_non_zero(shared_args)
+        validate_record_counts(factory_definitions),
+        validate_max_file_size(factory_definitions),
+        validate_output_file_extensions(dev_file_builder_args,
+                                        factory_definitions),
+        validate_pool_sizes_non_zero(shared_factory_args),
+        validate_job_size_non_zero(shared_factory_args)
     ]
 
     # Remove instances of None or empty lists from error list
@@ -53,14 +61,15 @@ def validate(configurations):
         return Validation_Result(True, None)
 
 
-def validate_record_counts(domain_object_configs):
+def validate_record_counts(factory_definitions):
     """ Ensure the record count for each domain object is zero or above.
 
     Parameters
     ----------
-    domain_object_configs : dict
-        List of dictionaries, each dictionary containing the configuration
-        settings for a single domain object.
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
 
     Returns
     -------
@@ -70,7 +79,7 @@ def validate_record_counts(domain_object_configs):
     """
 
     errors = []
-    for domain_object, config in domain_object_configs.items():
+    for domain_object, config in factory_definitions.items():
         record_count = config['fixed_args']['record_count']
         if record_count < 0:
             errors.append(f'- Record count for domain object ' +
@@ -78,14 +87,15 @@ def validate_record_counts(domain_object_configs):
     return errors
 
 
-def validate_max_file_size(domain_object_configs):
+def validate_max_file_size(factory_definitions):
     """ Ensure the maximum file size for each object is greater than 0.
 
     Parameters
     ----------
-    domain_object_configs : dict
-        List of dictionaries, each dictionary containing the configuration
-        settings for a single domain object.
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
 
     Returns
     -------
@@ -96,7 +106,7 @@ def validate_max_file_size(domain_object_configs):
 
     errors = []
 
-    for domain_object, config in domain_object_configs.items():
+    for domain_object, config in factory_definitions.items():
         file_size = config['max_objects_per_file']
         if file_size < 0:
             errors.append(f'- File size for domain object ' +
@@ -104,13 +114,22 @@ def validate_max_file_size(domain_object_configs):
     return errors
 
 
-def validate_output_file_extensions(file_builder_configs,
-                                    domain_object_configs):
+def validate_output_file_extensions(dev_file_builder_args,
+                                    factory_definitions):
     """ Ensure the file extension for each object is valid as per the defined
     file builders.
 
     Parameters
     ----------
+    dev_file_builder_args : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        file builders, and each value is a dictionary containing the
+        configuration settings for that file builder.
+
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
 
     Returns
     -------
@@ -120,9 +139,9 @@ def validate_output_file_extensions(file_builder_configs,
     """
 
     errors = []
-    file_extensions = get_file_extensions(file_builder_configs)
+    file_extensions = get_file_extensions(dev_file_builder_args)
 
-    for domain_object, config in domain_object_configs.items():
+    for domain_object, config in factory_definitions.items():
         file_extension = config['output_file_type']
         if file_extension not in file_extensions:
             errors.append(f'- File type \'{file_extension}\' for ' +
@@ -131,15 +150,16 @@ def validate_output_file_extensions(file_builder_configs,
     return errors
 
 
-def get_file_extensions(file_builder_configs):
+def get_file_extensions(dev_file_builder_args):
     """ Retrieve the file extensions currently supported as per their config
     definitions.
 
     Parameters
     ----------
-    file_builder_configs: list
-        List of dictionaries, each dictionary being the description of a
-        single file builder type/extension.
+    dev_file_builder_args : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        file builders, and each value is a dictionary containing the
+        configuration settings for that file builder.
 
     Returns
     -------
@@ -147,16 +167,16 @@ def get_file_extensions(file_builder_configs):
         List containing all supported file types.
     """
 
-    return list(file_builder_configs.keys())
+    return list(dev_file_builder_args.keys())
 
 
-def validate_pool_sizes_non_zero(shared_config):
+def validate_pool_sizes_non_zero(shared_factory_args):
     """ Verifies that pool sizes for both generation and writing pools are
     non-zero and positive.
 
     Parameters
     ----------
-    shared_config : dict
+    shared_factory_args : dict
         Dictionary of the "shared_config" section of the config file
 
     Returns
@@ -167,8 +187,8 @@ def validate_pool_sizes_non_zero(shared_config):
 
     errors = []
 
-    gen_pool_size = shared_config['generator_pool_size']
-    write_pool_size = shared_config['writer_pool_size']
+    gen_pool_size = shared_factory_args['generator_pool_size']
+    write_pool_size = shared_factory_args['writer_pool_size']
     if gen_pool_size <= 0:
         errors.append("- Generation pool size must be a positive value.")
     if write_pool_size <= 0:
@@ -176,12 +196,12 @@ def validate_pool_sizes_non_zero(shared_config):
     return errors
 
 
-def validate_job_size_non_zero(shared_config):
+def validate_job_size_non_zero(shared_factory_args):
     """ Ensure the specified job size is a non-zero numbers.
 
     Parameters
     ----------
-    shared_config : dict
+    shared_factory_args : dict
         Dictionary of the "shared_config" section of the config file
 
     Returns
@@ -192,7 +212,7 @@ def validate_job_size_non_zero(shared_config):
     """
 
     error = []
-    job_size = shared_config['pool_job_size']
+    job_size = shared_factory_args['pool_job_size']
     if job_size <= 0:
         error = ["- Pool job size must be a positive value"]
     return error

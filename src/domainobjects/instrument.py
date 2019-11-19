@@ -66,7 +66,7 @@ class Instrument(Generatable):
         isin = self.generate_isin(country_of_issuance, cusip)
         ric = self.generate_ric(ticker, exchange_code)
         sedol = self.generate_random_integer(length=7)
-        return {
+        record = {
             'instrument_id': id,
             'ric': ric,
             'isin': isin,
@@ -77,6 +77,11 @@ class Instrument(Generatable):
             'country_of_issuance': country_of_issuance,
             'time_stamp': datetime.now()
         }
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
+        return record
 
     def generate_asset_class(self):
         """ Generate a predetermined asset class for instruments

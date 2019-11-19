@@ -1,9 +1,9 @@
-import random
-import string
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-
 from database.sqlite_database import Sqlite_Database
+import multi_processing.batch_size_calc as batch_size_calc
+import random
+import string
 
 
 class Generatable(ABC):
@@ -144,11 +144,21 @@ class Generatable(ABC):
     RETURN_TYPES = ['Outstanding', 'Pending Return', 'Pending Recall',
                     'Partial Return', 'Partial Recall', 'Settled']
 
-    def __init__(self, domain_object_config):
+    def __init__(self, factory_args, shared_factory_args):
         """ Set configuration, default database connection to None and
-        instantiate list of records to persist to be empty. """
+        instantiate list of records to persist to be empty.
 
-        self.__config = domain_object_config
+        Parameters
+        ----------
+        factory_args : dict
+            Factory settings as set by the user, such as number of records to
+            generate and any object-specific arguments.
+        shared_factory_args : dict
+            All multiprocessing arguments and their user-assigned values
+        """
+
+        self.__config = factory_args
+        self.__shared_args = shared_factory_args
         self.__database = None
         self.__persisting_records = []
 
@@ -159,6 +169,43 @@ class Generatable(ABC):
         provided by each domain object """
 
         pass
+
+    def get_dummy_field_generator(self):
+        """ Return generator of dummy fields based on user
+        specification in config for the domain object subclass calling
+        this function
+
+        Returns
+        -------
+        Generator:
+            iterable that yields key/value pairs as specified in the config
+        """
+        if self.__config is None:
+            # workaround since testing does not always use a config file
+            # eventually a testing config will be created and used
+            # at which point this 'if' statement can be removed
+            return iter(())
+
+        object_name = self.__config["file_type_args"]["xml_item_name"]
+        field_number = 1
+
+        for dummy_field in self.__config["dummy_fields"]:
+            field_count = dummy_field["field_count"]
+            if field_count < 1:
+                continue
+
+            data_type = dummy_field["data_type"]
+            data_length = dummy_field["data_length"]
+
+            if data_type == "string":
+                data_method = self.generate_random_string
+            elif data_type == "numeric":
+                data_method = self.generate_random_integer
+
+            for _ in range(field_count):
+                yield f'{object_name}_field{field_number}',\
+                      data_method(length=data_length)
+                field_number += 1
 
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
@@ -574,7 +621,7 @@ class Generatable(ABC):
         self.__database = Sqlite_Database()
         return self.__database
 
-    def get_object_config(self):
+    def get_factory_config(self):
         """ Returns the current objects user-specified configuration
 
         Returns
@@ -595,3 +642,33 @@ class Generatable(ABC):
         """
 
         return self.__config['custom_args']
+
+    def get_shared_args(self):
+        """ Returns the shared multiprocessing arguments for multiprocessing.
+
+        Returns
+        -------
+        Dict
+            The arguments shared between factories for multiprocessing.
+        """
+        return self.__shared_args
+
+    def get_record_count(self):
+        """ Returns the number of records the factory is to produce.
+
+        Returns
+        -------
+        int
+            The number of records this factory will produce.
+        """
+        return int(self.__config['fixed_args']['record_count'])
+
+    def set_batch_size(self):
+        """ Sets the batch size value for the factory.
+
+        Parameters
+        ----------
+        batch_size : int
+            The size of the batch to generate objects in
+        """
+        self.batch_size = batch_size_calc.get(self)

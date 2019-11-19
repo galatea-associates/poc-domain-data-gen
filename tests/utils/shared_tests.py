@@ -1,5 +1,6 @@
 import sys
 from datetime import datetime, timedelta
+import re
 
 sys.path.insert(0, 'src/')
 from utils import helper_methods as helper
@@ -8,10 +9,10 @@ from domainobjects import instrument
 # Shared Tests
 # domain_obj gives access to defined constant lists in the parent class
 # generatable, this is otherwise uninstantiable as it is abstract
-domain_obj = instrument.Instrument(None)
+domain_obj = instrument.Instrument(None, None)
 
 
-def attribute_quantity_valid(record, quantity):
+def attribute_quantity_valid(object_name, record, quantity):
     """
     Checks to see if number of attributes (domain object dict keys) has
     changed since tests were last updated. Failure of this test indicates a
@@ -27,7 +28,10 @@ def attribute_quantity_valid(record, quantity):
     Domain Object attributes have been added since this test was written.
     Ensure tests have also been provided to validate all newly added
     attributes of this domain object."""
-    assert len(record) == quantity, error_message
+    pattern = f"^{object_name}_field[0-9]+$"
+    record_without_dummies = {key: record[key] for key in record.keys()
+                              if not re.match(pattern, key)}
+    assert len(record_without_dummies) == quantity, error_message
 
 
 def attribute_exists(value, attribute, table):
@@ -165,7 +169,7 @@ def account_valid(record, account_types):
 
 
 def position_type_valid(record):
-    domain_object = instrument.Instrument(None)
+    domain_object = instrument.Instrument(None, None)
     position_types = domain_object.POSITION_TYPES
     assert record['position_type'] in position_types
 
