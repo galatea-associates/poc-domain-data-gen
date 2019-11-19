@@ -39,20 +39,27 @@ from multi_processing.coordinator import Coordinator
 from exceptions.config_error import ConfigError
 from configuration.configuration import Configuration
 import validator.config_validator as config_validator
+from src.utils.google_drive_connector import GoogleDriveConnector
 
 
 def main():
     delete_database()
 
-    configurations = parse_config_files()
+    args = get_args()
+    configurations = parse_config_files(args)
+    google_drive_connector = GoogleDriveConnector(args.g_drive_root)
+
     factory_definitions = configurations.get_user_generation_args()
     dev_file_builder_args = configurations.get_dev_file_builder_args()
     dev_factory_args = configurations.get_dev_factory_args()
     shared_factory_args = configurations.get_user_shared_generation_args()
 
     for factory_definition in factory_definitions:
+        google_drive_flag = factory_definition['upload_to_google_drive']
         file_builder = instantiate_file_builder(factory_definition,
-                                                dev_file_builder_args)
+                                                dev_file_builder_args,
+                                                google_drive_connector,
+                                                google_drive_flag)
         object_factory = instantiate_object_factory(dev_factory_args,
                                                     factory_definition,
                                                     shared_factory_args)
@@ -85,7 +92,9 @@ def process_object_factory(file_builder, object_factory):
 
 
 def instantiate_file_builder(factory_definition,
-                             dev_file_builder_args):
+                             dev_file_builder_args,
+                             google_drive_connector,
+                             google_drive_flag):
     """ Returns file builder object from provided configs
 
     Parameters
@@ -95,6 +104,8 @@ def instantiate_file_builder(factory_definition,
     dev_file_builder_args: dict
         Developer arguments defining where in the codebase file builder
         classes are defined
+    google_drive_connector: GoogleDriveConnector
+    google_drive_flag: bool
 
     Returns
     -------
@@ -113,7 +124,9 @@ def instantiate_file_builder(factory_definition,
     file_builder_class = get_class('filebuilders',
                                    file_builder_config['module_name'],
                                    file_builder_config['class_name'])
-    return file_builder_class(None, factory_args)
+    return file_builder_class(google_drive_connector,
+                              google_drive_flag,
+                              factory_args)
 
 
 def instantiate_object_factory(dev_factory_args,
@@ -256,7 +269,7 @@ def get_class(package_name, module_name, class_name):
                    class_name)
 
 
-def parse_config_files():
+def parse_config_files(config_location):
     """ Retrieve command line arguments, and extract the 4 core configuration
     sections from it. Return this information as a Configuration object.
 
@@ -266,8 +279,6 @@ def parse_config_files():
         An object instantiated to containin all 4 configuration types. Has
         retrieval methods defined within.
     """
-
-    config_location = get_args()
 
     with open(config_location.user_config) as user_config:
         parsed_user_config = ujson.load(user_config)
@@ -306,6 +317,8 @@ def get_args():
                         help='JSON Configuration File Location')
     parser.add_argument('--dev_config', default='src/dev_config.json',
                         help='Developer Configuration File Location')
+    parser.add_argument('--g-drive-root', default='root',
+                        help='Google Drive root folder ID')
     return parser.parse_args()
 
 

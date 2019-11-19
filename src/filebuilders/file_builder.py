@@ -49,7 +49,7 @@ class FileBuilder(abc.ABC):
         Returns the name of each XML item
     """
 
-    def __init__(self, google_drive_connector, factory_config):
+    def __init__(self, google_drive_connector, google_drive_flag, factory_config):
         """ Initialises various values required for correct behaviour when
         writing out to files. Stores XML-specific data where the specified
         output type is XML.
@@ -59,6 +59,7 @@ class FileBuilder(abc.ABC):
         google_drive_connector : Google_Drive_Connector
             Instantiated connector object for uploading to a pre-defined
             google drive directory.
+        google_drive_flag: bool
         factory_config : Dict
             Dictionary containing the parsed json user-defined configuration
             for the current factory.
@@ -69,6 +70,7 @@ class FileBuilder(abc.ABC):
         file_extension = file_type.lower()
 
         self.__google_drive_connector = google_drive_connector
+        self.__google_drive_flag = google_drive_flag
         self.__file_name = file_name + '_{}.' + file_extension
         self.__output_dir = factory_config['output_directory']
         self.__max_objects_per_file = factory_config['max_objects_per_file']
@@ -114,14 +116,14 @@ class FileBuilder(abc.ABC):
         # Check if a folder for today's date exists, create if it doesn't
         folder_id = self.__google_drive_connector\
             .get_folder_id(todays_date, root_folder_id)
-        if folder_id == None:
+        if folder_id is None:
             folder_id = self.__google_drive_connector\
                 .create_folder(todays_date, root_folder_id)
 
         # Check if the file already exists, create it if not
         file_id = self.__google_drive_connector\
             .get_file_id(file_name, folder_id)
-        if file_id == None:
+        if file_id is None:
             self.__google_drive_connector\
                 .create_file(local_folder_name, file_name, folder_id)
         else:
