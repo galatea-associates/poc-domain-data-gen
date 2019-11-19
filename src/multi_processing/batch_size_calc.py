@@ -50,7 +50,7 @@ def get(object_factory):
         should retrieve from the database for generation where the objects has
         an unknown amount to generate.
     """
-    factory_config = object_factory.get_factory_config() 
+    factory_config = object_factory.get_factory_config()
     factory_name = next(iter(factory_config))
 
     default_job_size = object_factory.get_shared_args()['pool_job_size']

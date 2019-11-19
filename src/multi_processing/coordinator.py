@@ -53,7 +53,7 @@ class Coordinator():
     """
 
     def __init__(self, file_builder, object_factory):
-        """Create Job Queues for both generation and file writing processes. 
+        """Create Job Queues for both generation and file writing processes.
         Instantiate the coordinating process for both, by default not running
         until their "start" methods are called.
 
@@ -64,7 +64,7 @@ class Coordinator():
             the necessary format.
         object_factory : Generatable
             Instantiated and pre-configured object factory which produces
-            the current object. 
+            the current object.
         """
 
         queue_manager = Manager()

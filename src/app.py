@@ -34,7 +34,6 @@ import importlib
 import ujson
 import os
 import sys
-import time
 from argparse import ArgumentParser
 from utils.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
@@ -147,7 +146,7 @@ def instantiate_object_factory(dev_factory_args,
     object_factory_class = get_class('domainobjects',
                                      object_factory_config['module_name'],
                                      object_factory_config['class_name'])
-    return object_factory_class(factory_arguments[object_factory_name], 
+    return object_factory_class(factory_arguments[object_factory_name],
                                 shared_factory_args)
 
 
@@ -263,7 +262,7 @@ def parse_config_files():
     -------
     Configuration
         An object instantiated to containin all 4 configuration types. Has
-        retrieval methods defined within. 
+        retrieval methods defined within.
     """
 
     config_location = get_args()
@@ -279,10 +278,10 @@ def parse_config_files():
         domain_object_location_config = parsed_dev_config['domain_objects']
 
     return Configuration({
-        "generation_arguments" : domain_object_gen_config,
-        "domain_objects" : domain_object_location_config,
-        "shared_arguments" : shared_config,
-        "file_builders" : file_builder_configs
+        "generation_arguments": domain_object_gen_config,
+        "domain_objects": domain_object_location_config,
+        "shared_arguments": shared_config,
+        "file_builders": file_builder_configs
     })
 
 

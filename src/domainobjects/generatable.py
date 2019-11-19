@@ -146,8 +146,8 @@ class Generatable(ABC):
 
     def __init__(self, factory_args, shared_factory_args):
         """ Set configuration, default database connection to None and
-        instantiate list of records to persist to be empty. 
-        
+        instantiate list of records to persist to be empty.
+
         Parameters
         ----------
         factory_args : dict
