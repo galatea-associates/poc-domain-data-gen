@@ -1,21 +1,21 @@
-from domainobjects.generatable import Generatable
+from domainobjects.creatable import Creatable
 import random
 import string
 from datetime import datetime
 
-class Counterparty(Generatable):
-    """ A class to generate counterparties. Generate method will generate a
+class CounterpartyFactory(Creatable):
+    """ A class to create counterparties. Create method will create a
     set amount of positions. """
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of counterparties.
+    def create(self, record_count, start_id):
+        """ Create a set number of counterparties.
 
         Parameters
         ----------
         record_count : int
-            Number of counterparties to generate
+            Number of counterparties to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -33,12 +33,12 @@ class Counterparty(Generatable):
         return records
 
     def get_record(self, current_id):
-        """ Generate a single counterparty record
+        """ Create a single counterparty record
 
         Parameters
         ----------
         current_id : int
-            Current id of the counterparty being generated
+            Current id of the counterparty being created
 
         Returns
         -------
@@ -48,7 +48,7 @@ class Counterparty(Generatable):
 
         record = {
             'counterparty_id': current_id,
-            'book': self.generate_random_string(5, include_numbers=False),
+            'book': self.create_random_string(5, include_numbers=False),
             'time_stamp': datetime.now()
         }
 

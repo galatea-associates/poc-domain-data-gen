@@ -1,23 +1,23 @@
-from domainobjects.generatable import Generatable
+from domainobjects.creatable import Creatable
 from datetime import datetime
 import random
 
-class CashBalance(Generatable):
-    """ Class to generate cash balances. Generate method will generate a set
-    amount of balances. Other generation methods included where cash balances
+class CashBalanceFactory(Creatable):
+    """ Class to create cash balances. Create method will create a set
+    amount of balances. Other creation methods included where cash balances
     are the only domain object requiring them. """
 
     CASH_BALANCE_PURPOSES = ['Cash Balance', 'P&L', 'Fees']
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of cash balances
+    def create(self, record_count, start_id):
+        """ Create a set number of cash balances
 
         Parameters
         ----------
         record_count : int
-            Number of cash balances to generate
+            Number of cash balances to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -28,12 +28,12 @@ class CashBalance(Generatable):
         records = []
 
         for _ in range(start_id, start_id+record_count):
-            records.append(self.generate_record())
+            records.append(self.create_record())
 
         return records
 
-    def generate_record(self):
-        """ Generate a single cash balance
+    def create_record(self):
+        """ Create a single cash balance
 
         Returns
         -------
@@ -42,10 +42,10 @@ class CashBalance(Generatable):
         """
 
         record = {
-            'amount': self.generate_random_integer(),
-            'currency': self.generate_currency(),
-            'account_num': self.generate_random_integer(length=8),
-            'purpose': self.generate_purpose(),
+            'amount': self.create_random_integer(),
+            'currency': self.create_currency(),
+            'account_num': self.create_random_integer(length=8),
+            'purpose': self.create_purpose(),
             'time_stamp': datetime.now(),
         }
 
@@ -54,8 +54,8 @@ class CashBalance(Generatable):
 
         return record
 
-    def generate_purpose(self):
-        """ Generate a purpose for a cash balance
+    def create_purpose(self):
+        """ Create a purpose for a cash balance
 
         Returns
         -------

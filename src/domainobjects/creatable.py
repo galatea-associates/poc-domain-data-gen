@@ -6,9 +6,9 @@ import random
 import string
 
 
-class Generatable(ABC):
-    """ Parents class of all domain objects. Contains shared generation
-    methods, and defines an abstract method for generation. Pre-defines
+class Creatable(ABC):
+    """ Parents class of all domain objects. Contains shared creation
+    methods, and defines an abstract method for creation. Pre-defines
     lists of potential values for some variations to minimise number of
     list constructions.
 
@@ -47,67 +47,67 @@ class Generatable(ABC):
 
     persisting_records : List
         Records, or partial records, to persist to the database. Used to store
-        attributes or objects other generations depend on
+        attributes or objects other creations depend on
 
     Methods
     -------
-    generate(record_count, start_id) : Abstract
-        Generate a given number of records, if id'd starting from given number
+    create(record_count, start_id) : Abstract
+        Create a given number of records, if id'd starting from given number
 
-    generate_random_string(length, include_letters, include_numbers)
-        Generate a random string of letters and/or numbers of given length
+    create_random_string(length, include_letters, include_numbers)
+        Create a random string of letters and/or numbers of given length
 
-    generate_random_boolean()
+    create_random_boolean()
         Select a random boolean value
 
-    generate_random_date(from_year, to_year, from_month,
+    create_random_date(from_year, to_year, from_month,
                          to_month, from_day, to_day)
         Select a random date between a given range
 
-    generate_random_integer(min, max, length, negative)
-        Generate a random digit between given values of set length. Boolean
+    create_random_integer(min, max, length, negative)
+        Create a random digit between given values of set length. Boolean
         flag as to positive or negative
 
-    generate_random_decimal(min, max, dp)
-        Generate a random number between two values to a given number of
+    create_random_decimal(min, max, dp)
+        Create a random number between two values to a given number of
         decimal places
 
-    generate_currency()
+    create_currency()
         Select a random currency from a pre-defined set
 
-    generate_asset_class()
+    create_asset_class()
         Select a random asset class from a pre-defined set
 
-    generate_ric(ticker, exchange_code)
+    create_ric(ticker, exchange_code)
         Create a RIC value from given ticker and exchange values
 
-    generate_isin(country_of_issuance, cusip)
+    create_isin(country_of_issuance, cusip)
         Create an ISIN value from given county of issuance and CUSIP values
 
-    generate_credit_debit()
+    create_credit_debit()
         Select a random value between credit or debit
 
-    generate_long_short()
+    create_long_short()
         Select a random value between long and short
 
-    generate_position_type(no_sd, no_td)
+    create_position_type(no_sd, no_td)
         Select a random position type, considering whether there should be
         inclusion of settlement or trade date positions
 
-    generate_knowledge_date()
+    create_knowledge_date()
         Return todays date
 
-    generate_effective_date(n_days_to_add, knowledge_date, position_type)
+    create_effective_date(n_days_to_add, knowledge_date, position_type)
         Return today is position is of settlement, else extend by n days
 
-    generate_account(account_types)
+    create_account(account_types)
         Select a random account type from a provided set
 
-    generate_return_type()
+    create_return_type()
         Select a random return type from a pre-defined set
 
     get_random_instrument()
-        Return a random instrument from the set of all generated intruments
+        Return a random instrument from the set of all created intruments
 
     persist_record(record)
         Add record to list of those to be persisted
@@ -152,7 +152,7 @@ class Generatable(ABC):
         ----------
         factory_args : dict
             Factory settings as set by the user, such as number of records to
-            generate and any object-specific arguments.
+            create and any object-specific arguments.
         shared_factory_args : dict
             All multiprocessing arguments and their user-assigned values
         """
@@ -163,8 +163,8 @@ class Generatable(ABC):
         self.__persisting_records = []
 
     @abstractmethod
-    def generate(self, record_count, start_id):
-        """ Generate a set number of records for a domain object, where ID's
+    def create(self, record_count, start_id):
+        """ Create a set number of records for a domain object, where ID's
         are sequential, start from a given id. Concrete implementations
         provided by each domain object """
 
@@ -198,23 +198,23 @@ class Generatable(ABC):
             data_length = dummy_field["data_length"]
 
             if data_type == "string":
-                data_method = self.generate_random_string
+                data_method = self.create_random_string
             elif data_type == "numeric":
-                data_method = self.generate_random_integer
+                data_method = self.create_random_integer
 
             for _ in range(field_count):
                 yield f'{object_name}_field{field_number}',\
                       data_method(length=data_length)
                 field_number += 1
 
-    def generate_random_string(self, length,
+    def create_random_string(self, length,
                                include_letters=True, include_numbers=True):
-        """ Generates a random string, of letters or numbers or both.
+        """ Creates a random string, of letters or numbers or both.
 
         Parameters
         ----------
         length : int
-            Length of the random string to generate
+            Length of the random string to create
         include_letters : Boolean
             Boolean flag of whether letters are included in the string
         include_numbers : Boolean
@@ -235,7 +235,7 @@ class Generatable(ABC):
 
         return ''.join(random.choices(choices, k=length))
 
-    def generate_random_boolean(self):
+    def create_random_boolean(self):
         """ Return a random boolean value
 
         Returns
@@ -246,10 +246,10 @@ class Generatable(ABC):
 
         return random.choice(self.TRUE_FALSE)
 
-    def generate_random_date(self, from_year=2016, to_year=2017,
+    def create_random_date(self, from_year=2016, to_year=2017,
                              from_month=1, to_month=12,
                              from_day=1, to_day=28):
-        """ Generates a random date between two given days
+        """ Creates a random date between two given days
 
         Parameters
         ----------
@@ -277,10 +277,10 @@ class Generatable(ABC):
         day = random.randint(from_day, to_day)
         return datetime(year, month, day).date()
 
-    def generate_random_integer(self, min=1, max=10000,
+    def create_random_integer(self, min=1, max=10000,
                                 length=None, negative=False):
-        """ Generate a random integer of a given length. If no length given,
-        generate a random integer between minimum and maximum.
+        """ Create a random integer of a given length. If no length given,
+        create a random integer between minimum and maximum.
 
         Parameters
         ----------
@@ -307,8 +307,8 @@ class Generatable(ABC):
         value = random.randint(min, max)
         return value if not negative else -value
 
-    def generate_random_decimal(self, min=10, max=10000, dp=2):
-        """ Generate a random number between a given range to a given number
+    def create_random_decimal(self, min=10, max=10000, dp=2):
+        """ Create a random number between a given range to a given number
         of decimal places.
 
         Parameters
@@ -318,18 +318,18 @@ class Generatable(ABC):
         max : int
             Maximum value of the range
         dp : int
-            Number of decimal places to generate the value to
+            Number of decimal places to create the value to
 
         Returns
         -------
         float
-            Randomly generated value between min and max to dp decimal places
+            Randomly created value between min and max to dp decimal places
         """
 
         return round(random.uniform(min, max), dp)
 
-    def generate_currency(self):
-        """ Generate a random currency from a set list
+    def create_currency(self):
+        """ Create a random currency from a set list
 
         Returns
         -------
@@ -339,8 +339,8 @@ class Generatable(ABC):
 
         return random.choice(self.CURRENCIES)
 
-    def generate_asset_class(self):
-        """ Generate a random asset class from a set list
+    def create_asset_class(self):
+        """ Create a random asset class from a set list
 
         Returns
         -------
@@ -350,7 +350,7 @@ class Generatable(ABC):
 
         return random.choice(self.ASSET_CLASSES)
 
-    def generate_ric(self, ticker, exchange_code):
+    def create_ric(self, ticker, exchange_code):
         """ Appends two input values to "ticker.exchange_code"
 
         Parameters
@@ -368,7 +368,7 @@ class Generatable(ABC):
 
         return '{0}.{1}'.format(ticker, exchange_code)
 
-    def generate_isin(self, country_of_issuance, cusip):
+    def create_isin(self, country_of_issuance, cusip):
         """ Appends two input values to "'country_of_issuance''cusip''4'"
 
         Parameters
@@ -385,8 +385,8 @@ class Generatable(ABC):
         """
         return ''.join([country_of_issuance, str(cusip), '4'])
 
-    def generate_credit_debit(self):
-        """ Generate a random credit or debit value
+    def create_credit_debit(self):
+        """ Create a random credit or debit value
 
         Returns
         -------
@@ -396,8 +396,8 @@ class Generatable(ABC):
 
         return random.choice(self.CREDIT_DEBIT)
 
-    def generate_long_short(self):
-        """ Generate a random long or short value
+    def create_long_short(self):
+        """ Create a random long or short value
 
         Returns
         -------
@@ -407,8 +407,8 @@ class Generatable(ABC):
 
         return random.choice(self.LONG_SHORT)
 
-    def generate_position_type(self, no_sd=False, no_td=False):
-        """ Generate a random position type
+    def create_position_type(self, no_sd=False, no_td=False):
+        """ Create a random position type
 
         Parameters
         ----------
@@ -430,8 +430,8 @@ class Generatable(ABC):
             choices.remove('TD')
         return random.choice(choices)
 
-    def generate_knowledge_date(self):
-        """ Generate a knowledge day value
+    def create_knowledge_date(self):
+        """ Create a knowledge day value
 
         Returns
         -------
@@ -441,18 +441,18 @@ class Generatable(ABC):
 
         return datetime.today()
 
-    def generate_effective_date(self, n_days_to_add=3,
+    def create_effective_date(self, n_days_to_add=3,
                                 knowledge_date=None, position_type=None):
-        """ Generates an Effective Date value
+        """ Creates an Effective Date value
 
         Parameters
         ----------
         n_days_to_add : int
             Number of days to add to knowledge date before event takes effect
         knowledge_date : Date
-            The knowledge date of the object being generated
+            The knowledge date of the object being created
         position_type : String
-            The position type of the object being generated
+            The position type of the object being created
 
         Returns
         -------
@@ -464,8 +464,8 @@ class Generatable(ABC):
         return knowledge_date if position_type == 'SD' \
             else knowledge_date + timedelta(days=n_days_to_add)
 
-    def generate_account(self, account_types=ACCOUNT_TYPES):
-        """ Generates an account value
+    def create_account(self, account_types=ACCOUNT_TYPES):
+        """ Creates an account value
 
         Parameters
         ----------
@@ -483,8 +483,8 @@ class Generatable(ABC):
         random_string = ''.join(random.choices(string.digits, k=4))
         return ''.join([account_type, random_string])
 
-    def generate_return_type(self):
-        """ Generate a return type
+    def create_return_type(self):
+        """ Create a return type
 
         Returns
         -------
@@ -497,7 +497,7 @@ class Generatable(ABC):
     # THESE ARE NON-GENERATING, UTILITY METHODS USED WHERE NECESSARY #
 
     def get_random_instrument(self):
-        """ Returns a random instrument from those generated prior
+        """ Returns a random instrument from those created prior
 
         Returns
         -------
@@ -669,6 +669,6 @@ class Generatable(ABC):
         Parameters
         ----------
         batch_size : int
-            The size of the batch to generate objects in
+            The size of the batch to create objects in
         """
         self.batch_size = batch_size_calc.get(self)

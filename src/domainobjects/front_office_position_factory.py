@@ -1,26 +1,26 @@
 import random
 from datetime import datetime
 
-from domainobjects.generatable import Generatable
+from domainobjects.creatable import Creatable
 
 
-class FrontOfficePosition(Generatable):
-    """ Class to generate front office positions. Generate method will
-    generate a set amount of positions. Other generation methods included
+class FrontOfficePositionFactory(Creatable):
+    """ Class to create front office positions. Create method will
+    create a set amount of positions. Other creation methods included
     where front office positions are the only domain object requiring them.
     """
 
     FRONT_OFFICE_POSITION_PURPOSES = ['Outright']
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of front office positions
+    def create(self, record_count, start_id):
+        """ Create a set number of front office positions
 
         Parameters
         ----------
         record_count : int
-            Number of front office positions to generate
+            Number of front office positions to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -38,31 +38,31 @@ class FrontOfficePosition(Generatable):
         return records
 
     def get_record(self, instrument):
-        """ Generate a single front office position
+        """ Create a single front office position
 
         Parameters
         ----------
         instrument : list
             Dictionary containing a partial record of an instrument, only
-            containing information necessary to generate depot positions.
+            containing information necessary to create depot positions.
 
         Returns
         -------
         dict
             A single front office position object
         """
-        position_type = self.generate_position_type()
-        knowledge_date = self.generate_knowledge_date()
+        position_type = self.create_position_type()
+        knowledge_date = self.create_knowledge_date()
         record = {
             'ric': instrument['ric'],
             'position_type': position_type,
             'knowledge_date': knowledge_date,
-            'effective_date': self.generate_effective_date(
+            'effective_date': self.create_effective_date(
                 2, knowledge_date, position_type),
-            'account': self.generate_account(),
-            'direction': self.generate_credit_debit(),
-            'qty': self.generate_random_integer(),
-            'purpose': self.generate_purpose(),
+            'account': self.create_account(),
+            'direction': self.create_credit_debit(),
+            'qty': self.create_random_integer(),
+            'purpose': self.create_purpose(),
             'time_stamp': datetime.now()
         }
 
@@ -71,8 +71,8 @@ class FrontOfficePosition(Generatable):
 
         return record
 
-    def generate_purpose(self):
-        """ Generate a purpose for a front office position
+    def create_purpose(self):
+        """ Create a purpose for a front office position
 
         Returns
         -------

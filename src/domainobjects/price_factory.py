@@ -1,20 +1,20 @@
-from domainobjects.generatable import Generatable
+from domainobjects.creatable import Creatable
 from datetime import datetime
 import random
 
-class Price(Generatable):
-    """ Class to generate prices. Generate method will generate a set amount
+class PriceFactory(Creatable):
+    """ Class to create prices. Create method will create a set amount
     of prices. """
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of prices
+    def create(self, record_count, start_id):
+        """ Create a set number of prices
 
         Parameters
         ----------
         record_count : int
-            Number of prices to generate
+            Number of prices to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -26,13 +26,13 @@ class Price(Generatable):
         self.instruments = self.retrieve_records('instruments')
 
         for _ in range(start_id, start_id+record_count):
-            record = self.generate_record()
+            record = self.create_record()
             records.append(record)
 
         return records
 
-    def generate_record(self):
-        """ Generate a single price
+    def create_record(self):
+        """ Create a single price
 
         Returns
         -------
@@ -43,8 +43,8 @@ class Price(Generatable):
         instrument = self.get_random_instrument()
         record = {
                 'ric': instrument['ric'],
-                'price': self.generate_random_decimal(),
-                'currency': self.generate_currency(),
+                'price': self.create_random_decimal(),
+                'currency': self.create_currency(),
                 'time_stamp': datetime.now()
             }
 

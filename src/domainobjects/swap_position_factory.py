@@ -1,34 +1,34 @@
-from domainobjects.generatable import Generatable
+from domainobjects.creatable import Creatable
 from datetime import datetime
 import random
 import string
 import pandas as pd
 
 
-class SwapPosition(Generatable):
-    """ Class to generate swap positions. Generate method will generate a set
-    amount of swap positions. Other generation methods are included where swap
+class SwapPositionFactory(Creatable):
+    """ Class to create swap positions. Create method will create a set
+    amount of swap positions. Other creation methods are included where swap
     positions are the only domain object requiring them.
 
-    Process of generating swap positions dependent on swap contracts, for each
+    Process of creating swap positions dependent on swap contracts, for each
     of these positions, choose a random number of instruments from those
-    generated prior, then for each position type (start of day, intraday,
-    end of day), generate a record for every date from the user specified
+    created prior, then for each position type (start of day, intraday,
+    end of day), create a record for every date from the user specified
     start-date until today's date.
     """
 
     PURPOSES = ['Outright']
     POSITION_TYPES = ['S', 'I', 'E']
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of swap positions
+    def create(self, record_count, start_id):
+        """ Create a set number of swap positions
 
         Parameters
         ----------
         record_count : int
-            Number of swap positions to generate
+            Number of swap positions to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -44,7 +44,7 @@ class SwapPosition(Generatable):
             self.retrieve_batch_records('swap_contracts',
                                         record_count, start_id)
 
-        records = [self.generate_record(swap_contract, instrument,
+        records = [self.create_record(swap_contract, instrument,
                                         position_type, date)
                    for swap_contract in swap_contract_batch
                    for instrument in self.get_random_instruments()
@@ -54,8 +54,8 @@ class SwapPosition(Generatable):
         self.persist_records('swap_positions')
         return records
 
-    def generate_record(self, swap_contract, instrument, position_type, date):
-        """ Generate a single swap position
+    def create_record(self, swap_contract, instrument, position_type, date):
+        """ Create a single swap position
 
         Parameters
         ----------
@@ -78,9 +78,9 @@ class SwapPosition(Generatable):
             A single swap position object
         """
 
-        long_short = self.generate_long_short()
-        purpose = self.generate_purpose()
-        quantity = self.generate_random_integer(
+        long_short = self.create_long_short()
+        purpose = self.create_purpose()
+        quantity = self.create_random_integer(
                         negative=long_short.upper() == "SHORT"
                     )
         current_date = datetime.strftime(date, '%Y-%m-%d')
@@ -100,7 +100,7 @@ class SwapPosition(Generatable):
             'position_type': position_type,
             'knowledge_date': current_date,
             'effective_date': current_date,
-            'account': self.generate_account(),
+            'account': self.create_account(),
             'long_short': long_short,
             'td_quantity': quantity,
             'purpose': purpose,
@@ -147,14 +147,14 @@ class SwapPosition(Generatable):
         Returns
         -------
         String
-            String format of the user-specified start date for generation
+            String format of the user-specified start date for creation
         """
 
         custom_args = self.get_custom_args()
         return custom_args['start_date']
 
-    def generate_account(self):
-        """ Generate an account identifier
+    def create_account(self):
+        """ Create an account identifier
 
         Returns
         -------
@@ -165,8 +165,8 @@ class SwapPosition(Generatable):
         random_string = ''.join(random.choices(string.digits, k=4))
         return ''.join([account_type, random_string])
 
-    def generate_long_short(self):
-        """ Generates a long or short flag randomly
+    def create_long_short(self):
+        """ Creates a long or short flag randomly
 
         Returns
         -------
@@ -176,8 +176,8 @@ class SwapPosition(Generatable):
 
         return random.choice(self.LONG_SHORT)
 
-    def generate_purpose(self):
-        """ Generate swap positions purpose
+    def create_purpose(self):
+        """ Create swap positions purpose
 
         Returns
         -------

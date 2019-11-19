@@ -1,24 +1,24 @@
 import random
 from datetime import datetime
 
-from domainobjects.generatable import Generatable
+from domainobjects.creatable import Creatable
 
 
-class Instrument(Generatable):
-    """ Class to generate instruments. Generate method generates a set amount
-    of positions. Other generation methods included where instruments are the
+class InstrumentFactory(Creatable):
+    """ Class to create instruments. Create method creates a set amount
+    of positions. Other creation methods included where instruments are the
     only domain object requiring these.
     """
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of instruments
+    def create(self, record_count, start_id):
+        """ Create a set number of instruments
 
         Parameters
         ----------
         record_count : int
-            Number of instruments to generate
+            Number of instruments to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -34,7 +34,7 @@ class Instrument(Generatable):
         records = []
 
         for i in range(start_id, start_id + record_count):
-            record = self.generate_record(i)
+            record = self.create_record(i)
             records.append(record)
             self.persist_record(
                 [record['ric'], str(record['cusip']), str(record['isin'])]
@@ -43,14 +43,14 @@ class Instrument(Generatable):
         self.persist_records("instruments")
         return records
 
-    def generate_record(self, id):
-        """ Generate a single instrument
+    def create_record(self, id):
+        """ Create a single instrument
 
         Parameters
         ----------
         id : int
-            Current id of the instrument to generate, used as a pseudo
-            exchange code to ensure uniquely generated instruments
+            Current id of the instrument to create, used as a pseudo
+            exchange code to ensure uniquely created instruments
 
         Returns
         -------
@@ -58,14 +58,14 @@ class Instrument(Generatable):
             A single back office position object
         """
 
-        asset_class = self.generate_asset_class()
-        ticker = self.generate_ticker()
-        country_of_issuance = self.generate_country_of_issuance()
-        exchange_code = self.generate_exchange_code()
-        cusip = self.generate_random_integer(length=9)
-        isin = self.generate_isin(country_of_issuance, cusip)
-        ric = self.generate_ric(ticker, exchange_code)
-        sedol = self.generate_random_integer(length=7)
+        asset_class = self.create_asset_class()
+        ticker = self.create_ticker()
+        country_of_issuance = self.create_country_of_issuance()
+        exchange_code = self.create_exchange_code()
+        cusip = self.create_random_integer(length=9)
+        isin = self.create_isin(country_of_issuance, cusip)
+        ric = self.create_ric(ticker, exchange_code)
+        sedol = self.create_random_integer(length=7)
         record = {
             'instrument_id': id,
             'ric': ric,
@@ -83,8 +83,8 @@ class Instrument(Generatable):
 
         return record
 
-    def generate_asset_class(self):
-        """ Generate a predetermined asset class for instruments
+    def create_asset_class(self):
+        """ Create a predetermined asset class for instruments
 
         Returns
         -------
@@ -94,8 +94,8 @@ class Instrument(Generatable):
 
         return 'Stock'
 
-    def generate_country_of_issuance(self):
-        """ Generate a random country of issuance
+    def create_country_of_issuance(self):
+        """ Create a random country of issuance
 
         Returns
         -------
@@ -105,8 +105,8 @@ class Instrument(Generatable):
 
         return random.choice(self.countries_of_issuance)
 
-    def generate_ticker(self):
-        """ Generate a random ticker
+    def create_ticker(self):
+        """ Create a random ticker
 
         Returns
         -------
@@ -116,8 +116,8 @@ class Instrument(Generatable):
 
         return random.choice(self.tickers)
 
-    def generate_exchange_code(self):
-        """ Generate a random exchange code
+    def create_exchange_code(self):
+        """ Create a random exchange code
 
         Returns
         -------
