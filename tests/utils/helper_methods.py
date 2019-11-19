@@ -122,7 +122,7 @@ def set_up_back_office_position_tests():
     create_instrument(50)
     records = create_back_office_position(50)
     domain_obj_factory = back_office_position_factory.\
-        BackOfficePositionFactory(None,None)
+        BackOfficePositionFactory(None, None)
     return records, domain_obj_factory
 
 
@@ -159,7 +159,7 @@ def set_up_front_office_position_tests():
     create_instrument(50)
     records = create_front_office_position(50)
     domain_obj_factory = front_office_position_factory.\
-        FrontOfficePositionFactory(None,None)
+        FrontOfficePositionFactory(None, None)
     return records, domain_obj_factory
 
 
