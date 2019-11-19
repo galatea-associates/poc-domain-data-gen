@@ -1,6 +1,8 @@
-from domainobjects.creatable import Creatable
-from datetime import datetime
 import random
+from datetime import datetime
+
+from domainobjects.creatable import Creatable
+
 
 class BackOfficePositionFactory(Creatable):
     """ Class to create back office positions. Create method will create

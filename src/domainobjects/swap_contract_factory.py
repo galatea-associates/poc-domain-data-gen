@@ -1,7 +1,7 @@
 import random
 import uuid
-
 from datetime import datetime, timedelta
+
 from domainobjects.creatable import Creatable
 
 

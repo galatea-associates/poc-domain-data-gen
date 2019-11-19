@@ -1,7 +1,8 @@
-from domainobjects.creatable import Creatable
-from functools import partial
-from datetime import datetime
 import random
+from datetime import datetime
+
+from domainobjects.creatable import Creatable
+
 
 class StockLoanPositionFactory(Creatable):
     """ Class to create stock loan positions. Create method will create

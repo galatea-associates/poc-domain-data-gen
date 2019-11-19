@@ -1,6 +1,7 @@
-from domainobjects.creatable import Creatable
 from datetime import datetime
-import random
+
+from domainobjects.creatable import Creatable
+
 
 class PriceFactory(Creatable):
     """ Class to create prices. Create method will create a set amount

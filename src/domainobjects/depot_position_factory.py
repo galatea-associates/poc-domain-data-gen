@@ -1,7 +1,8 @@
-from domainobjects.creatable import Creatable
-from datetime import datetime
 import random
-import string
+from datetime import datetime
+
+from domainobjects.creatable import Creatable
+
 
 class DepotPositionFactory(Creatable):
     """ Class to create depot positions. Create method will create a set

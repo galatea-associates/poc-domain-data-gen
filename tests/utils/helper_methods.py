@@ -1,13 +1,18 @@
 import os
 import sys
+
 import ujson
 
 sys.path.insert(0, 'src/')
 from database.sqlite_database import Sqlite_Database
-from domainobjects import back_office_position_factory, cash_balance_factory, cashflow_factory
-from domainobjects import counterparty_factory, depot_position_factory, front_office_position_factory
-from domainobjects import instrument_factory, order_execution_factory, price_factory
-from domainobjects import stock_loan_position_factory, swap_contract_factory, swap_position_factory
+from domainobjects import back_office_position_factory, cash_balance_factory, \
+    cashflow_factory
+from domainobjects import counterparty_factory, depot_position_factory, \
+    front_office_position_factory
+from domainobjects import instrument_factory, order_execution_factory, \
+    price_factory
+from domainobjects import stock_loan_position_factory, swap_contract_factory, \
+    swap_position_factory
 
 
 # Helper Methods
@@ -116,7 +121,8 @@ def set_up_back_office_position_tests():
     delete_local_database()
     create_instrument(50)
     records = create_back_office_position(50)
-    domain_obj = back_office_position_factory.BackOfficePositionFactory(None, None)
+    domain_obj = back_office_position_factory.BackOfficePositionFactory(None,
+                                                                        None)
     return records, domain_obj
 
 
@@ -151,7 +157,8 @@ def set_up_front_office_position_tests():
     delete_local_database()
     create_instrument(50)
     records = create_front_office_position(50)
-    domain_obj = front_office_position_factory.FrontOfficePositionFactory(None, None)
+    domain_obj = front_office_position_factory.FrontOfficePositionFactory(None,
+                                                                          None)
     return records, domain_obj
 
 
@@ -176,7 +183,8 @@ def set_up_stock_loan_position_tests():
     delete_local_database()
     create_instrument(50)
     records = create_stock_loan_position(50)
-    domain_obj = stock_loan_position_factory.StockLoanPositionFactory(None, None)
+    domain_obj = stock_loan_position_factory.StockLoanPositionFactory(None,
+                                                                      None)
     return records, domain_obj
 
 

@@ -1,9 +1,10 @@
-from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
-from database.sqlite_database import Sqlite_Database
-import multi_processing.batch_size_calc as batch_size_calc
 import random
 import string
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+
+import multi_processing.batch_size_calc as batch_size_calc
+from database.sqlite_database import Sqlite_Database
 
 
 class Creatable(ABC):

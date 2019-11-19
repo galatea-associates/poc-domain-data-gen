@@ -1,6 +1,7 @@
-from domainobjects.creatable import Creatable
 from datetime import datetime
-import random
+
+from domainobjects.creatable import Creatable
+
 
 class OrderExecutionFactory(Creatable):
     """ Class to create order executions. Create method will create a

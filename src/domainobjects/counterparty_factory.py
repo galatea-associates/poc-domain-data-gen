@@ -1,7 +1,7 @@
-from domainobjects.creatable import Creatable
-import random
-import string
 from datetime import datetime
+
+from domainobjects.creatable import Creatable
+
 
 class CounterpartyFactory(Creatable):
     """ A class to create counterparties. Create method will create a

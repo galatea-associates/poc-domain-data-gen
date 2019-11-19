@@ -1,6 +1,8 @@
-from domainobjects.creatable import Creatable
-from datetime import datetime
 import random
+from datetime import datetime
+
+from domainobjects.creatable import Creatable
+
 
 class CashBalanceFactory(Creatable):
     """ Class to create cash balances. Create method will create a set
