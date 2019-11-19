@@ -24,7 +24,7 @@ import math
 from datetime import datetime
 
 
-def get(obj_name, default_job_size):
+def get(object_factory):
     """Entry point. Defers functionality depending on given object name.
 
     Entry point of these scripts. If the input domain objects generation
@@ -50,14 +50,20 @@ def get(obj_name, default_job_size):
         should retrieve from the database for generation where the objects has
         an unknown amount to generate.
     """
-    nondeterministic_objects = ['SwapContract', 'SwapPosition', 'Cashflow']
-    if obj_name not in nondeterministic_objects:
+    factory_config = object_factory.get_factory_config()
+    factory_name = next(iter(factory_config))
+
+    default_job_size = object_factory.get_shared_args()['pool_job_size']
+    # custom_args = object_factory.
+
+    nondeterministic_objects = ['swap_contract', 'swap_position', 'cashflow']
+    if factory_name not in nondeterministic_objects:
         return default_job_size
-    elif obj_name == 'SwapContract':
+    elif factory_name == 'swap_contract':
         return swap_contract_size(custom_args, default_job_size)
-    elif obj_name == 'SwapPosition':
+    elif factory_name == 'swap_position':
         return swap_position_size(custom_args, default_job_size)
-    elif obj_name == 'Cashflow':
+    elif factory_name == 'cashflow':
         return cashflow_size(custom_args, default_job_size)
     else:
         print("Object not found")
