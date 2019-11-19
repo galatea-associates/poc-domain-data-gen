@@ -34,10 +34,10 @@ class FrontOfficePositionFactory(Creatable):
 
         for _ in range(start_id, start_id + record_count):
             instrument = self.get_random_instrument()
-            records.append(self.get_record(instrument))
+            records.append(self.create_record(instrument))
         return records
 
-    def get_record(self, instrument):
+    def create_record(self, instrument):
         """ Create a single front office position
 
         Parameters
@@ -66,7 +66,7 @@ class FrontOfficePositionFactory(Creatable):
             'time_stamp': datetime.now()
         }
 
-        for key, value in self.get_dummy_field_generator():
+        for key, value in self.create_dummy_field_generator():
             record[key] = value
 
         return record

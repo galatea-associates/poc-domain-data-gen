@@ -121,15 +121,16 @@ def set_up_back_office_position_tests():
     delete_local_database()
     create_instrument(50)
     records = create_back_office_position(50)
-    domain_obj = back_office_position_factory.BackOfficePositionFactory(None,
-                                                                        None)
-    return records, domain_obj
+    domain_obj_factory = back_office_position_factory.BackOfficePositionFactory(
+        None,
+        None)
+    return records, domain_obj_factory
 
 
 def set_up_cash_balance_tests():
-    domain_obj = cash_balance_factory.CashBalanceFactory(None, None)
+    domain_obj_factory = cash_balance_factory.CashBalanceFactory(None, None)
     records = create_cash_balance(50)
-    return records, domain_obj
+    return records, domain_obj_factory
 
 
 def set_up_cashflow_tests():
@@ -149,17 +150,19 @@ def set_up_depot_position_tests():
     delete_local_database()
     create_instrument(50)
     records = create_depot_position(50)
-    domain_obj = depot_position_factory.DepotPositionFactory(None, None)
-    return records, domain_obj
+    domain_obj_factory = depot_position_factory.DepotPositionFactory(None,
+                                                                     None)
+    return records, domain_obj_factory
 
 
 def set_up_front_office_position_tests():
     delete_local_database()
     create_instrument(50)
     records = create_front_office_position(50)
-    domain_obj = front_office_position_factory.FrontOfficePositionFactory(None,
-                                                                          None)
-    return records, domain_obj
+    domain_obj_factory = front_office_position_factory.FrontOfficePositionFactory(
+        None,
+        None)
+    return records, domain_obj_factory
 
 
 def set_up_instrument_tests():
@@ -183,17 +186,18 @@ def set_up_stock_loan_position_tests():
     delete_local_database()
     create_instrument(50)
     records = create_stock_loan_position(50)
-    domain_obj = stock_loan_position_factory.StockLoanPositionFactory(None,
-                                                                      None)
-    return records, domain_obj
+    domain_obj_factory = stock_loan_position_factory.StockLoanPositionFactory(
+        None,
+        None)
+    return records, domain_obj_factory
 
 
 def set_up_swap_contract_tests():
     delete_local_database()
     create_counterparty(20)
     records = create_swap_contract(20)
-    domain_obj = swap_contract_factory.SwapContractFactory(None, None)
-    return records, domain_obj
+    domain_obj_factory = swap_contract_factory.SwapContractFactory(None, None)
+    return records, domain_obj_factory
 
 
 def set_up_swap_position_tests():
@@ -201,5 +205,5 @@ def set_up_swap_position_tests():
     create_counterparty(20)
     create_swap_contract(20)
     records = create_swap_position(50)
-    domain_obj = swap_position_factory.SwapPositionFactory(None, None)
-    return records, domain_obj
+    domain_obj_factory = swap_position_factory.SwapPositionFactory(None, None)
+    return records, domain_obj_factory

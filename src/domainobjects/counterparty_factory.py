@@ -26,13 +26,13 @@ class CounterpartyFactory(Creatable):
         records = []
 
         for i in range(start_id, record_count+start_id):
-            records.append(self.get_record(i))
+            records.append(self.create_record(i))
             self.persist_record([str(i)])
 
         self.persist_records("counterparties")
         return records
 
-    def get_record(self, current_id):
+    def create_record(self, current_id):
         """ Create a single counterparty record
 
         Parameters
@@ -52,7 +52,7 @@ class CounterpartyFactory(Creatable):
             'time_stamp': datetime.now()
         }
 
-        for key, value in self.get_dummy_field_generator():
+        for key, value in self.create_dummy_field_generator():
             record[key] = value
 
         return record

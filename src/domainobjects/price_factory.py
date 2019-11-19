@@ -49,7 +49,7 @@ class PriceFactory(Creatable):
                 'time_stamp': datetime.now()
             }
 
-        for key, value in self.get_dummy_field_generator():
+        for key, value in self.create_dummy_field_generator():
             record[key] = value
 
         return record

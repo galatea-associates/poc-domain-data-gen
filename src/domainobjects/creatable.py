@@ -171,7 +171,7 @@ class Creatable(ABC):
 
         pass
 
-    def get_dummy_field_generator(self):
+    def create_dummy_field_generator(self):
         """ Return generator of dummy fields based on user
         specification in config for the domain object subclass calling
         this function

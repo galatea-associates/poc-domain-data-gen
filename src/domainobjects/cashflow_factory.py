@@ -67,7 +67,7 @@ class CashflowFactory(Creatable):
         effective_date = self.effective_date(swap_position['effective_date'])
         if self.cashflow_accrues(effective_date, accrual, probability):
             pay_date_period = cf_arg['cashFlowPaydatePeriod']
-            p_date_func = self.get_pay_date_func(pay_date_period)
+            p_date_func = self.create_pay_date_func(pay_date_period)
             record = {
                 'swap_contract_id': swap_position['swap_contract_id'],
                 'ric': swap_position['ric'],
@@ -80,7 +80,7 @@ class CashflowFactory(Creatable):
                 'long_short': swap_position['long_short']
             }
 
-            for key, value in self.get_dummy_field_generator():
+            for key, value in self.create_dummy_field_generator():
                 record[key] = value
 
             return record
@@ -147,7 +147,7 @@ class CashflowFactory(Creatable):
 
         return date(d.year, 6, 30) if d.month <= 6 else date(d.year, 12, 31)
 
-    def get_pay_date_func(self, pay_date_period):
+    def create_pay_date_func(self, pay_date_period):
         """ Retrieve the pay date function for a given pay date period from
         the user-defined cashflow arguments. This value is either end of month
         or half, and returns the end of month/half date in each case
