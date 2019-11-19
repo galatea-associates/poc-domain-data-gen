@@ -121,9 +121,8 @@ def set_up_back_office_position_tests():
     delete_local_database()
     create_instrument(50)
     records = create_back_office_position(50)
-    domain_obj_factory = back_office_position_factory.BackOfficePositionFactory(
-        None,
-        None)
+    domain_obj_factory = back_office_position_factory.\
+        BackOfficePositionFactory(None,None)
     return records, domain_obj_factory
 
 
@@ -159,9 +158,8 @@ def set_up_front_office_position_tests():
     delete_local_database()
     create_instrument(50)
     records = create_front_office_position(50)
-    domain_obj_factory = front_office_position_factory.FrontOfficePositionFactory(
-        None,
-        None)
+    domain_obj_factory = front_office_position_factory.\
+        FrontOfficePositionFactory(None,None)
     return records, domain_obj_factory
 
 
