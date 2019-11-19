@@ -81,12 +81,8 @@ class SwapContract(Generatable):
             'time_stamp': datetime.now()
         }
 
-        # for loop below can be easily changed to iterate over
-        # range(1, num_contracts + 1) where num_contracts is provided in
-        # config.json if we want to let users customise output in this way
-        for index in range(1, 9):
-            record[f'swap_contract_field{index}'] =\
-                self.generate_random_string(10)
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
 
         return record
 

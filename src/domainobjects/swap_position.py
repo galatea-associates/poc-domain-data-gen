@@ -94,7 +94,7 @@ class SwapPosition(Generatable):
                  str(long_short)]
             )
 
-        return {
+        record = {
             'ric': instrument['ric'],
             'swap_contract_id': swap_contract['id'],
             'position_type': position_type,
@@ -106,6 +106,11 @@ class SwapPosition(Generatable):
             'purpose': purpose,
             'time_stamp': datetime.now()
         }
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
+        return record
 
     def get_random_instruments(self):
         """ Retrieves a random batch of instruments

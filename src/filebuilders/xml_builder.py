@@ -43,10 +43,12 @@ class XMLBuilder(FileBuilder):
 
         item_name = self.get_item_name()
 
-        def item_func(root_element_name):
+        def item_func(_):
             """ This function can access the item_name from the local scope
             of the surrounding function, which overcomes the issue of returning
-            the item_name without taking in 'self' as a parameter"""
+            the item_name without taking in 'self' as a parameter.
+            Note the parameter is not used, but provided to comply with the
+            calling module"""
             return item_name
 
         return item_func

@@ -53,7 +53,7 @@ class DepotPosition(Generatable):
 
         position_type = self.generate_position_type()
         knowledge_date = self.generate_knowledge_date()
-        return {
+        record = {
             'isin': instrument['isin'],
             'knowledge_date': knowledge_date,
             'position_type': position_type,
@@ -65,6 +65,11 @@ class DepotPosition(Generatable):
             'depot_id': self.generate_random_integer(length=5),
             'time_stamp': datetime.now()
         }
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
+        return record
 
     def generate_purpose(self):
         """ Generate a purpose for a depot position

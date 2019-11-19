@@ -41,9 +41,14 @@ class Price(Generatable):
         """
 
         instrument = self.get_random_instrument()
-        return {
+        record = {
                 'ric': instrument['ric'],
                 'price': self.generate_random_decimal(),
                 'currency': self.generate_currency(),
                 'time_stamp': datetime.now()
             }
+
+        for key, value in self.get_dummy_field_generator():
+            record[key] = value
+
+        return record

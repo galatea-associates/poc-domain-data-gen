@@ -170,6 +170,43 @@ class Generatable(ABC):
 
         pass
 
+    def get_dummy_field_generator(self):
+        """ Return generator of dummy fields based on user
+        specification in config for the domain object subclass calling
+        this function
+
+        Returns
+        -------
+        Generator:
+            iterable that yields key/value pairs as specified in the config
+        """
+        if self.__config is None:
+            # workaround since testing does not always use a config file
+            # eventually a testing config will be created and used
+            # at which point this 'if' statement can be removed
+            return iter(())
+
+        object_name = self.__config["file_type_args"]["xml_item_name"]
+        field_number = 1
+
+        for dummy_field in self.__config["dummy_fields"]:
+            field_count = dummy_field["field_count"]
+            if field_count < 1:
+                continue
+
+            data_type = dummy_field["data_type"]
+            data_length = dummy_field["data_length"]
+
+            if data_type == "string":
+                data_method = self.generate_random_string
+            elif data_type == "numeric":
+                data_method = self.generate_random_integer
+
+            for _ in range(field_count):
+                yield f'{object_name}_field{field_number}',\
+                      data_method(length=data_length)
+                field_number += 1
+
     def generate_random_string(self, length,
                                include_letters=True, include_numbers=True):
         """ Generates a random string, of letters or numbers or both.
