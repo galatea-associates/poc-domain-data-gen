@@ -8,7 +8,7 @@ from domainobjects import instrument
 # Shared Tests
 # domain_obj gives access to defined constant lists in the parent class
 # generatable, this is otherwise uninstantiable as it is abstract
-domain_obj = instrument.Instrument(None)
+domain_obj = instrument.Instrument(None, None)
 
 
 def attribute_quantity_valid(record, quantity):
@@ -165,7 +165,7 @@ def account_valid(record, account_types):
 
 
 def position_type_valid(record):
-    domain_object = instrument.Instrument(None)
+    domain_object = instrument.Instrument(None, None)
     position_types = domain_object.POSITION_TYPES
     assert record['position_type'] in position_types
 
