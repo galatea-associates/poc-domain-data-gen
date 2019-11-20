@@ -1,5 +1,5 @@
 {
-  "domain_objects": [
+  "dev_factory_args": [
     {
       "instrument": {
         "module_name": "instrument_factory",
@@ -51,7 +51,7 @@
       }
     }
   ],
-  "file_builders": [
+  "dev_file_builder_args": [
     {
       "CSV": {
         "module_name": "csv_builder",
