@@ -274,13 +274,13 @@ def parse_config_files():
 
     with open(config_location.user_config) as user_config:
         parsed_user_config = ujson.load(user_config)
-        factory_definitions = parsed_user_config['domain_objects']
-        shared_args = parsed_user_config['shared_generation_arguments']
+        factory_definitions = parsed_user_config['factory_definitions']
+        shared_args = parsed_user_config['shared_args']
 
     with open(config_location.dev_config) as dev_config:
         parsed_dev_config = ujson.load(dev_config)
-        dev_file_builder_args = parsed_dev_config['file_builders']
-        dev_factory_args = parsed_dev_config['domain_objects']
+        dev_file_builder_args = parsed_dev_config['dev_file_builder_args']
+        dev_factory_args = parsed_dev_config['dev_factory_args']
 
     return Configuration({
         "factory_definitions": factory_definitions,

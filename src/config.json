@@ -1,5 +1,5 @@
 {
-  "domain_objects" : [
+  "factory_definitions" : [
     {
       "instrument" : {
         "max_objects_per_file" : 50,
@@ -253,7 +253,7 @@
       }
     }
   ],
-  "shared_generation_arguments" : {
+  "shared_args" : {
     "generator_pool_size" : 1,
     "writer_pool_size" : 1,
     "pool_job_size" : 10000
