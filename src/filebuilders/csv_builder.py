@@ -16,7 +16,9 @@ class CSVBuilder(FileBuilder):
 
         with open(os.path.join(output_dir, file_name),
                   'w+', newline='') as output_file:
-
+            # TODO: remove redundant list in multi processing workflow
+            #  before 'data' parameter is passed to build(), then remove
+            #  workaround below
             fieldnames = data[0][0].keys()  # get keys from first dict
             data = data[0]  # remove redundant outer list
             dict_writer = csv.DictWriter(output_file, restval="-",

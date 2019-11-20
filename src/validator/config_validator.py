@@ -30,6 +30,7 @@ def validate(config):
     errors = []
     errors.append(validate_record_counts(domain_objects))
     errors.append(validate_max_file_size(domain_objects))
+    errors.append(validate_google_drive_flag(domain_objects))
     errors.append(validate_output_file_extensions(file_builders,
                                                   domain_objects))
 
@@ -198,3 +199,31 @@ def validate_job_size_non_zero(shared_config):
     if job_size <= 0:
         error = ["- Job_Size in shared arguments must be a positive value"]
     return error
+
+
+def validate_google_drive_flag(domain_object_configs):
+    """ Ensure the google drive flag for each domain object is valid
+    (either 'true' or 'false').
+
+    Parameters
+    ----------
+    domain_object_configs : dict
+        List of dictionaries, each dictionary containing the configuration
+        settings for a single domain object.
+
+    Returns
+    -------
+    List
+        List of strings detailing each domain object where google drive flag
+        is erroneous. Empty where there are no errors to be found.
+    """
+    errors = []
+    for config in domain_object_configs:
+        current_object = config['class_name']
+        google_drive_flag = config['upload_to_google_drive']
+        if google_drive_flag.upper() not in ("TRUE", "FALSE"):
+            error = f"- Invalid Google Drive Flag \'{google_drive_flag}\'" \
+                    f"for domain object {current_object}"
+            errors.append(error)
+    return errors
+

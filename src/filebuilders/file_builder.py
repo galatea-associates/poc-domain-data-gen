@@ -50,6 +50,8 @@ class FileBuilder(abc.ABC):
         Returns the name of XML parent tags
     get_item_name()
         Returns the name of each XML item
+    get_google_drive_flag()
+        Returns the google drive boolean flag
     """
 
     def __init__(self, google_drive_connector,
@@ -65,6 +67,8 @@ class FileBuilder(abc.ABC):
             Instantiated connector object for uploading to a pre-defined
             google drive directory.
         google_drive_flag: bool
+            Boolean flag to determine whether the file will be uploaded to
+            Google Drive after being written locally
         factory_config : Dict
             Dictionary containing the parsed json user-defined configuration
             for the current factory.
@@ -202,4 +206,13 @@ class FileBuilder(abc.ABC):
         return self.__max_objects_per_file
 
     def get_google_drive_flag(self):
+        """ Returns a boolean flag from the user config specifying whether the
+        output file is to be uploaded to google drive
+
+        Returns
+        -------
+        bool
+            Boolean flag to determine whether the file will be uploaded to
+            Google Drive after being written locally
+        """
         return self.__google_drive_flag

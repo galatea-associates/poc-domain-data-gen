@@ -73,6 +73,21 @@ def main():
 
 
 def get_google_drive_connector(factory_definitions, g_drive_root):
+    """
+
+    Parameters
+    ----------
+    factory_definitions : list
+        List of all domain object configurations as provided by user
+    g_drive_root : string
+        Name of Google Drive root folder id to upload files to
+
+    Returns
+    -------
+    GoogleDriveConnector
+        Instantiated connector object for uploading to a pre-defined google
+        drive directory.
+    """
     for factory_definition in factory_definitions:
         factory_config = list(factory_definition.values())[0]
         if factory_config['upload_to_google_drive'].upper() == "TRUE":
@@ -119,7 +134,11 @@ def instantiate_file_builder(factory_definition,
         Developer arguments defining where in the codebase file builder
         classes are defined
     google_drive_connector: GoogleDriveConnector
+        Instantiated connector object for uploading to a pre-defined google
+        drive directory.
     google_drive_flag: bool
+        Boolean flag stating whether to upload the output files generated to
+        google drive
 
     Returns
     -------
