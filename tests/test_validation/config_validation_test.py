@@ -145,3 +145,21 @@ def test_job_size_failure():
 
     success = validator.validate(configurations).check_success()
     assert success is False
+
+
+def test_google_drive_flag_failure():
+    """ Ensure an invalid string for the google drive flag fails"""
+
+    invalid_factory_definitions = copy.deepcopy(default_factory_definitions)
+    invalid_factory_definitions[0]['instrument']['upload_to_google_drive']\
+        = 'invalid'
+
+    configurations = configuration.Configuration({
+        "factory_definitions": invalid_factory_definitions,
+        "shared_args": default_shared_args,
+        "dev_file_builder_args": default_dev_file_builder_args,
+        "dev_factory_args": default_dev_factory_args
+    })
+
+    success = validator.validate(configurations).check_success()
+    assert success is False
