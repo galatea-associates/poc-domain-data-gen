@@ -22,7 +22,7 @@
     coordinators. One of these children handles object generation, and the
     second writing of these to file.
 
-    The generation coordinator recieved instruction to generate X number of
+    The generation coordinator received instruction to generate X number of
     objects over Y number of subprocesses (Pool Size). Once these jobs are
     executed and records returned, they are placed into a writing job queue.
     The writing to file coordinator picks up & formats these tasks before
@@ -33,6 +33,7 @@
 import importlib
 import ujson
 import os
+import sys
 from argparse import ArgumentParser
 from database.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
@@ -47,11 +48,12 @@ def main():
 
     args = get_args()
     configurations = parse_config_files(args)
+    validate_configs(configurations)
 
-    factory_definitions = configurations.get_user_generation_args()
+    factory_definitions = configurations.get_factory_definitions()
+    shared_factory_args = configurations.get_shared_args()
     dev_file_builder_args = configurations.get_dev_file_builder_args()
     dev_factory_args = configurations.get_dev_factory_args()
-    shared_factory_args = configurations.get_user_shared_generation_args()
 
     google_drive_connector = get_google_drive_connector(factory_definitions,
                                                         args.g_drive_root)
@@ -188,7 +190,7 @@ def instantiate_object_factory(dev_factory_args,
     object_factory_name = next(iter(factory_arguments))
     object_factory_config = get_dev_object_factory_config(dev_factory_args,
                                                           object_factory_name)
-    object_factory_class = get_class('domainobjects',
+    object_factory_class = get_class('domainobjectfactories',
                                      object_factory_config['module_name'],
                                      object_factory_config['class_name'])
     return object_factory_class(factory_arguments[object_factory_name],
@@ -281,7 +283,7 @@ def get_dev_object_factory_config(dev_factory_args, object_factory_name):
 
 def get_class(package_name, module_name, class_name):
     """ Return a given class which sits within a specified heirarchy.
-    Used to return classes of filebuilders and domainobjects to only
+    Used to return classes of filebuilders and domainobjectfactories to only
     instantiate as and when that domainobject/filebuilder is required.
 
     Parameters
@@ -309,25 +311,25 @@ def parse_config_files(config_location):
     Returns
     -------
     Configuration
-        An object instantiated to containin all 4 configuration types. Has
+        An object instantiated to contain all 4 configuration types. Has
         retrieval methods defined within.
     """
 
     with open(config_location.user_config) as user_config:
         parsed_user_config = ujson.load(user_config)
-        domain_object_gen_config = parsed_user_config['domain_objects']
-        shared_config = parsed_user_config['shared_generation_arguments']
+        factory_definitions = parsed_user_config['factory_definitions']
+        shared_args = parsed_user_config['shared_args']
 
     with open(config_location.dev_config) as dev_config:
         parsed_dev_config = ujson.load(dev_config)
-        file_builder_configs = parsed_dev_config['file_builders']
-        domain_object_location_config = parsed_dev_config['domain_objects']
+        dev_file_builder_args = parsed_dev_config['dev_file_builder_args']
+        dev_factory_args = parsed_dev_config['dev_factory_args']
 
     return Configuration({
-        "generation_arguments": domain_object_gen_config,
-        "domain_objects": domain_object_location_config,
-        "shared_arguments": shared_config,
-        "file_builders": file_builder_configs
+        "factory_definitions": factory_definitions,
+        "shared_args": shared_args,
+        "dev_file_builder_args": dev_file_builder_args,
+        "dev_factory_args": dev_factory_args
     })
 
 
@@ -373,6 +375,7 @@ def validate_configs(configurations):
     """
 
     validation_result = config_validator.validate(configurations)
+
     try:
         if validation_result.check_success():
             print("No errors found in config")
@@ -380,11 +383,10 @@ def validate_configs(configurations):
             raise ConfigError()
 
     except ConfigError:
-        print("Issue(s) within Config:")
+        print("Issue(s) within Config:\n")
         for error in validation_result.get_errors():
             print(error)
-        # Re-raised to halt operation
-        raise
+        sys.exit()
 
 
 def delete_database():

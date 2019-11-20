@@ -1,57 +1,57 @@
 {
-  "domain_objects": [
+  "dev_factory_args": [
     {
       "instrument": {
-        "module_name": "instrument",
-        "class_name": "Instrument"
+        "module_name": "instrument_factory",
+        "class_name": "InstrumentFactory"
       },
       "counterparty": {
-        "module_name": "counterparty",
-        "class_name": "Counterparty"
+        "module_name": "counterparty_factory",
+        "class_name": "CounterpartyFactory"
       },
       "back_office_position": {
-        "module_name": "back_office_position",
-        "class_name": "BackOfficePosition"
+        "module_name": "back_office_position_factory",
+        "class_name": "BackOfficePositionFactory"
       },
       "cash_balance": {
-        "module_name": "cash_balance",
-        "class_name": "CashBalance"
+        "module_name": "cash_balance_factory",
+        "class_name": "CashBalanceFactory"
       },
       "depot_position": {
-        "module_name": "depot_position",
-        "class_name": "DepotPosition"
+        "module_name": "depot_position_factory",
+        "class_name": "DepotPositionFactory"
       },
       "front_office_position": {
-        "module_name": "front_office_position",
-        "class_name": "FrontOfficePosition"
+        "module_name": "front_office_position_factory",
+        "class_name": "FrontOfficePositionFactory"
       },
       "order_execution": {
-        "module_name": "order_execution",
-        "class_name": "OrderExecution"
+        "module_name": "order_execution_factory",
+        "class_name": "OrderExecutionFactory"
       },
       "price": {
-        "module_name": "price",
-        "class_name": "Price"
+        "module_name": "price_factory",
+        "class_name": "PriceFactory"
       },
       "stock_loan_position": {
-        "module_name": "stock_loan_position",
-        "class_name": "StockLoanPosition"
+        "module_name": "stock_loan_position_factory",
+        "class_name": "StockLoanPositionFactory"
       },
       "swap_contract": {
-        "module_name": "swap_contract",
-        "class_name": "SwapContract"
+        "module_name": "swap_contract_factory",
+        "class_name": "SwapContractFactory"
       },
       "swap_position": {
-        "module_name": "swap_position",
-        "class_name": "SwapPosition"
+        "module_name": "swap_position_factory",
+        "class_name": "SwapPositionFactory"
       },
       "cashflow": {
-        "module_name": "cashflow",
-        "class_name": "Cashflow"
+        "module_name": "cashflow_factory",
+        "class_name": "CashflowFactory"
       }
     }
   ],
-  "file_builders": [
+  "dev_file_builder_args": [
     {
       "CSV": {
         "module_name": "csv_builder",

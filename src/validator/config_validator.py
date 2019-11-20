@@ -8,56 +8,69 @@ the configuration as-is is insufficient for successful operation.
 from validator.validation_result import Validation_Result
 
 
-def validate(config):
+def validate(configurations):
     """ Entry point. Build a list of errors based on a number of tests, when
     returned can be used to feedback to the user what requires changing.
 
     Parameters
     ----------
-    config : dict
-        Parsed json of the user-input configuration
+    configurations : Configuration
+        Configuration object containing all 4 configuration types as specified
+        in user and dev configs.
 
     Returns
+    -------
     validation_result : Validation_Result
         An object containing a boolean flag for success or fail, as well as
         a list of any errors on the case of failure.
     """
-    # TODO: refactor for new configurations
-    domain_objects = config['domain_objects']
-    file_builders = config['file_builders']
-    shared_args = config['shared_args']
 
-    errors = []
-    errors.append(validate_record_counts(domain_objects))
-    errors.append(validate_max_file_size(domain_objects))
-    errors.append(validate_google_drive_flag(domain_objects))
-    errors.append(validate_output_file_extensions(file_builders,
-                                                  domain_objects))
+    # configurations.get_user_generation_args() and
+    # configurations.get_dev_file_builder_args() each return a list of
+    # dictionaries, with each dictionary containing a single key/value pair.
+    # These are formatted into a single dictionary for validation.
 
-    errors.append(validate_pool_sizes_non_zero(shared_args))
-    errors.append(validate_job_size_non_zero(shared_args))
+    factory_definitions = {}
+    for factory_definition in configurations.get_factory_definitions():
+        factory_definitions.update(factory_definition)
 
-    # Remove instances of None from error list
-    errors = [error for error in errors if error is not None]
-    # Remove instances of empty lists from error list
-    errors = [error for error in errors if error != []]
+    dev_file_builder_args = {}
+    for file_builder in configurations.get_dev_file_builder_args():
+        dev_file_builder_args.update(file_builder)
+
+    shared_args = configurations.get_shared_args()
+
+    errors = [
+        validate_record_counts(factory_definitions),
+        validate_max_file_size(factory_definitions),
+        validate_google_drive_flag(factory_definitions),
+        validate_output_file_extensions(dev_file_builder_args,
+                                        factory_definitions),
+        validate_pool_sizes_non_zero(shared_args),
+        validate_job_size_non_zero(shared_args)
+    ]
+
+    # Remove instances of None or empty lists from error list
+    errors = [error for error in errors if error]
     # Flatten list of lists to single list
     errors = [error for sub_error in errors for error in sub_error]
 
-    if len(errors) != 0:
+    # boolean coercion evaluates 'errors' as True if not empty
+    if errors:
         return Validation_Result(False, errors)
     else:
         return Validation_Result(True, None)
 
 
-def validate_record_counts(domain_object_configs):
+def validate_record_counts(factory_definitions):
     """ Ensure the record count for each domain object is zero or above.
 
     Parameters
     ----------
-    domain_object_configs : dict
-        List of dictionaries, each dictionary containing the configuration
-        settings for a single domain object.
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
 
     Returns
     -------
@@ -67,24 +80,23 @@ def validate_record_counts(domain_object_configs):
     """
 
     errors = []
-    for config in domain_object_configs:
-        current_object = config['class_name']
-        record_count = int(config['record_count'])
+    for domain_object, config in factory_definitions.items():
+        record_count = config['fixed_args']['record_count']
         if record_count < 0:
-            error = "- Record count for " + current_object + \
-                    " is less than 0."
-            errors.append(error)
+            errors.append(f'- Record count for domain object ' +
+                          f'\'{domain_object}\' is less than 0')
     return errors
 
 
-def validate_max_file_size(domain_object_configs):
+def validate_max_file_size(factory_definitions):
     """ Ensure the maximum file size for each object is greater than 0.
 
     Parameters
     ----------
-    domain_object_configs : dict
-        List of dictionaries, each dictionary containing the configuration
-        settings for a single domain object.
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
 
     Returns
     -------
@@ -94,23 +106,31 @@ def validate_max_file_size(domain_object_configs):
     """
 
     errors = []
-    for config in domain_object_configs:
-        current_object = config['class_name']
-        file_size = int(config['max_objects_per_file'])
+
+    for domain_object, config in factory_definitions.items():
+        file_size = config['max_objects_per_file']
         if file_size < 0:
-            error = "- File size for " + current_object + \
-                    " is less than 0."
-            errors.append(error)
+            errors.append(f'- File size for domain object ' +
+                          f'\'{domain_object}\' is less than 0')
     return errors
 
 
-def validate_output_file_extensions(file_builder_configs,
-                                    domain_object_configs):
+def validate_output_file_extensions(dev_file_builder_args,
+                                    factory_definitions):
     """ Ensure the file extension for each object is valid as per the defined
     file builders.
 
     Parameters
     ----------
+    dev_file_builder_args : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        file builders, and each value is a dictionary containing the
+        configuration settings for that file builder.
+
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
 
     Returns
     -------
@@ -120,27 +140,27 @@ def validate_output_file_extensions(file_builder_configs,
     """
 
     errors = []
-    file_extensions = get_file_extensions(file_builder_configs)
+    file_extensions = get_file_extensions(dev_file_builder_args)
 
-    for config in domain_object_configs:
-        current_object = config['class_name']
-        file_extension = config['file_builder_name']
+    for domain_object, config in factory_definitions.items():
+        file_extension = config['output_file_type']
         if file_extension not in file_extensions:
-            error = "- File Builder, " + file_extension + ", for " + \
-                    current_object + " doesn't exist."
-            errors.append(error)
+            errors.append(f'- File type \'{file_extension}\' for ' +
+                          f'domain object \'{domain_object}\' does not ' +
+                          'have a file builder defined')
     return errors
 
 
-def get_file_extensions(file_builder_configs):
+def get_file_extensions(dev_file_builder_args):
     """ Retrieve the file extensions currently supported as per their config
     definitions.
 
     Parameters
     ----------
-    file_builder_configs: list
-        List of dictionaries, each dictionary being the description of a
-        single file builder type/extension.
+    dev_file_builder_args : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        file builders, and each value is a dictionary containing the
+        configuration settings for that file builder.
 
     Returns
     -------
@@ -148,18 +168,16 @@ def get_file_extensions(file_builder_configs):
         List containing all supported file types.
     """
 
-    file_extensions = []
-    for config in file_builder_configs:
-        file_extensions.append(config['name'])
-    return file_extensions
+    return list(dev_file_builder_args.keys())
 
-def validate_pool_sizes_non_zero(shared_config):
+
+def validate_pool_sizes_non_zero(shared_args):
     """ Verifies that pool sizes for both generation and writing pools are
     non-zero and positive.
 
     Parameters
     ----------
-    shared_config : dict
+    shared_args : dict
         Dictionary of the "shared_config" section of the config file
 
     Returns
@@ -170,21 +188,21 @@ def validate_pool_sizes_non_zero(shared_config):
 
     errors = []
 
-    gen_pool_size = shared_config['gen_pools']
-    write_pool_size = shared_config['write_pools']
+    gen_pool_size = shared_args['generator_pool_size']
+    write_pool_size = shared_args['writer_pool_size']
     if gen_pool_size <= 0:
-        errors.append("- Generation Pool size must be a positive value.")
+        errors.append("- Generation pool size must be a positive value.")
     if write_pool_size <= 0:
-        errors.append("- Writing Pool size must be a positive value.")
+        errors.append("- Writing pool size must be a positive value.")
     return errors
 
 
-def validate_job_size_non_zero(shared_config):
+def validate_job_size_non_zero(shared_args):
     """ Ensure the specified job size is a non-zero numbers.
 
     Parameters
     ----------
-    shared_config : dict
+    shared_args : dict
         Dictionary of the "shared_config" section of the config file
 
     Returns
@@ -194,22 +212,23 @@ def validate_job_size_non_zero(shared_config):
         less than zero, contains nothing otherwise.
     """
 
-    error = None
-    job_size = shared_config['job_size']
+    error = []
+    job_size = shared_args['pool_job_size']
     if job_size <= 0:
-        error = ["- Job_Size in shared arguments must be a positive value"]
+        error = ["- Pool job size must be a positive value"]
     return error
 
 
-def validate_google_drive_flag(domain_object_configs):
+def validate_google_drive_flag(factory_definitions):
     """ Ensure the google drive flag for each domain object is valid
     (either 'true' or 'false').
 
     Parameters
     ----------
-    domain_object_configs : dict
-        List of dictionaries, each dictionary containing the configuration
-        settings for a single domain object.
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
 
     Returns
     -------
@@ -218,12 +237,11 @@ def validate_google_drive_flag(domain_object_configs):
         is erroneous. Empty where there are no errors to be found.
     """
     errors = []
-    for config in domain_object_configs:
-        current_object = config['class_name']
+    for domain_object, config in factory_definitions.items():
         google_drive_flag = config['upload_to_google_drive']
         if google_drive_flag.upper() not in ("TRUE", "FALSE"):
-            error = f"- Invalid Google Drive Flag \'{google_drive_flag}\'" \
-                    f"for domain object {current_object}"
-            errors.append(error)
+            errors.append(f"- Invalid Google Drive Flag " +
+                          f"\'{google_drive_flag}\' for domain object " +
+                          f"\'{domain_object}\'")
     return errors
 
