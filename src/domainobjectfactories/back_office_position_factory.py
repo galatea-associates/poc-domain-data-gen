@@ -1,24 +1,26 @@
-from domainobjects.generatable import Generatable
-from datetime import datetime
 import random
+from datetime import datetime
 
-class BackOfficePosition(Generatable):
-    """ Class to generate back office positions. Generate method will generate
-    a set amount of positions. Other generation methods included where back
+from domainobjectfactories.creatable import Creatable
+
+
+class BackOfficePositionFactory(Creatable):
+    """ Class to create back office positions. Create method will create
+    a set amount of positions. Other creation methods included where back
     office positions are the only domain object requiring them. """
 
     BACK_OFFICE_ACCOUNT_TYPES = ['ICP']
     BACK_OFFICE_PURPOSES = ['Outright']
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of back office positions
+    def create(self, record_count, start_id):
+        """ Create a set number of back office positions
 
         Parameters
         ----------
         record_count : int
-            Number of back office positions to generate
+            Number of back office positions to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -30,12 +32,12 @@ class BackOfficePosition(Generatable):
         records = []
 
         for _ in range(start_id, start_id+record_count):
-            records.append(self.generate_record())
+            records.append(self.create_record())
 
         return records
 
-    def generate_record(self):
-        """ Generate a single back office position
+    def create_record(self):
+        """ Create a single back office position
 
         Returns
         -------
@@ -44,30 +46,30 @@ class BackOfficePosition(Generatable):
         """
 
         instrument = self.get_random_instrument()
-        position_type = self.generate_position_type()
-        knowledge_date = self.generate_knowledge_date()
+        position_type = self.create_position_type()
+        knowledge_date = self.create_knowledge_date()
         record = {
             'cusip': instrument['cusip'],
             'position_type': position_type,
             'knowledge_date': knowledge_date,
-            'effective_date': self.generate_effective_date(
+            'effective_date': self.create_effective_date(
                                 2, knowledge_date, position_type),
-            'account': self.generate_account(
+            'account': self.create_account(
                 account_types=self.BACK_OFFICE_ACCOUNT_TYPES
                 ),
-            'direction': self.generate_credit_debit(),
-            'qty': self.generate_random_integer(),
-            'purpose': self.generate_purpose(),
+            'direction': self.create_credit_debit(),
+            'qty': self.create_random_integer(),
+            'purpose': self.create_purpose(),
             'time_stamp': datetime.now(),
         }
 
-        for key, value in self.get_dummy_field_generator():
+        for key, value in self.create_dummy_field_generator():
             record[key] = value
 
         return record
 
-    def generate_purpose(self):
-        """ Generate a purpose for a back office position
+    def create_purpose(self):
+        """ Create a purpose for a back office position
 
         Returns
         -------

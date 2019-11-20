@@ -4,12 +4,12 @@ import re
 
 sys.path.insert(0, 'src/')
 from utils import helper_methods as helper
-from domainobjects import instrument
+from domainobjectfactories import instrument_factory
 
 # Shared Tests
 # domain_obj gives access to defined constant lists in the parent class
 # generatable, this is otherwise uninstantiable as it is abstract
-domain_obj = instrument.Instrument(None, None)
+domain_obj = instrument_factory.InstrumentFactory(None, None)
 
 
 def attribute_quantity_valid(object_name, record, quantity):
@@ -169,7 +169,7 @@ def account_valid(record, account_types):
 
 
 def position_type_valid(record):
-    domain_object = instrument.Instrument(None, None)
+    domain_object = instrument_factory.InstrumentFactory(None, None)
     position_types = domain_object.POSITION_TYPES
     assert record['position_type'] in position_types
 

@@ -64,7 +64,7 @@ def generate_data(job):
     quantity = instructions['quantity']
     start_id = instructions['start_id']
 
-    records = object_factory.generate(quantity, start_id)
+    records = object_factory.create(quantity, start_id)
     return records
 
 

@@ -1,31 +1,31 @@
-from domainobjects.generatable import Generatable
-import random
-import pandas as pd
-from datetime import datetime, date
 import calendar
+import random
+from datetime import datetime, date
+
+from domainobjectfactories.creatable import Creatable
 
 
-class Cashflow(Generatable):
-    """ Class to generate cashflows. Generate method will generate a set
-    amount of cashflows. Other generation methods are included where cashflows
+class CashflowFactory(Creatable):
+    """ Class to create cashflows. Create method will create a set
+    amount of cashflows. Other creation methods are included where cashflows
     are the only domain object requiring them.
 
-    Process of generating cashflows dependent on Swap Positions, for each of
+    Process of creating cashflows dependent on Swap Positions, for each of
     these positions, simulate whether each cashflow type (defined by the user
-    in custom arguments -> cashflow args) would accrue, and if so, generate a
+    in custom arguments -> cashflow args) would accrue, and if so, create a
     record of such. Only Swap Positions with type 'E' (end of day) will have
-    cashflows generated.
+    cashflows created.
     """
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of cashflows
+    def create(self, record_count, start_id):
+        """ Create a set number of cashflows
 
         Parameters
         ----------
         record_count : int
-            Number of cashflows to generate
+            Number of cashflows to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -38,23 +38,23 @@ class Cashflow(Generatable):
                                         record_count, start_id)
         cashflow_gen_args = self.get_cashflow_gen_args()
 
-        records = [self.generate_record(swap_position, cf_arg)
+        records = [self.create_record(swap_position, cf_arg)
                    for swap_position in swap_position_batch
                    for cf_arg in cashflow_gen_args
                    if swap_position['position_type'] == 'E']
         records = filter(None, records)
         return records
 
-    def generate_record(self, swap_position, cf_arg):
-        """ Generate a single cashflow
+    def create_record(self, swap_position, cf_arg):
+        """ Create a single cashflow
 
         Parameters
         ----------
         Swap Position : dict
             Dictionary containing a partial record of a Swap Position, only
-            contains the information necessary to generate Cashflows
+            contains the information necessary to create Cashflows
         cf_arg : dict
-            Dictionary defining the particular cashflow being generated for
+            Dictionary defining the particular cashflow being created for
 
         Returns
         -------
@@ -67,7 +67,7 @@ class Cashflow(Generatable):
         effective_date = self.effective_date(swap_position['effective_date'])
         if self.cashflow_accrues(effective_date, accrual, probability):
             pay_date_period = cf_arg['cashFlowPaydatePeriod']
-            p_date_func = self.get_pay_date_func(pay_date_period)
+            p_date_func = self.create_pay_date_func(pay_date_period)
             record = {
                 'swap_contract_id': swap_position['swap_contract_id'],
                 'ric': swap_position['ric'],
@@ -75,12 +75,12 @@ class Cashflow(Generatable):
                 'pay_date': datetime.strftime(p_date_func(effective_date),
                                               '%Y-%m-%d'),
                 'effective_date': effective_date,
-                'currency': self.generate_currency(),
-                'amount': self.generate_random_integer(),
+                'currency': self.create_currency(),
+                'amount': self.create_random_integer(),
                 'long_short': swap_position['long_short']
             }
 
-            for key, value in self.get_dummy_field_generator():
+            for key, value in self.create_dummy_field_generator():
                 record[key] = value
 
             return record
@@ -102,7 +102,7 @@ class Cashflow(Generatable):
         return datetime.strptime(effective_date, '%Y-%m-%d')
 
     def get_cashflow_gen_args(self):
-        """ Retrieve the user-defined cashflow generation arguments from
+        """ Retrieve the user-defined cashflow creation arguments from
         config. These are the definitions of cashflow type and the attributes
         thereof.
 
@@ -113,7 +113,7 @@ class Cashflow(Generatable):
         """
 
         custom_args = self.get_custom_args()
-        return custom_args['cashflow_generation']
+        return custom_args['cashflow_creation']
 
     def calc_eom(self, d):
         """ Calculate the end of month from a given Date
@@ -147,7 +147,7 @@ class Cashflow(Generatable):
 
         return date(d.year, 6, 30) if d.month <= 6 else date(d.year, 12, 31)
 
-    def get_pay_date_func(self, pay_date_period):
+    def create_pay_date_func(self, pay_date_period):
         """ Retrieve the pay date function for a given pay date period from
         the user-defined cashflow arguments. This value is either end of month
         or half, and returns the end of month/half date in each case

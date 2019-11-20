@@ -1,24 +1,25 @@
-from domainobjects.generatable import Generatable
-from datetime import datetime
 import random
-import string
+from datetime import datetime
 
-class DepotPosition(Generatable):
-    """ Class to generate depot positions. Generate method will generate a set
-    amount of positions. Other generation method are included where depot
+from domainobjectfactories.creatable import Creatable
+
+
+class DepotPositionFactory(Creatable):
+    """ Class to create depot positions. Create method will create a set
+    amount of positions. Other creation method are included where depot
     positions are the only domain object requiring them. """
 
     DEPOT_POSITION_PURPOSES = ['Holdings', 'Seg']
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of depot positions
+    def create(self, record_count, start_id):
+        """ Create a set number of depot positions
 
         Parameters
         ----------
         record_count : int
-            Number of depot positions to generate
+            Number of depot positions to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -32,18 +33,18 @@ class DepotPosition(Generatable):
 
         for _ in range(start_id, start_id+record_count):
             instrument = self.get_random_instrument()
-            records.append(self.generate_record(instrument))
+            records.append(self.create_record(instrument))
 
         return records
 
-    def generate_record(self, instrument):
-        """ Generate a single depot position
+    def create_record(self, instrument):
+        """ Create a single depot position
 
         Parameters
         ----------
         instrument : list
             Dictionary containing a partial record of an instrument, only
-            containing information necessary to generate depot positions.
+            containing information necessary to create depot positions.
 
         Returns
         -------
@@ -51,28 +52,28 @@ class DepotPosition(Generatable):
             A single depot position object
         """
 
-        position_type = self.generate_position_type()
-        knowledge_date = self.generate_knowledge_date()
+        position_type = self.create_position_type()
+        knowledge_date = self.create_knowledge_date()
         record = {
             'isin': instrument['isin'],
             'knowledge_date': knowledge_date,
             'position_type': position_type,
-            'effective_date': self.generate_effective_date(
+            'effective_date': self.create_effective_date(
                                 2, knowledge_date, position_type),
-            'account': self.generate_account(),
-            'qty': self.generate_random_integer(),
-            'purpose': self.generate_purpose(),
-            'depot_id': self.generate_random_integer(length=5),
+            'account': self.create_account(),
+            'qty': self.create_random_integer(),
+            'purpose': self.create_purpose(),
+            'depot_id': self.create_random_integer(length=5),
             'time_stamp': datetime.now()
         }
 
-        for key, value in self.get_dummy_field_generator():
+        for key, value in self.create_dummy_field_generator():
             record[key] = value
 
         return record
 
-    def generate_purpose(self):
-        """ Generate a purpose for a depot position
+    def create_purpose(self):
+        """ Create a purpose for a depot position
 
         Returns
         -------
