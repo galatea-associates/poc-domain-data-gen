@@ -48,10 +48,10 @@ def main():
     configurations = parse_config_files()
     validate_configs(configurations)
 
-    factory_definitions = configurations.get_user_generation_args()
+    factory_definitions = configurations.get_factory_definitions()
+    shared_factory_args = configurations.get_shared_args()
     dev_file_builder_args = configurations.get_dev_file_builder_args()
     dev_factory_args = configurations.get_dev_factory_args()
-    shared_factory_args = configurations.get_user_shared_generation_args()
 
     for factory_definition in factory_definitions:
         file_builder = instantiate_file_builder(factory_definition,
@@ -274,19 +274,19 @@ def parse_config_files():
 
     with open(config_location.user_config) as user_config:
         parsed_user_config = ujson.load(user_config)
-        domain_object_gen_config = parsed_user_config['domain_objects']
-        shared_config = parsed_user_config['shared_generation_arguments']
+        factory_definitions = parsed_user_config['domain_objects']
+        shared_args = parsed_user_config['shared_generation_arguments']
 
     with open(config_location.dev_config) as dev_config:
         parsed_dev_config = ujson.load(dev_config)
-        file_builder_configs = parsed_dev_config['file_builders']
-        domain_object_location_config = parsed_dev_config['domain_objects']
+        dev_file_builder_args = parsed_dev_config['file_builders']
+        dev_factory_args = parsed_dev_config['domain_objects']
 
     return Configuration({
-        "generation_arguments": domain_object_gen_config,
-        "domain_objects": domain_object_location_config,
-        "shared_arguments": shared_config,
-        "file_builders": file_builder_configs
+        "factory_definitions": factory_definitions,
+        "shared_args": shared_args,
+        "dev_file_builder_args": dev_file_builder_args,
+        "dev_factory_args": dev_factory_args
     })
 
 

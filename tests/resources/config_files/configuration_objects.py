@@ -1,4 +1,4 @@
-default_gen_arguments = [
+default_factory_definitions = [
     {
         'instrument': {
             'max_objects_per_file': 50,
@@ -29,7 +29,7 @@ default_gen_arguments = [
     }
 ]
 
-default_domain_objects = [
+default_dev_factory_args = [
     {
         'instrument': {
             'module_name': 'instrument',
@@ -37,13 +37,13 @@ default_domain_objects = [
         }
     }
 ]
-default_shared_arguments = {
+default_shared_args = {
     'generator_pool_size': 1,
     'writer_pool_size': 1,
     'pool_job_size': 10000
 }
 
-default_file_builders = [
+default_dev_file_builder_args = [
     {
         'CSV': {
             'module_name': 'csv_builder',

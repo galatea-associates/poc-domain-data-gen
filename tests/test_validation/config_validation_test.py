@@ -2,8 +2,8 @@ import copy
 from configuration import configuration
 from validator import config_validator as validator
 from tests.resources.config_files.configuration_objects\
-    import default_gen_arguments, default_domain_objects,\
-    default_shared_arguments, default_file_builders
+    import default_factory_definitions, default_shared_args,\
+    default_dev_file_builder_args, default_dev_factory_args
 """
 In the main method of src/app.py, the user and dev JSON config files are
 converted to Python objects using the ujson library prior to validation. The
@@ -33,10 +33,10 @@ def test_record_count_success():
     """ Ensure a valid configuration succeeds"""
 
     configurations = configuration.Configuration({
-        "generation_arguments": default_gen_arguments,
-        "domain_objects": default_domain_objects,
-        "shared_arguments": default_shared_arguments,
-        "file_builders": default_file_builders
+        "factory_definitions": default_factory_definitions,
+        "shared_args": default_shared_args,
+        "dev_file_builder_args": default_dev_file_builder_args,
+        "dev_factory_args": default_dev_factory_args
     })
 
     success = validator.validate(configurations).check_success()
@@ -46,14 +46,15 @@ def test_record_count_success():
 def test_record_count_failure():
     """ Ensure a negative integer for record count fails """
 
-    invalid_gen_arguments = copy.deepcopy(default_gen_arguments)
-    invalid_gen_arguments[0]['instrument']['fixed_args']['record_count'] = -1
+    invalid_factory_definitions = copy.deepcopy(default_factory_definitions)
+    invalid_factory_definitions[0]['instrument']['fixed_args']['record_count']\
+        = -1
 
     configurations = configuration.Configuration({
-        "generation_arguments": invalid_gen_arguments,
-        "domain_objects": default_domain_objects,
-        "shared_arguments": default_shared_arguments,
-        "file_builders": default_file_builders
+        "factory_definitions": invalid_factory_definitions,
+        "shared_args": default_shared_args,
+        "dev_file_builder_args": default_dev_file_builder_args,
+        "dev_factory_args": default_dev_factory_args
     })
 
     success = validator.validate(configurations).check_success()
@@ -63,14 +64,14 @@ def test_record_count_failure():
 def test_file_size_failure():
     """ Ensure negative integer for file size fails """
 
-    invalid_gen_arguments = copy.deepcopy(default_gen_arguments)
-    invalid_gen_arguments[0]['instrument']['max_objects_per_file'] = -1
+    invalid_factory_definitions = copy.deepcopy(default_factory_definitions)
+    invalid_factory_definitions[0]['instrument']['max_objects_per_file'] = -1
 
     configurations = configuration.Configuration({
-        "generation_arguments": invalid_gen_arguments,
-        "domain_objects": default_domain_objects,
-        "shared_arguments": default_shared_arguments,
-        "file_builders": default_file_builders
+        "factory_definitions": invalid_factory_definitions,
+        "shared_args": default_shared_args,
+        "dev_file_builder_args": default_dev_file_builder_args,
+        "dev_factory_args": default_dev_factory_args
     })
 
     success = validator.validate(configurations).check_success()
@@ -80,14 +81,15 @@ def test_file_size_failure():
 def test_file_extension_failure():
     """ Ensure an invalid file extension fails """
 
-    invalid_gen_arguments = copy.deepcopy(default_gen_arguments)
-    invalid_gen_arguments[0]['instrument']['output_file_type'] = 'invalid'
+    invalid_factory_definitions = copy.deepcopy(default_factory_definitions)
+    invalid_factory_definitions[0]['instrument']['output_file_type']\
+        = 'invalid'
 
     configurations = configuration.Configuration({
-        "generation_arguments": invalid_gen_arguments,
-        "domain_objects": default_domain_objects,
-        "shared_arguments": default_shared_arguments,
-        "file_builders": default_file_builders
+        "factory_definitions": invalid_factory_definitions,
+        "shared_args": default_shared_args,
+        "dev_file_builder_args": default_dev_file_builder_args,
+        "dev_factory_args": default_dev_factory_args
     })
 
     success = validator.validate(configurations).check_success()
@@ -97,14 +99,14 @@ def test_file_extension_failure():
 def test_generator_pool_size_failure():
     """ Ensure a negative integer for pool sizes fails """
 
-    invalid_shared_arguments = copy.deepcopy(default_shared_arguments)
-    invalid_shared_arguments['generator_pool_size'] = -1
+    invalid_shared_args = copy.deepcopy(default_shared_args)
+    invalid_shared_args['generator_pool_size'] = -1
 
     configurations = configuration.Configuration({
-        "generation_arguments": default_gen_arguments,
-        "domain_objects": default_domain_objects,
-        "shared_arguments": invalid_shared_arguments,
-        "file_builders": default_file_builders
+        "factory_definitions": default_factory_definitions,
+        "shared_args": invalid_shared_args,
+        "dev_file_builder_args": default_dev_file_builder_args,
+        "dev_factory_args": default_dev_factory_args
     })
 
     success = validator.validate(configurations).check_success()
@@ -114,14 +116,14 @@ def test_generator_pool_size_failure():
 def test_writer_pool_size_failure():
     """ Ensure a negative integer for pool sizes fails """
 
-    invalid_shared_arguments = copy.deepcopy(default_shared_arguments)
-    invalid_shared_arguments['writer_pool_size'] = -1
+    invalid_shared_args = copy.deepcopy(default_shared_args)
+    invalid_shared_args['writer_pool_size'] = -1
 
     configurations = configuration.Configuration({
-        "generation_arguments": default_gen_arguments,
-        "domain_objects": default_domain_objects,
-        "shared_arguments": invalid_shared_arguments,
-        "file_builders": default_file_builders
+        "factory_definitions": default_factory_definitions,
+        "shared_args": invalid_shared_args,
+        "dev_file_builder_args": default_dev_file_builder_args,
+        "dev_factory_args": default_dev_factory_args
     })
 
     success = validator.validate(configurations).check_success()
@@ -131,14 +133,14 @@ def test_writer_pool_size_failure():
 def test_job_size_failure():
     """ Ensure a negative integer for job size fails """
 
-    invalid_shared_arguments = copy.deepcopy(default_shared_arguments)
-    invalid_shared_arguments['pool_job_size'] = -1
+    invalid_shared_args = copy.deepcopy(default_shared_args)
+    invalid_shared_args['pool_job_size'] = -1
 
     configurations = configuration.Configuration({
-        "generation_arguments": default_gen_arguments,
-        "domain_objects": default_domain_objects,
-        "shared_arguments": invalid_shared_arguments,
-        "file_builders": default_file_builders
+        "factory_definitions": default_factory_definitions,
+        "shared_args": invalid_shared_args,
+        "dev_file_builder_args": default_dev_file_builder_args,
+        "dev_factory_args": default_dev_factory_args
     })
 
     success = validator.validate(configurations).check_success()

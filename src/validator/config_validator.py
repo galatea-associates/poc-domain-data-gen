@@ -31,22 +31,22 @@ def validate(configurations):
     # These are formatted into a single dictionary for validation.
 
     factory_definitions = {}
-    for factory_definition in configurations.get_user_generation_args():
+    for factory_definition in configurations.get_factory_definitions():
         factory_definitions.update(factory_definition)
 
     dev_file_builder_args = {}
     for file_builder in configurations.get_dev_file_builder_args():
         dev_file_builder_args.update(file_builder)
 
-    shared_factory_args = configurations.get_user_shared_generation_args()
+    shared_args = configurations.get_shared_args()
 
     errors = [
         validate_record_counts(factory_definitions),
         validate_max_file_size(factory_definitions),
         validate_output_file_extensions(dev_file_builder_args,
                                         factory_definitions),
-        validate_pool_sizes_non_zero(shared_factory_args),
-        validate_job_size_non_zero(shared_factory_args)
+        validate_pool_sizes_non_zero(shared_args),
+        validate_job_size_non_zero(shared_args)
     ]
 
     # Remove instances of None or empty lists from error list
@@ -170,13 +170,13 @@ def get_file_extensions(dev_file_builder_args):
     return list(dev_file_builder_args.keys())
 
 
-def validate_pool_sizes_non_zero(shared_factory_args):
+def validate_pool_sizes_non_zero(shared_args):
     """ Verifies that pool sizes for both generation and writing pools are
     non-zero and positive.
 
     Parameters
     ----------
-    shared_factory_args : dict
+    shared_args : dict
         Dictionary of the "shared_config" section of the config file
 
     Returns
@@ -187,8 +187,8 @@ def validate_pool_sizes_non_zero(shared_factory_args):
 
     errors = []
 
-    gen_pool_size = shared_factory_args['generator_pool_size']
-    write_pool_size = shared_factory_args['writer_pool_size']
+    gen_pool_size = shared_args['generator_pool_size']
+    write_pool_size = shared_args['writer_pool_size']
     if gen_pool_size <= 0:
         errors.append("- Generation pool size must be a positive value.")
     if write_pool_size <= 0:
@@ -196,12 +196,12 @@ def validate_pool_sizes_non_zero(shared_factory_args):
     return errors
 
 
-def validate_job_size_non_zero(shared_factory_args):
+def validate_job_size_non_zero(shared_args):
     """ Ensure the specified job size is a non-zero numbers.
 
     Parameters
     ----------
-    shared_factory_args : dict
+    shared_args : dict
         Dictionary of the "shared_config" section of the config file
 
     Returns
@@ -212,7 +212,7 @@ def validate_job_size_non_zero(shared_factory_args):
     """
 
     error = []
-    job_size = shared_factory_args['pool_job_size']
+    job_size = shared_args['pool_job_size']
     if job_size <= 0:
         error = ["- Pool job size must be a positive value"]
     return error

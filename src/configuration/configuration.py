@@ -8,18 +8,18 @@ class Configuration:
         ----------
         configurations : dict
             4 element dictionary containing:
-                1. object factory generation arguments
-                2. object factory location in codebase
-                3. file builder location in codebase
-                4. multiprocessing generation arguments
+                1. object factory generation arguments (factory definitions)
+                2. object factory location in codebase (dev_factory_args)
+                3. file builder location in codebase (file_builder_args)
+                4. multiprocessing generation arguments (shared_args)
         """
 
-        self.__user_generation_args = configurations['generation_arguments']
-        self.__user_shared_generation_args = configurations['shared_arguments']
-        self.__dev_file_builder_args = configurations['file_builders']
-        self.__dev_factory_args = configurations['domain_objects']
+        self.__factory_definitions = configurations['factory_definitions']
+        self.__shared_args = configurations['shared_args']
+        self.__dev_file_builder_args = configurations['dev_file_builder_args']
+        self.__dev_factory_args = configurations['dev_factory_args']
 
-    def get_user_generation_args(self):
+    def get_factory_definitions(self):
         """ Return the user-specific object generation arguments.
 
         Returns
@@ -28,9 +28,9 @@ class Configuration:
             User-specific object generation arguments
         """
 
-        return self.__user_generation_args
+        return self.__factory_definitions
 
-    def get_user_shared_generation_args(self):
+    def get_shared_args(self):
         """ Return the user-specific multiprocessing-centric generation
         arguments.
 
@@ -40,7 +40,7 @@ class Configuration:
             User-specific multiprocessing-centric generation arguments
         """
 
-        return self.__user_shared_generation_args
+        return self.__shared_args
 
     def get_dev_file_builder_args(self):
         """ Return the developer-specific file builder arguments. These are
