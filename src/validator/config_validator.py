@@ -244,4 +244,3 @@ def validate_google_drive_flag(factory_definitions):
                           f"\'{google_drive_flag}\' for domain object " +
                           f"\'{domain_object}\'")
     return errors
-
