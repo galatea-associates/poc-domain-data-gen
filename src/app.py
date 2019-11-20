@@ -142,7 +142,7 @@ def instantiate_object_factory(dev_factory_args,
     object_factory_name = next(iter(factory_arguments))
     object_factory_config = get_dev_object_factory_config(dev_factory_args,
                                                           object_factory_name)
-    object_factory_class = get_class('domainobjects',
+    object_factory_class = get_class('domainobjectfactories',
                                      object_factory_config['module_name'],
                                      object_factory_config['class_name'])
     return object_factory_class(factory_arguments[object_factory_name],
@@ -235,7 +235,7 @@ def get_dev_object_factory_config(dev_factory_args, object_factory_name):
 
 def get_class(package_name, module_name, class_name):
     """ Return a given class which sits within a specified heirarchy.
-    Used to return classes of filebuilders and domainobjects to only
+    Used to return classes of filebuilders and domainobjectfactories to only
     instantiate as and when that domainobject/filebuilder is required.
 
     Parameters

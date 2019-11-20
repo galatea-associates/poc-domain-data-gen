@@ -2,7 +2,7 @@ import calendar
 import random
 from datetime import datetime, date
 
-from domainobjects.creatable import Creatable
+from domainobjectfactories.creatable import Creatable
 
 
 class CashflowFactory(Creatable):

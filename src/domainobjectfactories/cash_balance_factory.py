@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 
-from domainobjects.creatable import Creatable
+from domainobjectfactories.creatable import Creatable
 
 
 class CashBalanceFactory(Creatable):

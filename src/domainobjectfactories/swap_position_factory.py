@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pandas as pd
 
-from domainobjects.creatable import Creatable
+from domainobjectfactories.creatable import Creatable
 
 
 class SwapPositionFactory(Creatable):

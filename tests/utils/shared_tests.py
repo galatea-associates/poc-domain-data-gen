@@ -4,7 +4,7 @@ import re
 
 sys.path.insert(0, 'src/')
 from utils import helper_methods as helper
-from domainobjects import instrument_factory
+from domainobjectfactories import instrument_factory
 
 # Shared Tests
 # domain_obj gives access to defined constant lists in the parent class

@@ -2,7 +2,7 @@ import random
 import uuid
 from datetime import datetime, timedelta
 
-from domainobjects.creatable import Creatable
+from domainobjectfactories.creatable import Creatable
 
 
 class SwapContractFactory(Creatable):

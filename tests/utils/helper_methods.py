@@ -5,13 +5,13 @@ import ujson
 
 sys.path.insert(0, 'src/')
 from database.sqlite_database import Sqlite_Database
-from domainobjects import back_office_position_factory, cash_balance_factory, \
+from domainobjectfactories import back_office_position_factory, cash_balance_factory, \
     cashflow_factory
-from domainobjects import counterparty_factory, depot_position_factory, \
+from domainobjectfactories import counterparty_factory, depot_position_factory, \
     front_office_position_factory
-from domainobjects import instrument_factory, order_execution_factory, \
+from domainobjectfactories import instrument_factory, order_execution_factory, \
     price_factory
-from domainobjects import stock_loan_position_factory, swap_contract_factory, \
+from domainobjectfactories import stock_loan_position_factory, swap_contract_factory, \
     swap_position_factory
 
 
