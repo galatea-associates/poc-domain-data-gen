@@ -1,32 +1,32 @@
 import random
 import uuid
-
 from datetime import datetime, timedelta
-from domainobjects.generatable import Generatable
+
+from domainobjectfactories.creatable import Creatable
 
 
-class SwapContract(Generatable):
-    """ Class to generate swap contracts. Generate method will generate a set
-    of swap contracts. Other generation methods are included where swap
+class SwapContractFactory(Creatable):
+    """ Class to create swap contracts. Create method will create a set
+    of swap contracts. Other creation methods are included where swap
     contracts are the only domain object requiring them.
 
-    Process of generating swap contracts is dependent on counterparties, for
+    Process of creating swap contracts is dependent on counterparties, for
     each of these, randomly select a number of swaps between the user-defined
-    range, and generate a record for each swap.
+    range, and create a record for each swap.
     """
 
     SWAP_TYPES = ['Equity', 'Portfolio']
     REFERENCE_RATES = ['LIBOR']
 
-    def generate(self, record_count, start_id):
-        """ Generate a set number of swap contracts
+    def create(self, record_count, start_id):
+        """ Create a set number of swap contracts
 
         Parameters
         ----------
         record_count : int
-            Number of swap contracts to generate
+            Number of swap contracts to create
         start_id : int
-            Starting id to generate from
+            Starting id to create from
 
         Returns
         -------
@@ -38,21 +38,21 @@ class SwapContract(Generatable):
             self.retrieve_batch_records('counterparties',
                                         record_count, start_id)
 
-        records = [self.generate_record(counterparty['id'])
+        records = [self.create_record(counterparty['id'])
                    for counterparty in counterparties
                    for _ in range(0, self.get_number_of_swaps())]
 
         self.persist_records("swap_contracts")
         return records
 
-    def generate_record(self, counterparty):
-        """ Generate a single swap contract
+    def create_record(self, counterparty):
+        """ Create a single swap contract
 
         Parameters
         ----------
         Counterparty : dict
             Dictionary containing a partial record of a counterparty, only
-            contains the information necessary to generate swap contracts
+            contains the information necessary to create swap contracts
 
         Returns
         -------
@@ -60,28 +60,28 @@ class SwapContract(Generatable):
             A single swap contract object
         """
 
-        status = self.generate_status()
-        start_date = self.generate_random_date()
+        status = self.create_status()
+        start_date = self.create_random_date()
         contract_id = str(uuid.uuid1())
         self.persist_record([contract_id])
 
         record = {
             'counterparty_id': counterparty,
             'swap_contract_id': contract_id,
-            'swap_mnemonic': self.generate_random_string(10),
-            'is_short_mtm_financed': self.generate_random_boolean(),
-            'accounting_area': self.generate_random_string(10),
+            'swap_mnemonic': self.create_random_string(10),
+            'is_short_mtm_financed': self.create_random_boolean(),
+            'accounting_area': self.create_random_string(10),
             'status': status,
             'start_date': start_date,
-            'end_date': self.generate_swap_end_date(
+            'end_date': self.create_swap_end_date(
                                     start_date=start_date,
                                     status=status),
-            'swap_type': self.generate_swap_type(),
-            'reference_rate': self.generate_reference_rate(),
+            'swap_type': self.create_swap_type(),
+            'reference_rate': self.create_reference_rate(),
             'time_stamp': datetime.now()
         }
 
-        for key, value in self.get_dummy_field_generator():
+        for key, value in self.create_dummy_field_generator():
             record[key] = value
 
         return record
@@ -102,9 +102,9 @@ class SwapContract(Generatable):
         swap_max = int(swaps_per_counterparty['max'])
         return random.randint(swap_min, swap_max)
 
-    def generate_swap_end_date(self, years_to_add=5,
+    def create_swap_end_date(self, years_to_add=5,
                                start_date=None, status=None):
-        """ Generate the end date of the swap
+        """ Create the end date of the swap
 
         Parameters
         ----------
@@ -113,7 +113,7 @@ class SwapContract(Generatable):
         start_date : Date
             Date from which swap contract commenced
         Status : String
-            'Live' or 'Dead' - randomly generated beforehand
+            'Live' or 'Dead' - randomly created beforehand
 
         Returns
         -------
@@ -127,8 +127,8 @@ class SwapContract(Generatable):
         return None if status == 'Live' else start_date +\
                        timedelta(days=365 * years_to_add)
 
-    def generate_swap_type(self):
-        """ Generate the type of swap
+    def create_swap_type(self):
+        """ Create the type of swap
 
         Returns
         -------
@@ -139,8 +139,8 @@ class SwapContract(Generatable):
 
         return random.choice(self.SWAP_TYPES)
 
-    def generate_reference_rate(self):
-        """ Generate the reference rate
+    def create_reference_rate(self):
+        """ Create the reference rate
 
         Returns
         -------
@@ -150,8 +150,8 @@ class SwapContract(Generatable):
 
         return random.choice(self.REFERENCE_RATES)
 
-    def generate_status(self):
-        """ Generate the current status of the swap
+    def create_status(self):
+        """ Create the current status of the swap
 
         Returns
         -------
