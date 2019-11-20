@@ -39,7 +39,7 @@ from multi_processing.coordinator import Coordinator
 from exceptions.config_error import ConfigError
 from configuration.configuration import Configuration
 import validator.config_validator as config_validator
-from src.utils.google_drive_connector import GoogleDriveConnector
+from utils.google_drive_connector import GoogleDriveConnector
 
 
 def main():
@@ -47,15 +47,21 @@ def main():
 
     args = get_args()
     configurations = parse_config_files(args)
-    google_drive_connector = GoogleDriveConnector(args.g_drive_root)
 
     factory_definitions = configurations.get_user_generation_args()
     dev_file_builder_args = configurations.get_dev_file_builder_args()
     dev_factory_args = configurations.get_dev_factory_args()
     shared_factory_args = configurations.get_user_shared_generation_args()
 
+    google_drive_connector = get_google_drive_connector(factory_definitions,
+                                                        args.g_drive_root)
+
     for factory_definition in factory_definitions:
-        google_drive_flag = factory_definition['upload_to_google_drive']
+        factory_config = list(factory_definition.values())[0]
+        google_drive_config_flag = \
+            factory_config['upload_to_google_drive'].upper()
+        google_drive_flag = google_drive_config_flag == "TRUE"
+
         file_builder = instantiate_file_builder(factory_definition,
                                                 dev_file_builder_args,
                                                 google_drive_connector,
@@ -64,6 +70,14 @@ def main():
                                                     factory_definition,
                                                     shared_factory_args)
         process_object_factory(file_builder, object_factory)
+
+
+def get_google_drive_connector(factory_definitions, g_drive_root):
+    for factory_definition in factory_definitions:
+        factory_config = list(factory_definition.values())[0]
+        if factory_config['upload_to_google_drive'].upper() == "TRUE":
+            return GoogleDriveConnector(g_drive_root)
+    return None
 
 
 def process_object_factory(file_builder, object_factory):

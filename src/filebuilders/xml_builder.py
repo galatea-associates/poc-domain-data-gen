@@ -7,17 +7,15 @@ class XMLBuilder(FileBuilder):
     """ A class to generate an XML file from records. Uses the dicttoxml
     library to achieve this. """
 
-    def build(self, file_number, data, upload_to_google_drive=False):
+    def build(self, file_number, data):
         output_dir = self.get_output_directory()
-        file_name = self.get_file_name()
+        file_name = self.get_file_name().format(f'{file_number:03}')
         root_element_name = self.get_root_element_name()
 
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
-        with open(os.path.join(output_dir,
-                  file_name.format(f'{file_number:03}')),
-                  'w', newline='') as output_file:
+        with open(os.path.join(output_dir, file_name), 'w') as output_file:
             # convert data to bytes
             item_func = self.get_item_func()
             xml = dicttoxml.dicttoxml(
@@ -31,6 +29,9 @@ class XMLBuilder(FileBuilder):
                 .replace(' type=\"dict\"', '')\
                 .replace(' type=\"int\"', '')
             output_file.write(xml)
+
+        if self.get_google_drive_flag():
+            self.upload_to_google_drive(output_dir, file_name)
 
     def get_item_func(self):
         """ This is a helper method to create a compatible argument for the

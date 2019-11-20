@@ -18,6 +18,9 @@ class FileBuilder(abc.ABC):
     google_drive_connector : Google_Drive_Connector
         Instantiated connector object for uploading to a pre-defined google
         drive directory.
+    google_drive_flag : bool
+        Boolean flag stating whether to upload the output files generated to
+        google drive
     output_dir : String
         The directory files are to be written to
     root_element_name : string
@@ -49,7 +52,9 @@ class FileBuilder(abc.ABC):
         Returns the name of each XML item
     """
 
-    def __init__(self, google_drive_connector, google_drive_flag, factory_config):
+    def __init__(self, google_drive_connector,
+                 google_drive_flag,
+                 factory_config):
         """ Initialises various values required for correct behaviour when
         writing out to files. Stores XML-specific data where the specified
         output type is XML.
@@ -82,7 +87,7 @@ class FileBuilder(abc.ABC):
             self.__item_name = file_specific_config['xml_item_name']
 
     @abc.abstractmethod
-    def build(self, file_number, data, upload_to_google_drive):
+    def build(self, file_number, data):
         """ Method called to write given data to a file. The file name
         includes the given number for sequential writing. If uploading to
         google drive, copies of file are made locally too.
@@ -93,8 +98,6 @@ class FileBuilder(abc.ABC):
             The current file number to be writing to
         data : List
             List of records to be writen to file
-        upload_to_google_drive : Boolean
-            Boolean flag on whether to upload the results to google drive
         """
         pass
 
@@ -197,3 +200,6 @@ class FileBuilder(abc.ABC):
             The maximum number of objects to write to each file.
         """
         return self.__max_objects_per_file
+
+    def get_google_drive_flag(self):
+        return self.__google_drive_flag
