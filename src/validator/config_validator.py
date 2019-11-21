@@ -43,6 +43,7 @@ def validate(configurations):
     errors = [
         validate_record_counts(factory_definitions),
         validate_max_file_size(factory_definitions),
+        validate_google_drive_flag(factory_definitions),
         validate_output_file_extensions(dev_file_builder_args,
                                         factory_definitions),
         validate_pool_sizes_non_zero(shared_args),
@@ -216,3 +217,30 @@ def validate_job_size_non_zero(shared_args):
     if job_size <= 0:
         error = ["- Pool job size must be a positive value"]
     return error
+
+
+def validate_google_drive_flag(factory_definitions):
+    """ Ensure the google drive flag for each domain object is valid
+    (either 'true' or 'false').
+
+    Parameters
+    ----------
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
+
+    Returns
+    -------
+    List
+        List of strings detailing each domain object where google drive flag
+        is erroneous. Empty where there are no errors to be found.
+    """
+    errors = []
+    for domain_object, config in factory_definitions.items():
+        google_drive_flag = config['upload_to_google_drive']
+        if google_drive_flag.upper() not in ("TRUE", "FALSE"):
+            errors.append(f"- Invalid Google Drive Flag " +
+                          f"\'{google_drive_flag}\' for domain object " +
+                          f"\'{domain_object}\'")
+    return errors

@@ -18,6 +18,9 @@ class FileBuilder(abc.ABC):
     google_drive_connector : Google_Drive_Connector
         Instantiated connector object for uploading to a pre-defined google
         drive directory.
+    google_drive_flag : bool
+        Boolean flag stating whether to upload the output files generated to
+        google drive
     output_dir : String
         The directory files are to be written to
     root_element_name : string
@@ -47,6 +50,8 @@ class FileBuilder(abc.ABC):
         Returns the name of XML parent tags
     get_item_name()
         Returns the name of each XML item
+    get_google_drive_flag()
+        Returns the google drive boolean flag
     """
 
     def __init__(self, google_drive_connector, factory_config):
@@ -80,7 +85,7 @@ class FileBuilder(abc.ABC):
             self.__item_name = file_specific_config['xml_item_name']
 
     @abc.abstractmethod
-    def build(self, file_number, data, upload_to_google_drive):
+    def build(self, file_number, data):
         """ Method called to write given data to a file. The file name
         includes the given number for sequential writing. If uploading to
         google drive, copies of file are made locally too.
@@ -91,8 +96,6 @@ class FileBuilder(abc.ABC):
             The current file number to be writing to
         data : List
             List of records to be writen to file
-        upload_to_google_drive : Boolean
-            Boolean flag on whether to upload the results to google drive
         """
         pass
 
@@ -114,14 +117,14 @@ class FileBuilder(abc.ABC):
         # Check if a folder for today's date exists, create if it doesn't
         folder_id = self.__google_drive_connector\
             .get_folder_id(todays_date, root_folder_id)
-        if folder_id == None:
+        if folder_id is None:
             folder_id = self.__google_drive_connector\
                 .create_folder(todays_date, root_folder_id)
 
         # Check if the file already exists, create it if not
         file_id = self.__google_drive_connector\
             .get_file_id(file_name, folder_id)
-        if file_id == None:
+        if file_id is None:
             self.__google_drive_connector\
                 .create_file(local_folder_name, file_name, folder_id)
         else:
@@ -195,3 +198,16 @@ class FileBuilder(abc.ABC):
             The maximum number of objects to write to each file.
         """
         return self.__max_objects_per_file
+
+    def google_drive_connector_exists(self):
+        """ Returns a boolean specifying whether a google drive connector
+        exists for the file builder. This will only occur when the domain
+        object being built is to be uploaded to Google Drive
+
+        Returns
+        -------
+        bool
+            Boolean flag to determine whether the file will be uploaded to
+            Google Drive after being written locally
+        """
+        return self.__google_drive_connector is not None

@@ -4,7 +4,6 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.http import MediaFileUpload
-from datetime import datetime
 
 
 class GoogleDriveConnector():
@@ -98,3 +97,10 @@ class GoogleDriveConnector():
         media_body = MediaFileUpload(file_location, resumable=True)
         self.service.files().update(fileId=file_id,
                                     media_body=media_body).execute()
+
+    def delete_folder(self, folder_id):
+        """ For testing purposes only """
+        try:
+            self.service.files().delete(fileId=folder_id).execute()
+        except Exception as e:
+            print(f'error deleting folder: {e}')

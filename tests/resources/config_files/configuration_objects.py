@@ -5,6 +5,7 @@ default_factory_definitions = [
             'file_name': 'instruments',
             'output_file_type': 'CSV',
             'output_directory': 'out',
+            'upload_to_google_drive': 'false',
             'generation_type': 'fixed',
             'fixed_args': {
                 'record_count': 50
