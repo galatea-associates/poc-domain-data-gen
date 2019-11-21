@@ -104,4 +104,3 @@ class GoogleDriveConnector():
             self.service.files().delete(fileId=folder_id).execute()
         except Exception as e:
             print(f'error deleting folder: {e}')
-
