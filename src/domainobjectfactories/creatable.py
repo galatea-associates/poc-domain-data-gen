@@ -145,7 +145,7 @@ class Creatable(ABC):
     RETURN_TYPES = ['Outstanding', 'Pending Return', 'Pending Recall',
                     'Partial Return', 'Partial Recall', 'Settled']
 
-    def __init__(self, factory_args, shared_factory_args):
+    def __init__(self, factory_args, shared_args):
         """ Set configuration, default database connection to None and
         instantiate list of records to persist to be empty.
 
@@ -154,12 +154,12 @@ class Creatable(ABC):
         factory_args : dict
             Factory settings as set by the user, such as number of records to
             create and any object-specific arguments.
-        shared_factory_args : dict
+        shared_args : dict
             All multiprocessing arguments and their user-assigned values
         """
 
         self.__config = factory_args
-        self.__shared_args = shared_factory_args
+        self.__shared_args = shared_args
         self.__database = None
         self.__persisting_records = []
 

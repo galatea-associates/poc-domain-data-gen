@@ -30,7 +30,7 @@ class XMLBuilder(FileBuilder):
                 .replace(' type=\"int\"', '')
             output_file.write(xml)
 
-        if self.get_google_drive_flag():
+        if self.google_drive_connector_exists():
             self.upload_to_google_drive(output_dir, file_name)
 
     def get_item_func(self):

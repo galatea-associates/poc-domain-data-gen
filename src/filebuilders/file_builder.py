@@ -54,9 +54,7 @@ class FileBuilder(abc.ABC):
         Returns the google drive boolean flag
     """
 
-    def __init__(self, google_drive_connector,
-                 google_drive_flag,
-                 factory_config):
+    def __init__(self, google_drive_connector, factory_config):
         """ Initialises various values required for correct behaviour when
         writing out to files. Stores XML-specific data where the specified
         output type is XML.
@@ -66,9 +64,6 @@ class FileBuilder(abc.ABC):
         google_drive_connector : Google_Drive_Connector
             Instantiated connector object for uploading to a pre-defined
             google drive directory.
-        google_drive_flag: bool
-            Boolean flag to determine whether the file will be uploaded to
-            Google Drive after being written locally
         factory_config : Dict
             Dictionary containing the parsed json user-defined configuration
             for the current factory.
@@ -79,7 +74,6 @@ class FileBuilder(abc.ABC):
         file_extension = file_type.lower()
 
         self.__google_drive_connector = google_drive_connector
-        self.__google_drive_flag = google_drive_flag
         self.__file_name = file_name + '_{}.' + file_extension
         self.__output_dir = factory_config['output_directory']
         self.__max_objects_per_file = factory_config['max_objects_per_file']
@@ -205,9 +199,10 @@ class FileBuilder(abc.ABC):
         """
         return self.__max_objects_per_file
 
-    def get_google_drive_flag(self):
-        """ Returns a boolean flag from the user config specifying whether the
-        output file is to be uploaded to google drive
+    def google_drive_connector_exists(self):
+        """ Returns a boolean specifying whether a google drive connector
+        exists for the file builder. This will only occur when the domain
+        object being built is to be uploaded to Google Drive
 
         Returns
         -------
@@ -215,4 +210,4 @@ class FileBuilder(abc.ABC):
             Boolean flag to determine whether the file will be uploaded to
             Google Drive after being written locally
         """
-        return self.__google_drive_flag
+        return self.__google_drive_connector is not None

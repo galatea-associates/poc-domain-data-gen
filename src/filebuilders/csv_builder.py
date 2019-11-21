@@ -27,5 +27,5 @@ class CSVBuilder(FileBuilder):
             dict_writer.writeheader()
             dict_writer.writerows(data)
 
-        if self.get_google_drive_flag():
+        if self.google_drive_connector_exists():
             self.upload_to_google_drive(output_dir, file_name)

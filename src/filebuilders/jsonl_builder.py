@@ -19,5 +19,5 @@ class JSONLBuilder(FileBuilder):
             formatted_output = "\n".join(to_output)
             output_file.write(formatted_output)
 
-        if self.get_google_drive_flag():
+        if self.google_drive_connector_exists():
             self.upload_to_google_drive(output_dir, file_name)

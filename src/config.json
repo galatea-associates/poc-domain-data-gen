@@ -263,6 +263,7 @@
     }
   ],
   "shared_args" : {
+    "google_drive_root_folder_id" : "root",
     "generator_pool_size" : 1,
     "writer_pool_size" : 1,
     "pool_job_size" : 10000

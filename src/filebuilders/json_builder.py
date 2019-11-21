@@ -17,7 +17,7 @@ class JSONBuilder(FileBuilder):
         with open(os.path.join(output_dir, file_name), 'w') as output_file:
             ujson.dump(data, output_file)
 
-        if self.get_google_drive_flag():
+        if self.google_drive_connector_exists():
             self.upload_to_google_drive(output_dir, file_name)
 
     def append_data(self, data):

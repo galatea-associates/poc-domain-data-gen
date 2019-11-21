@@ -46,55 +46,22 @@ from utils.google_drive_connector import GoogleDriveConnector
 def main():
     delete_database()
 
-    args = get_args()
-    configurations = parse_config_files(args)
+    configurations = parse_config_files()
     validate_configs(configurations)
 
     factory_definitions = configurations.get_factory_definitions()
-    shared_factory_args = configurations.get_shared_args()
+    shared_args = configurations.get_shared_args()
     dev_file_builder_args = configurations.get_dev_file_builder_args()
     dev_factory_args = configurations.get_dev_factory_args()
 
-    google_drive_connector = get_google_drive_connector(factory_definitions,
-                                                        args.g_drive_root)
-
     for factory_definition in factory_definitions:
-        factory_config = list(factory_definition.values())[0]
-        google_drive_config_flag = \
-            factory_config['upload_to_google_drive'].upper()
-        google_drive_flag = google_drive_config_flag == "TRUE"
-
         file_builder = instantiate_file_builder(factory_definition,
                                                 dev_file_builder_args,
-                                                google_drive_connector,
-                                                google_drive_flag)
+                                                shared_args)
         object_factory = instantiate_object_factory(dev_factory_args,
                                                     factory_definition,
-                                                    shared_factory_args)
+                                                    shared_args)
         process_object_factory(file_builder, object_factory)
-
-
-def get_google_drive_connector(factory_definitions, g_drive_root):
-    """
-
-    Parameters
-    ----------
-    factory_definitions : list
-        List of all domain object configurations as provided by user
-    g_drive_root : string
-        Name of Google Drive root folder id to upload files to
-
-    Returns
-    -------
-    GoogleDriveConnector
-        Instantiated connector object for uploading to a pre-defined google
-        drive directory.
-    """
-    for factory_definition in factory_definitions:
-        factory_config = list(factory_definition.values())[0]
-        if factory_config['upload_to_google_drive'].upper() == "TRUE":
-            return GoogleDriveConnector(g_drive_root)
-    return None
 
 
 def process_object_factory(file_builder, object_factory):
@@ -124,23 +91,19 @@ def process_object_factory(file_builder, object_factory):
 
 def instantiate_file_builder(factory_definition,
                              dev_file_builder_args,
-                             google_drive_connector,
-                             google_drive_flag):
+                             shared_args):
     """ Returns file builder object from provided configs
 
     Parameters
     ----------
     factory_definition : dict
-        A domain objects configuration as provided by user
+        A domain object configuration as provided by user
     dev_file_builder_args: dict
         Developer arguments defining where in the codebase file builder
         classes are defined
-    google_drive_connector: GoogleDriveConnector
-        Instantiated connector object for uploading to a pre-defined google
-        drive directory.
-    google_drive_flag: bool
-        Boolean flag stating whether to upload the output files generated to
-        google drive
+    shared_args: dict
+        User arguments defining parameters for multiprocessing and google drive
+        upload, which are fixed for all object factories and file builders
 
     Returns
     -------
@@ -159,14 +122,47 @@ def instantiate_file_builder(factory_definition,
     file_builder_class = get_class('filebuilders',
                                    file_builder_config['module_name'],
                                    file_builder_config['class_name'])
-    return file_builder_class(google_drive_connector,
-                              google_drive_flag,
-                              factory_args)
+
+    google_drive_connector = get_google_drive_connector(factory_definition,
+                                                        shared_args)
+    return file_builder_class(google_drive_connector, factory_args)
+
+
+def get_google_drive_connector(factory_definition, shared_args):
+    """ Return an instance of the Google Drive Connector object if the
+    object factory specified in factory_definition is configured to have
+    records uploaded to google drive. The Google Drive root folder id specified
+    in shared_args is used as the Drive directory for upload.
+
+    If the factory_definition is not configured to upload to Drive, the method
+    will return None.
+
+    Parameters
+    ----------
+    factory_definition : dict
+        A domain object configuration as provided by user
+    shared_args: dict
+        User arguments defining parameters for multiprocessing and google drive
+        upload, which are fixed for all object factories and file builders
+
+    Returns
+    -------
+    GoogleDriveConnector
+        Instantiated connector object for uploading to a pre-defined google
+        drive directory.
+    """
+    google_drive_flag = \
+        list(factory_definition.values())[0]['upload_to_google_drive'].upper()
+
+    if google_drive_flag == 'TRUE':
+        root_folder_id = shared_args['google_drive_root_folder_id']
+        return GoogleDriveConnector(root_folder_id)
+
 
 
 def instantiate_object_factory(dev_factory_args,
                                factory_arguments,
-                               shared_factory_args):
+                               shared_args):
     """ Returns factory object from provided configs
 
     Parameters
@@ -176,8 +172,9 @@ def instantiate_object_factory(dev_factory_args,
         defined
     factory_arguments: dict
         User arguments defining the parameters which generation will adhere to
-    shared_factory_args: dict
-        User arguments defining the parameters of multiprocessing components
+    shared_args: dict
+        User arguments defining parameters for multiprocessing and google drive
+        upload, which are fixed for all object factories and file builders
 
     Returns
     -------
@@ -194,7 +191,7 @@ def instantiate_object_factory(dev_factory_args,
                                      object_factory_config['module_name'],
                                      object_factory_config['class_name'])
     return object_factory_class(factory_arguments[object_factory_name],
-                                shared_factory_args)
+                                shared_args)
 
 
 def get_record_count(obj_config, obj_location):
@@ -304,7 +301,7 @@ def get_class(package_name, module_name, class_name):
                    class_name)
 
 
-def parse_config_files(config_location):
+def parse_config_files():
     """ Retrieve command line arguments, and extract the 4 core configuration
     sections from it. Return this information as a Configuration object.
 
@@ -314,13 +311,13 @@ def parse_config_files(config_location):
         An object instantiated to contain all 4 configuration types. Has
         retrieval methods defined within.
     """
-
-    with open(config_location.user_config) as user_config:
+    args = get_args()
+    with open(args.user_config) as user_config:
         parsed_user_config = ujson.load(user_config)
         factory_definitions = parsed_user_config['factory_definitions']
         shared_args = parsed_user_config['shared_args']
 
-    with open(config_location.dev_config) as dev_config:
+    with open(args.dev_config) as dev_config:
         parsed_dev_config = ujson.load(dev_config)
         dev_file_builder_args = parsed_dev_config['dev_file_builder_args']
         dev_factory_args = parsed_dev_config['dev_factory_args']
@@ -352,8 +349,6 @@ def get_args():
                         help='JSON Configuration File Location')
     parser.add_argument('--dev_config', default='src/dev_config.json',
                         help='Developer Configuration File Location')
-    parser.add_argument('--g-drive-root', default='root',
-                        help='Google Drive root folder ID')
     return parser.parse_args()
 
 
