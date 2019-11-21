@@ -79,7 +79,8 @@ class Sqlite_Database:
 
             instrument_def = {"ric": "text",
                               "cusip": "text",
-                              "isin": "text"}
+                              "isin": "text",
+                              "country_of_issuance": "text"}
 
             counterparty_def = {"id": "text"}
 
@@ -202,6 +203,15 @@ class Sqlite_Database:
         rows = cur.fetchall()
         return rows
 
+    def retrieve_on_matching_value(self, table_name, column_name,
+                                   column_value):
+        cur = self.__connection.cursor()
+        cur.execute(
+            "SELECT * FROM " + table_name + " WHERE "
+            + column_name + " = '" + column_value + "'")
+        rows = cur.fetchall()
+        return rows
+
     def retrieve_column_as_list(self, table_name, column_name):
         """ Retrieves one column of records from a given table.
 
@@ -219,7 +229,7 @@ class Sqlite_Database:
         """
 
         cur = self.__connection.cursor()
-        cur.execute("SELECT "+column_name.upper()+" FROM " + table_name)
+        cur.execute("SELECT " + column_name.upper() + " FROM " + table_name)
         rows = cur.fetchall()
         list = [row[column_name] for row in rows]
         return list

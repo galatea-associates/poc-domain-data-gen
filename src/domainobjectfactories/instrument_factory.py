@@ -37,7 +37,7 @@ class InstrumentFactory(Creatable):
             record = self.create_record(i)
             records.append(record)
             self.persist_record(
-                [record['ric'], str(record['cusip']), str(record['isin'])]
+                [record['ric'], str(record['cusip']), str(record['isin']), str(record['country_of_issuance'])]
             )
 
         self.persist_records("instruments")
