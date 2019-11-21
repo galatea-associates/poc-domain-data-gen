@@ -15,6 +15,5 @@ data = [
         {
             "attribute": "value5"
         },
-
     ]
 ]
