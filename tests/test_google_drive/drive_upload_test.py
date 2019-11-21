@@ -5,7 +5,7 @@ from src.filebuilders.xml_builder import XMLBuilder
 from src.filebuilders.jsonl_builder import JSONLBuilder
 from tests.resources.drive_files.config_stub import csv_config, xml_config, \
     json_config, jsonl_config
-from tests.resources.drive_files.output_data import data
+from tests.resources.drive_files.data_stub import data
 from datetime import datetime
 import pytest
 
