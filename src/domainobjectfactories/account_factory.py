@@ -6,13 +6,10 @@ class AccountFactory(Creatable):
     of records. Other creation methods included where accounts are the
     only domain object requiring these.
     """
-
-    def __init__(self, factory_args, shared_args):
-        Creatable.__init__(self, factory_args, shared_args)
-        self.ACCOUNT_TYPES = ['Client', 'Firm', 'Counterparty', 'Depot']
-        self.ACCOUNT_PURPOSES = ['Fully Paid', 'Financed', 'Stock Loan',
-                                 'Rehypo', 'Collateral']
-        self.ACCOUNT_STATUSES = ['Open', 'Closed']
+    ACCOUNT_TYPES = ['Client', 'Firm', 'Counterparty', 'Depot']
+    ACCOUNT_PURPOSES = ['Fully Paid', 'Financed', 'Stock Loan',
+                        'Rehypo', 'Collateral']
+    ACCOUNT_STATUSES = ['Open', 'Closed']
 
     def create(self, record_count, start_id):
         """ Create a set number of accounts
@@ -81,21 +78,54 @@ class AccountFactory(Creatable):
         return record
 
     def create_account_type(self):
+        """ Return an account type for from a collection of valid strings
+
+        Returns
+        -------
+        String
+            randomly selected account type
+        """
         return random.choice(self.ACCOUNT_TYPES)
 
     def create_account_purpose(self):
+        """ Return an account purpose for from a collection of valid strings
+
+        Returns
+        -------
+        String
+            randomly selected account purpose
+        """
         return random.choice(self.ACCOUNT_PURPOSES)
 
     def create_account_description(self):
+        """ Return an account purpose dummy string
+
+        Returns
+        -------
+        String
+            randomly generated 10 character dummy string
+        """
         return self.create_random_string(10)
 
     def create_account_status(self):
+        """ Return an account status for from a collection of valid strings
+
+        Returns
+        -------
+        String
+            randomly selected account status
+        """
         return random.choice(self.ACCOUNT_STATUSES)
 
     def create_iban(self):
-        """ IBANs take a different form depending on the associated country
-        code, so a selection 5 representative IBANs are used here
+        """
+        Returns an IBAN representative of the format from either the UK (GB),
+        Switzerland (CH), France (FR), Germany (DE), or Saudi Arabia (SA).
         TODO: use an external module to generate valid IBANs
+        Returns
+        -------
+        String
+           representative IBAN string
         """
         country = random.choice(['GB', 'CH', 'FR', 'DE', 'SA'])
         check_digits = str(self.create_random_integer(length=2))
@@ -115,15 +145,49 @@ class AccountFactory(Creatable):
         return country + check_digits + bban
 
     def create_account_set_id(self):
+        """ Return an account set id dummy string
+
+        Returns
+        -------
+        String
+            randomly generated 10 character dummy string
+        """
         return self.create_random_string(10)
 
     def create_legal_entity_id(self):
+        """ Return a legal entity id dummy string
+
+        Returns
+        -------
+        String
+            randomly generated 10 character dummy string
+        """
         return self.create_random_string(10)
 
     def create_opening_date(self):
+        """ Return a randomly generated date as a string in format YYYYMMDD
+
+        Returns
+        -------
+        String
+            randomly generated date in YYYYMMDD format
+        """
         return self.create_random_date().strftime('%Y%m%d')
 
     def create_closing_date(self, opening_date):
+        """ Return a randomly generated date as a string in format YYYYMMDD
+
+        Parameters
+        ----------
+        opening_date : string
+            string representing the account opening date in format YYYYMMDD,
+            used as an earliest feasible closing date for date creation
+
+        Returns
+        -------
+        String
+            randomly generated date in YYYYMMDD format
+        """
         from_year = int(opening_date[:4])
         from_month = int(opening_date[4:6])
         from_day = int(opening_date[6:])
