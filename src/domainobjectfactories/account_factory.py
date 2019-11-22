@@ -1,6 +1,7 @@
 from domainobjectfactories.creatable import Creatable
 import random
 
+
 class AccountFactory(Creatable):
     """ Class to create accounts. Create method creates a set amount
     of records. Other creation methods included where accounts are the
@@ -194,4 +195,3 @@ class AccountFactory(Creatable):
         return self.create_random_date(from_year=from_year,
                                        from_month=from_month,
                                        from_day=from_day).strftime('%Y%m%d')
-

@@ -1,9 +1,10 @@
 import sys
 import re
+from datetime import datetime
 sys.path.insert(0, 'tests/')
 from utils import shared_tests as shared
 from utils import helper_methods as helper
-from datetime import datetime
+
 
 
 def test_accounts():
@@ -27,13 +28,13 @@ def test_accounts():
 def account_type_valid(record):
     """ Account type must be from the values specified """
     assert record['account_type'] in \
-           ['Client', 'Firm', 'Counterparty', 'Depot']
+        ['Client', 'Firm', 'Counterparty', 'Depot']
 
 
 def account_purpose_valid(record):
     """ Account purpose must be from the values specified """
     assert record['account_purpose'] in \
-           ['Fully Paid', 'Financed', 'Stock Loan', 'Rehypo', 'Collateral']
+        ['Fully Paid', 'Financed', 'Stock Loan', 'Rehypo', 'Collateral']
 
 
 def account_description_valid(record):

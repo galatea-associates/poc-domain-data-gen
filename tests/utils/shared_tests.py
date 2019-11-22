@@ -231,4 +231,3 @@ def is_length(length, obj):
 
 def contains_numbers(string):
     return any(char.isdigit() for char in string)
-
