@@ -6,7 +6,6 @@ from utils import shared_tests as shared
 from utils import helper_methods as helper
 
 
-
 def test_accounts():
     """ Ensure all generated instrument attributes adhere to their
     specification. No dependencies. """
