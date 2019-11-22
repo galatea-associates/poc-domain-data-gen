@@ -531,7 +531,7 @@ class Creatable(ABC):
             Name of the table to persist records to
         """
 
-        if (self.__database is None):
+        if self.__database is None:
             self.establish_db_connection()
         self.__database.persist_batch(table_name, self.__persisting_records)
         self.__database.commit_changes()

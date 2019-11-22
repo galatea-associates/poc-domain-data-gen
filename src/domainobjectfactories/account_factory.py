@@ -7,7 +7,8 @@ class AccountFactory(Creatable):
     only domain object requiring these.
     """
 
-    def __init__(self):
+    def __init__(self, factory_args, shared_args):
+        Creatable.__init__(self, factory_args, shared_args)
         self.ACCOUNT_TYPES = ['Client', 'Firm', 'Counterparty', 'Depot']
         self.ACCOUNT_PURPOSES = ['Fully Paid', 'Financed', 'Stock Loan',
                                  'Rehypo', 'Collateral']
@@ -36,7 +37,7 @@ class AccountFactory(Creatable):
             records.append(record)
             self.persist_record(
                 [
-                    record['account_id'],
+                    str(record['account_id']),
                     record['account_type'],
                     record['iban']
                 ]
@@ -69,7 +70,7 @@ class AccountFactory(Creatable):
             'account_status': self.create_account_status(),
             'iban': self.create_iban(),
             'account_set_id': self.create_account_set_id(),
-            'legal_entity_id': self.create_legal_entity(),
+            'legal_entity_id': self.create_legal_entity_id(),
             'opening_date': opening_date,
             'closing_date': self.create_closing_date(opening_date)
         }
