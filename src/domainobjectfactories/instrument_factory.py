@@ -26,11 +26,8 @@ class InstrumentFactory(Creatable):
             Containing 'record_count' instruments
         """
 
-        self.countries_of_issuance = \
-            self.retrieve_column("exchanges", "country_of_issuance")
         self.tickers = self.retrieve_column('tickers', "symbol")
-        self.exchange_codes = self.retrieve_column("exchanges",
-                                                   "exchange_code")
+
         records = []
 
         for i in range(start_id, start_id + record_count):
@@ -60,8 +57,10 @@ class InstrumentFactory(Creatable):
 
         asset_class = self.create_asset_class()
         ticker = self.create_ticker()
-        country_of_issuance = self.create_country_of_issuance()
-        exchange_code = self.create_exchange_code()
+        random_exchanges_row = self.get_random_row('exchanges')
+        country_of_issuance = \
+            self.__create_country_of_issuance(random_exchanges_row)
+        exchange_code = self.__create_exchange_code(random_exchanges_row)
         cusip = self.create_random_integer(length=9)
         isin = self.create_isin(country_of_issuance, cusip)
         ric = self.create_ric(ticker, exchange_code)
@@ -94,16 +93,19 @@ class InstrumentFactory(Creatable):
 
         return 'Stock'
 
-    def create_country_of_issuance(self):
+    def __create_country_of_issuance(self, random_exchanges_row):
         """ Create a random country of issuance
 
         Returns
         -------
         String
-            Randomly selected country code from those in the cache
+            Select country of issuance field from the randomly selected row
+            from the exchanges table
         """
-
-        return random.choice(self.countries_of_issuance)
+        assert ('country_of_issuance' in random_exchanges_row.keys()), \
+            f"country_of_issuance not present in row.  Fields are: " \
+            f"{random_exchanges_row.keys()}"
+        return random_exchanges_row['country_of_issuance']
 
     def create_ticker(self):
         """ Create a random ticker
@@ -116,13 +118,17 @@ class InstrumentFactory(Creatable):
 
         return random.choice(self.tickers)
 
-    def create_exchange_code(self):
+    def __create_exchange_code(self, random_exchanges_row):
         """ Create a random exchange code
 
         Returns
         -------
         String
-            Randomly selected exchange code from those in the cache
+            Select exchange code field from the randomly selected row from the
+            exchanges table
         """
 
-        return random.choice(self.exchange_codes)
+        assert ('exchange_code' in random_exchanges_row.keys()), \
+            f"exchange_code not present in row.  Fields are: " \
+            f"{random_exchanges_row.keys()}"
+        return random_exchanges_row['exchange_code']
