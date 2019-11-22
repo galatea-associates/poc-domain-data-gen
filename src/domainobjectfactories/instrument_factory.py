@@ -59,8 +59,8 @@ class InstrumentFactory(Creatable):
         ticker = self.create_ticker()
         random_exchanges_row = self.get_random_row('exchanges')
         country_of_issuance = \
-            self.create_country_of_issuance(random_exchanges_row)
-        exchange_code = self.create_exchange_code(random_exchanges_row)
+            self.__create_country_of_issuance(random_exchanges_row)
+        exchange_code = self.__create_exchange_code(random_exchanges_row)
         cusip = self.create_random_integer(length=9)
         isin = self.create_isin(country_of_issuance, cusip)
         ric = self.create_ric(ticker, exchange_code)
@@ -93,7 +93,7 @@ class InstrumentFactory(Creatable):
 
         return 'Stock'
 
-    def create_country_of_issuance(self, random_exchanges_row):
+    def __create_country_of_issuance(self, random_exchanges_row):
         """ Create a random country of issuance
 
         Returns
@@ -118,7 +118,7 @@ class InstrumentFactory(Creatable):
 
         return random.choice(self.tickers)
 
-    def create_exchange_code(self, random_exchanges_row):
+    def __create_exchange_code(self, random_exchanges_row):
         """ Create a random exchange code
 
         Returns
