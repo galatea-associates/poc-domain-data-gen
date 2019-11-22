@@ -20,6 +20,8 @@ class Creatable(ABC):
 
     ACCOUNT_TYPES : List
         Possible values for objects account_type attribute
+        Due to be removed after data model refactor since account type
+        will be taken from a persisted Account record
 
     TRUE_FALSE : List
         Possible values for boolean object attribute
@@ -136,7 +138,7 @@ class Creatable(ABC):
     """
 
     LONG_SHORT = ['Long', 'Short']
-    ACCOUNT_TYPES = ['ICP', 'ECP']
+    ACCOUNT_TYPES = ['ICP', 'ECP']  # TODO: remove after data model refactor
     TRUE_FALSE = [True, False]
     CURRENCIES = ['USD', 'CAD', 'EUR', 'GBP']
     ASSET_CLASSES = ['Stock', 'Cash']
@@ -551,7 +553,7 @@ class Creatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if (self.__database is None):
+        if self.__database is None:
             self.establish_db_connection()
         return self.__database.retrieve(table_name)
 
@@ -571,7 +573,7 @@ class Creatable(ABC):
             List containing all the values in the specified table and column
         """
 
-        if (self.__database is None):
+        if self.__database is None:
             self.establish_db_connection()
         return self.__database.retrieve_column_as_list(table_name, column_name)
 
@@ -595,7 +597,7 @@ class Creatable(ABC):
             the data inwhich can be retrieved as though it's a dictionary
         """
 
-        if (self.__database is None):
+        if self.__database is None:
             self.establish_db_connection()
         return self.__database.retrieve_batch(table_name, amount, start_pos)
 
