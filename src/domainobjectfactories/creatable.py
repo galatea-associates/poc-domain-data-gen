@@ -479,7 +479,7 @@ class Creatable(ABC):
             Randomly selected account type from list provided/default list
             appended with a 4-digit random string of characters
         """
-
+        # TODO: REMOVE COMPLETELY ONCE ALL FACTORIES UPDATED
         account_type = random.choice(account_types)
         random_string = ''.join(random.choices(string.digits, k=4))
         return ''.join([account_type, random_string])

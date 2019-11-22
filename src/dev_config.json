@@ -5,6 +5,10 @@
         "module_name": "instrument_factory",
         "class_name": "InstrumentFactory"
       },
+      "account": {
+        "module_name": "account_factory",
+        "class_name": "AccountFactory"
+      },
       "counterparty": {
         "module_name": "counterparty_factory",
         "class_name": "CounterpartyFactory"
