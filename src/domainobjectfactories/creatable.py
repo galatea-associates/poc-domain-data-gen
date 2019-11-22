@@ -510,6 +510,17 @@ class Creatable(ABC):
             self.instruments = self.retrieve_records('instruments')
         return random.choice(self.instruments)
 
+    def get_random_row(self, table_name):
+        """ Returns a random from from provided table
+
+                Returns
+                -------
+                List
+                    Single record from the table passed in
+                """
+
+        return random.choice(self.retrieve_records(table_name))
+
     def persist_record(self, record):
         """ Adds a given record to the list of records to persist in storage
 
