@@ -26,11 +26,10 @@ class InstrumentFactory(Creatable):
             Containing 'record_count' instruments
         """
 
-        self.countries_of_issuance = \
-            self.retrieve_column("exchanges", "country_of_issuance")
         self.tickers = self.retrieve_column('tickers', "symbol")
-        self.exchange_codes = self.retrieve_column("exchanges",
-                                                   "exchange_code")
+        self.random_exchanges_row = \
+            self.retrieve_batch_records('exchanges', 1, 0)[0]
+
         records = []
 
         for i in range(start_id, start_id + record_count):
@@ -100,10 +99,11 @@ class InstrumentFactory(Creatable):
         Returns
         -------
         String
-            Randomly selected country code from those in the cache
+            Select country of issuance field from the randomly selected row
+            from the exchanges table
         """
 
-        return random.choice(self.countries_of_issuance)
+        return self.random_exchanges_row['Country_Of_Issuance']
 
     def create_ticker(self):
         """ Create a random ticker
@@ -122,7 +122,8 @@ class InstrumentFactory(Creatable):
         Returns
         -------
         String
-            Randomly selected exchange code from those in the cache
+            Select exchange code field from the randomly selected row from the
+            exchanges table
         """
 
-        return random.choice(self.exchange_codes)
+        return self.random_exchanges_row['Exchange_Code']
