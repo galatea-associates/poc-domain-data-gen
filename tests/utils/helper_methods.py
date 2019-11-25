@@ -6,15 +6,10 @@ import ujson
 sys.path.insert(0, 'src/')
 from database.sqlite_database import Sqlite_Database
 from domainobjectfactories import back_office_position_factory, \
-    cash_balance_factory, \
-    cashflow_factory
-from domainobjectfactories import counterparty_factory, depot_position_factory, \
-    front_office_position_factory
-from domainobjectfactories import instrument_factory, order_execution_factory, \
-    price_factory
-from domainobjectfactories import stock_loan_position_factory, \
-    swap_contract_factory, \
-    swap_position_factory
+    cash_balance_factory, cashflow_factory, counterparty_factory, \
+    depot_position_factory, front_office_position_factory, instrument_factory,\
+    order_execution_factory, price_factory, stock_loan_position_factory, \
+    swap_contract_factory, swap_position_factory, account_factory
 
 
 # Helper Methods
@@ -118,6 +113,11 @@ def create_swap_position(amount=1):
     return obj.create(amount, 0)
 
 
+def create_account(amount=1):
+    obj = account_factory.AccountFactory(None, None)
+    return obj.create(amount, 0)
+
+
 # Set-up Methods
 def set_up_back_office_position_tests():
     delete_local_database()
@@ -207,3 +207,8 @@ def set_up_swap_position_tests():
     records = create_swap_position(50)
     domain_obj_factory = swap_position_factory.SwapPositionFactory(None, None)
     return records, domain_obj_factory
+
+
+def set_up_account_tests():
+    delete_local_database()
+    return create_account(50)

@@ -8,7 +8,7 @@ from domainobjectfactories import instrument_factory
 
 # Shared Tests
 # domain_obj gives access to defined constant lists in the parent class
-# generatable, this is otherwise uninstantiable as it is abstract
+# Creatable, this is otherwise uninstantiable as it is abstract
 domain_obj = instrument_factory.InstrumentFactory(None, None)
 
 
