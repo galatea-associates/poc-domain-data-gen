@@ -129,6 +129,8 @@ def set_up_back_office_position_tests():
 
 
 def set_up_cash_balance_tests():
+    delete_local_database()
+    create_account(50)
     domain_obj_factory = cash_balance_factory.CashBalanceFactory(None, None)
     records = create_cash_balance(50)
     return records, domain_obj_factory

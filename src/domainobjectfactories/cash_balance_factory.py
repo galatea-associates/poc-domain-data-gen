@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+import datetime
 
 from domainobjectfactories.creatable import Creatable
 
@@ -62,21 +62,60 @@ class CashBalanceFactory(Creatable):
 
     @staticmethod
     def create_as_of_date():
+        """ Return an 'as of date', being either the current date or the date
+        in 2 days time
+
+        Returns
+        -------
+        Date
+            Date object representing either the current date, or the date in
+            2 days time
+        """
         today = datetime.date.today()
         day_after_tomorrow = today + datetime.timedelta(days=2)
         return random.choice((today, day_after_tomorrow))
 
     def create_amount(self):
+        """ Return cash balance amount, being a positive or negative integer
+        with absolute value not greater than 10000
+
+        Returns
+        -------
+        int
+            positive or negative integer with magnitude < 10000
+        """
         return self.create_random_integer(negative=
                                           random.choice(self.TRUE_FALSE))
 
     @staticmethod
     def account_valid(account_row):
+        """ Return boolean indicating if a row from the 'accounts' table in
+        the database represents a 'Client' or 'Firm' account
+
+        Returns
+        -------
+        bool
+            boolean representing if account is either 'Client' or 'Firm'
+        """
         return account_row['account_type'] in ('Client', 'Firm')
 
     def create_account_details(self):
-        account_row = random.choice(filter(self.account_valid,
-                                           self.retrieve_records('accounts')))
+        """ Return valid account id and type from the 'accounts' table in the
+        database - account is valid if type is 'Client' or 'Firm'.
+
+        Returns
+        -------
+        string
+            account id
+
+        string
+            account type
+        """
+        account_row = random.choice(
+            list(
+                filter(self.account_valid, self.retrieve_records('accounts'))
+            )
+        )
         return account_row['account_id'], account_row['account_type']
 
     def create_purpose(self):
@@ -85,7 +124,7 @@ class CashBalanceFactory(Creatable):
         Returns
         -------
         String
-            One of three possible purposes relevant for cash balances
+            One of the possible purposes relevant for cash balances
         """
 
         return random.choice(self.CASH_BALANCE_PURPOSES)

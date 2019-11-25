@@ -149,7 +149,7 @@ def currency_valid(record):
 
 def amount_valid(record):
     amount = record['amount']
-    assert 1 <= amount <= 10000
+    assert 1 <= abs(amount) <= 10000
 
 
 def quantity_valid(record, long_short='Long'):
