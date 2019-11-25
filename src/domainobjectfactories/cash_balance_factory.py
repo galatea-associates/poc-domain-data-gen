@@ -9,7 +9,8 @@ class CashBalanceFactory(Creatable):
     amount of balances. Other creation methods included where cash balances
     are the only domain object requiring them. """
 
-    CASH_BALANCE_PURPOSES = ['Cash Balance', 'P&L', 'Fees']
+    CASH_BALANCE_PURPOSES = ['Cash Balance', 'P&L', 'Fees',
+                             'Collateral Posted', 'Collateral Received']
 
     def create(self, record_count, start_id):
         """ Create a set number of cash balances
@@ -43,18 +44,40 @@ class CashBalanceFactory(Creatable):
             A single cash balance object
         """
 
+        account_id, account_owner = self.create_account_details()
+
         record = {
-            'amount': self.create_random_integer(),
+            'as_of_date': self.create_as_of_date(),
+            'amount': self.create_amount(),
             'currency': self.create_currency(),
-            'account_num': self.create_random_integer(length=8),
-            'purpose': self.create_purpose(),
-            'time_stamp': datetime.now(),
+            'account_id': account_id,
+            'account_owner': account_owner,
+            'purpose': self.create_purpose()
         }
 
         for key, value in self.create_dummy_field_generator():
             record[key] = value
 
         return record
+
+    @staticmethod
+    def create_as_of_date():
+        today = datetime.date.today()
+        day_after_tomorrow = today + datetime.timedelta(days=2)
+        return random.choice((today, day_after_tomorrow))
+
+    def create_amount(self):
+        return self.create_random_integer(negative=
+                                          random.choice(self.TRUE_FALSE))
+
+    @staticmethod
+    def account_valid(account_row):
+        return account_row['account_type'] in ('Client', 'Firm')
+
+    def create_account_details(self):
+        account_row = random.choice(filter(self.account_valid,
+                                           self.retrieve_records('accounts')))
+        return account_row['account_id'], account_row['account_type']
 
     def create_purpose(self):
         """ Create a purpose for a cash balance

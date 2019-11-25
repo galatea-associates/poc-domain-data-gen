@@ -138,7 +138,7 @@ class Creatable(ABC):
     LONG_SHORT = ['Long', 'Short']
     ACCOUNT_TYPES = ['ICP', 'ECP']
     TRUE_FALSE = [True, False]
-    CURRENCIES = ['USD', 'CAD', 'EUR', 'GBP']
+    CURRENCIES = ['USD', 'CAD', 'EUR', 'GBP', 'CHF', 'JPY', 'SGD']
     ASSET_CLASSES = ['Stock', 'Cash']
     CREDIT_DEBIT = ['Credit', 'Debit']
     POSITION_TYPES = ['SD', 'TD']
