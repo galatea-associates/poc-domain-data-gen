@@ -84,8 +84,9 @@ class CashBalanceFactory(Creatable):
         int
             positive or negative integer with magnitude < 10000
         """
-        return self.create_random_integer(negative=
-                                          random.choice(self.TRUE_FALSE))
+        return self.create_random_integer(
+            negative=random.choice(self.TRUE_FALSE)
+        )
 
     @staticmethod
     def account_valid(account_row):

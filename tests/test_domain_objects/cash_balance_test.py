@@ -41,4 +41,3 @@ def account_details_valid(record, accounts_table):
                 row['account_type'] == account_owner:
             details_in_database = True
     assert details_in_database
-
