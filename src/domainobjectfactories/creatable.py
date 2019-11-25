@@ -164,6 +164,8 @@ class Creatable(ABC):
         self.__shared_args = shared_args
         self.__database = None
         self.__persisting_records = []
+        self.instruments = None
+        self.accounts = None
 
     @abstractmethod
     def create(self, record_count, start_id):
@@ -511,6 +513,19 @@ class Creatable(ABC):
         if self.instruments is None:
             self.instruments = self.retrieve_records('instruments')
         return random.choice(self.instruments)
+
+    def get_random_account(self):
+        """ Returns a random instrument from those created prior
+
+        Returns
+        -------
+        List
+            Single record from the instruments table of the database
+        """
+
+        if self.accounts is None:
+            self.accounts = self.retrieve_records('accounts')
+        return random.choice(self.accounts)
 
     def get_random_row(self, table_name):
         """ Returns a random from from provided table

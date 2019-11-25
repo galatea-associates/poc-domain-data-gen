@@ -88,18 +88,6 @@ class CashBalanceFactory(Creatable):
             negative=random.choice(self.TRUE_FALSE)
         )
 
-    @staticmethod
-    def account_valid(account_row):
-        """ Return boolean indicating if a row from the 'accounts' table in
-        the database represents a 'Client' or 'Firm' account
-
-        Returns
-        -------
-        bool
-            boolean representing if account is either 'Client' or 'Firm'
-        """
-        return account_row['account_type'] in ('Client', 'Firm')
-
     def create_account_details(self):
         """ Return valid account id and type from the 'accounts' table in the
         database - account is valid if type is 'Client' or 'Firm'.
@@ -112,12 +100,10 @@ class CashBalanceFactory(Creatable):
         string
             account type
         """
-        account_row = random.choice(
-            list(
-                filter(self.account_valid, self.retrieve_records('accounts'))
-            )
-        )
-        return account_row['account_id'], account_row['account_type']
+        account = self.get_random_account()
+        while account['account_type'] not in ('Client', 'Firm'):
+            account = self.get_random_account()
+        return account['account_id'], account['account_type']
 
     def create_purpose(self):
         """ Create a purpose for a cash balance
