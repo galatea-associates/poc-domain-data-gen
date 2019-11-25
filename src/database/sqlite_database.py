@@ -60,7 +60,7 @@ class Sqlite_Database:
     """
 
     def __init__(self):
-        """Esablishes a connection to a database on given file_path. If the
+        """Establishes a connection to a database on given file_path. If the
         database does not already exist, then the connection is made and
         tables created via hard-coded definitions. These definitions are
         the minimum-required attributes for correct generation of all
@@ -72,7 +72,7 @@ class Sqlite_Database:
             Connection to the database.
         """
 
-        if (not os.path.isfile("dependencies.db")):
+        if not os.path.isfile("dependencies.db"):
             self.__connection = sqlite3.connect("dependencies.db",
                                                 timeout=30.0)
             self.__connection.row_factory = sqlite3.Row
@@ -80,6 +80,10 @@ class Sqlite_Database:
             instrument_def = {"ric": "text",
                               "cusip": "text",
                               "isin": "text"}
+
+            accounts_def = {"account_id": "text",
+                            "account_type": "text",
+                            "iban": "text"}
 
             counterparty_def = {"id": "text"}
 
@@ -99,6 +103,7 @@ class Sqlite_Database:
 
             tables_dict = {
                 "instruments": instrument_def,
+                "accounts": accounts_def,
                 "counterparties": counterparty_def,
                 "swap_contracts": swap_contract_def,
                 "swap_positions": swap_position_def,
