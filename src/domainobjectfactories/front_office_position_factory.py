@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+import datetime
 
 from domainobjectfactories.creatable import Creatable
 
@@ -9,8 +9,6 @@ class FrontOfficePositionFactory(Creatable):
     create a set amount of positions. Other creation methods included
     where front office positions are the only domain object requiring them.
     """
-
-    FRONT_OFFICE_POSITION_PURPOSES = ['Outright']
 
     def create(self, record_count, start_id):
         """ Create a set number of front office positions
@@ -28,42 +26,28 @@ class FrontOfficePositionFactory(Creatable):
             Containing 'record_count' front office positions
         """
 
-        self.instruments = self.retrieve_records('instruments')
-
         records = []
 
         for _ in range(start_id, start_id + record_count):
-            instrument = self.get_random_instrument()
-            records.append(self.create_record(instrument))
+            records.append(self.create_record())
         return records
 
-    def create_record(self, instrument):
+    def create_record(self):
         """ Create a single front office position
-
-        Parameters
-        ----------
-        instrument : list
-            Dictionary containing a partial record of an instrument, only
-            containing information necessary to create depot positions.
 
         Returns
         -------
         dict
             A single front office position object
         """
-        position_type = self.create_position_type()
-        knowledge_date = self.create_knowledge_date()
+
         record = {
-            'ric': instrument['ric'],
-            'position_type': position_type,
-            'knowledge_date': knowledge_date,
-            'effective_date': self.create_effective_date(
-                2, knowledge_date, position_type),
-            'account': self.create_account(),
-            'direction': self.create_credit_debit(),
-            'qty': self.create_random_integer(),
-            'purpose': self.create_purpose(),
-            'time_stamp': datetime.now()
+            'as_of_date': self.create_as_of_date(),
+            'value_date': self.create_value_date(),
+            'account_id': self.create_account_id(),
+            'cusip': self.create_cusip(),
+            'quantity': self.create_quantity(),
+            'purpose': self.create_purpose()
         }
 
         for key, value in self.create_dummy_field_generator():
@@ -71,7 +55,40 @@ class FrontOfficePositionFactory(Creatable):
 
         return record
 
-    def create_purpose(self):
+    @staticmethod
+    def create_as_of_date():
+        return datetime.date.today()
+
+    @staticmethod
+    def create_value_date():
+        today = datetime.date.today()
+        day_after_tomorrow = today + datetime.timedelta(days=2)
+        return random.choice((today, day_after_tomorrow))
+
+    def create_account_id(self):
+        account = self.get_random_account()
+        while account['account_type'] not in ('Client', 'Firm'):
+            account = self.get_random_account()
+        return account['account_id']
+
+    def create_cusip(self):
+        instrument = self.get_random_instrument()
+        return instrument['cusip']
+
+    def create_quantity(self):
+        """ Return front office position quantity, being a positive or
+        negative integer with absolute value not greater than 10000
+        Returns
+        -------
+        int
+            positive or negative integer with magnitude < 10000
+        """
+        return self.create_random_integer(
+            negative=random.choice(self.TRUE_FALSE)
+        )
+
+    @staticmethod
+    def create_purpose():
         """ Create a purpose for a front office position
 
         Returns
@@ -80,4 +97,4 @@ class FrontOfficePositionFactory(Creatable):
             Front office position purposes are always outright
         """
 
-        return random.choice(self.FRONT_OFFICE_POSITION_PURPOSES)
+        return 'Outright'
