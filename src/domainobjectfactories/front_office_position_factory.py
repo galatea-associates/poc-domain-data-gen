@@ -29,10 +29,10 @@ class FrontOfficePositionFactory(Creatable):
         records = []
 
         for _ in range(start_id, start_id + record_count):
-            records.append(self.create_record())
+            records.append(self.__create_record())
         return records
 
-    def create_record(self):
+    def __create_record(self):
         """ Create a single front office position
 
         Returns
@@ -42,12 +42,12 @@ class FrontOfficePositionFactory(Creatable):
         """
 
         record = {
-            'as_of_date': self.create_as_of_date(),
-            'value_date': self.create_value_date(),
-            'account_id': self.create_account_id(),
-            'cusip': self.create_cusip(),
-            'quantity': self.create_quantity(),
-            'purpose': self.create_purpose()
+            'as_of_date': self.__create_as_of_date(),
+            'value_date': self.__create_value_date(),
+            'account_id': self.__create_account_id(),
+            'cusip': self.__create_cusip(),
+            'quantity': self.__create_quantity(),
+            'purpose': self.__create_purpose()
         }
 
         for key, value in self.create_dummy_field_generator():
@@ -56,7 +56,7 @@ class FrontOfficePositionFactory(Creatable):
         return record
 
     @staticmethod
-    def create_as_of_date():
+    def __create_as_of_date():
         """ Return the 'as of date', which must be the current date
 
         Returns
@@ -67,7 +67,7 @@ class FrontOfficePositionFactory(Creatable):
         return datetime.date.today()
 
     @staticmethod
-    def create_value_date():
+    def __create_value_date():
         """ Return the 'value date', which must be today or in 2 days time
 
         Returns
@@ -80,7 +80,7 @@ class FrontOfficePositionFactory(Creatable):
         day_after_tomorrow = today + datetime.timedelta(days=2)
         return random.choice((today, day_after_tomorrow))
 
-    def create_account_id(self):
+    def __create_account_id(self):
         """ Return a account id from an account persisted in the database
 
         Returns
@@ -93,7 +93,7 @@ class FrontOfficePositionFactory(Creatable):
             account = self.get_random_account()
         return account['account_id']
 
-    def create_cusip(self):
+    def __create_cusip(self):
         """ Return a cusip from an instrument persisted in the database
 
         Returns
@@ -104,7 +104,7 @@ class FrontOfficePositionFactory(Creatable):
         instrument = self.get_random_instrument()
         return instrument['cusip']
 
-    def create_quantity(self):
+    def __create_quantity(self):
         """ Return front office position quantity, being a positive or
         negative integer with absolute value not greater than 10000
         Returns
@@ -117,7 +117,7 @@ class FrontOfficePositionFactory(Creatable):
         )
 
     @staticmethod
-    def create_purpose():
+    def __create_purpose():
         """ Create a purpose for a front office position
 
         Returns
