@@ -122,6 +122,7 @@ def create_account(amount=1):
 def set_up_back_office_position_tests():
     delete_local_database()
     create_instrument(50)
+    create_account(50)
     records = create_back_office_position(50)
     domain_obj_factory = back_office_position_factory.\
         BackOfficePositionFactory(None, None)
