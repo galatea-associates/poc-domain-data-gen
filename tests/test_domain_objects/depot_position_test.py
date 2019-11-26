@@ -37,7 +37,8 @@ def instrument_details_valid(record, domain_obj):
     instrument_table = domain_obj.retrieve_records('instruments')
     details_in_database = False
     for instrument in instrument_table:
-        if instrument['isin'] == isin and instrument['cusip'] == cusip and instrument['market'] == market:
+        if instrument['isin'] == isin and instrument['cusip'] == cusip and \
+                instrument['market'] == market:
             details_in_database = True
             break
     assert details_in_database
