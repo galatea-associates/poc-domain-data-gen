@@ -30,11 +30,11 @@ class DepotPositionFactory(Creatable):
         records = []
 
         for _ in range(start_id, start_id+record_count):
-            records.append(self.create_record())
+            records.append(self.__create_record())
 
         return records
 
-    def create_record(self):
+    def __create_record(self):
         """ Create a single depot position
 
         Returns
@@ -43,17 +43,17 @@ class DepotPositionFactory(Creatable):
             A single depot position object
         """
 
-        isin, cusip, market = self.create_instrument_details()
+        isin, cusip, market = self.__create_instrument_details()
 
         record = {
-            'as_of_date': self.create_as_of_date(),
-            'value_date': self.create_value_date(),
+            'as_of_date': self.__create_as_of_date(),
+            'value_date': self.__create_value_date(),
             'isin': isin,
             'cusip': cusip,
             'market': market,
-            'depot_id': self.create_depot_id(),
-            'purpose': self.create_purpose(),
-            'quantity': self.create_quantity()
+            'depot_id': self.__create_depot_id(),
+            'purpose': self.__create_purpose(),
+            'quantity': self.__create_quantity()
         }
 
         for key, value in self.create_dummy_field_generator():
@@ -61,10 +61,8 @@ class DepotPositionFactory(Creatable):
 
         return record
 
-    # TODO: check as of and value dates implemented correctly
-
     @staticmethod
-    def create_as_of_date():
+    def __create_as_of_date():
         """ Return the 'as of date', which must be the current date
         Returns
         -------
@@ -74,7 +72,7 @@ class DepotPositionFactory(Creatable):
         return datetime.date.today()
 
     @staticmethod
-    def create_value_date():
+    def __create_value_date():
         """ Return the 'value date', which must be today or in 2 days time
         Returns
         -------
@@ -86,20 +84,20 @@ class DepotPositionFactory(Creatable):
         day_after_tomorrow = today + datetime.timedelta(days=2)
         return random.choice((today, day_after_tomorrow))
 
-    def create_instrument_details(self):
+    def __create_instrument_details(self):
         instrument = self.get_random_instrument()
         isin = instrument['isin']
         cusip = instrument['cusip']
         market = instrument['market']
         return isin, cusip, market
 
-    def get_depot_id(self):
+    def __get_depot_id(self):
         account = self.get_random_account()
         while account['account_type'] != 'Depot':
             account = self.get_random_account()
         return account['account_id']
 
-    def create_purpose(self):
+    def __create_purpose(self):
         """ Create a purpose for a depot position
 
         Returns
@@ -110,5 +108,5 @@ class DepotPositionFactory(Creatable):
         """
         return random.choice(self.DEPOT_POSITION_PURPOSES)
 
-    def create_quantity(self):
+    def __create_quantity(self):
         return self.create_random_integer()
