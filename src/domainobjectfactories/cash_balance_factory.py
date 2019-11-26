@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+import datetime
 
 from domainobjectfactories.creatable import Creatable
 
@@ -9,7 +9,8 @@ class CashBalanceFactory(Creatable):
     amount of balances. Other creation methods included where cash balances
     are the only domain object requiring them. """
 
-    CASH_BALANCE_PURPOSES = ['Cash Balance', 'P&L', 'Fees']
+    CASH_BALANCE_PURPOSES = ['Cash Balance', 'P&L', 'Fees',
+                             'Collateral Posted', 'Collateral Received']
 
     def create(self, record_count, start_id):
         """ Create a set number of cash balances
@@ -30,11 +31,11 @@ class CashBalanceFactory(Creatable):
         records = []
 
         for _ in range(start_id, start_id+record_count):
-            records.append(self.create_record())
+            records.append(self.__create_record())
 
         return records
 
-    def create_record(self):
+    def __create_record(self):
         """ Create a single cash balance
 
         Returns
@@ -43,12 +44,15 @@ class CashBalanceFactory(Creatable):
             A single cash balance object
         """
 
+        account_id, account_owner = self.__create_account_details()
+
         record = {
-            'amount': self.create_random_integer(),
+            'as_of_date': self.__create_as_of_date(),
+            'amount': self.__create_amount(),
             'currency': self.create_currency(),
-            'account_num': self.create_random_integer(length=8),
-            'purpose': self.create_purpose(),
-            'time_stamp': datetime.now(),
+            'account_id': account_id,
+            'account_owner': account_owner,
+            'purpose': self.__create_purpose()
         }
 
         for key, value in self.create_dummy_field_generator():
@@ -56,13 +60,58 @@ class CashBalanceFactory(Creatable):
 
         return record
 
-    def create_purpose(self):
+    @staticmethod
+    def __create_as_of_date():
+        """ Return an 'as of date', being either the current date or the date
+        in 2 days time
+
+        Returns
+        -------
+        Date
+            Date object representing either the current date, or the date in
+            2 days time
+        """
+        today = datetime.date.today()
+        day_after_tomorrow = today + datetime.timedelta(days=2)
+        return random.choice((today, day_after_tomorrow))
+
+    def __create_amount(self):
+        """ Return cash balance amount, being a positive or negative integer
+        with absolute value not greater than 10000
+
+        Returns
+        -------
+        int
+            positive or negative integer with magnitude < 10000
+        """
+        return self.create_random_integer(
+            negative=random.choice(self.TRUE_FALSE)
+        )
+
+    def __create_account_details(self):
+        """ Return valid account id and type from the 'accounts' table in the
+        database - account is valid if type is 'Client' or 'Firm'.
+
+        Returns
+        -------
+        string
+            account id
+
+        string
+            account type
+        """
+        account = self.get_random_account()
+        while account['account_type'] not in ('Client', 'Firm'):
+            account = self.get_random_account()
+        return account['account_id'], account['account_type']
+
+    def __create_purpose(self):
         """ Create a purpose for a cash balance
 
         Returns
         -------
         String
-            One of three possible purposes relevant for cash balances
+            One of the possible purposes relevant for cash balances
         """
 
         return random.choice(self.CASH_BALANCE_PURPOSES)
