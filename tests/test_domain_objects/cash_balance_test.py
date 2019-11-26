@@ -30,7 +30,7 @@ def as_of_date_valid(record):
 
 
 def account_details_valid(record, accounts_table):
-    """" account_id and account_owner must be from the same database record
+    """ account_id and account_owner must be from the same database record
     and represent a valid account (either 'Client' or 'Firm') """
     account_id, account_owner = record['account_id'], record['account_owner']
     assert account_owner in ('Firm', 'Client')

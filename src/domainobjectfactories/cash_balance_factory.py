@@ -31,11 +31,11 @@ class CashBalanceFactory(Creatable):
         records = []
 
         for _ in range(start_id, start_id+record_count):
-            records.append(self.create_record())
+            records.append(self.__create_record())
 
         return records
 
-    def create_record(self):
+    def __create_record(self):
         """ Create a single cash balance
 
         Returns
@@ -44,15 +44,15 @@ class CashBalanceFactory(Creatable):
             A single cash balance object
         """
 
-        account_id, account_owner = self.create_account_details()
+        account_id, account_owner = self.__create_account_details()
 
         record = {
-            'as_of_date': self.create_as_of_date(),
-            'amount': self.create_amount(),
+            'as_of_date': self.__create_as_of_date(),
+            'amount': self.__create_amount(),
             'currency': self.create_currency(),
             'account_id': account_id,
             'account_owner': account_owner,
-            'purpose': self.create_purpose()
+            'purpose': self.__create_purpose()
         }
 
         for key, value in self.create_dummy_field_generator():
@@ -61,7 +61,7 @@ class CashBalanceFactory(Creatable):
         return record
 
     @staticmethod
-    def create_as_of_date():
+    def __create_as_of_date():
         """ Return an 'as of date', being either the current date or the date
         in 2 days time
 
@@ -75,7 +75,7 @@ class CashBalanceFactory(Creatable):
         day_after_tomorrow = today + datetime.timedelta(days=2)
         return random.choice((today, day_after_tomorrow))
 
-    def create_amount(self):
+    def __create_amount(self):
         """ Return cash balance amount, being a positive or negative integer
         with absolute value not greater than 10000
 
@@ -88,7 +88,7 @@ class CashBalanceFactory(Creatable):
             negative=random.choice(self.TRUE_FALSE)
         )
 
-    def create_account_details(self):
+    def __create_account_details(self):
         """ Return valid account id and type from the 'accounts' table in the
         database - account is valid if type is 'Client' or 'Firm'.
 
@@ -105,7 +105,7 @@ class CashBalanceFactory(Creatable):
             account = self.get_random_account()
         return account['account_id'], account['account_type']
 
-    def create_purpose(self):
+    def __create_purpose(self):
         """ Create a purpose for a cash balance
 
         Returns
