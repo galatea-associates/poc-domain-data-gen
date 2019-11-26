@@ -161,6 +161,7 @@ def set_up_depot_position_tests():
 def set_up_front_office_position_tests():
     delete_local_database()
     create_instrument(50)
+    create_account(50)
     records = create_front_office_position(50)
     domain_obj_factory = front_office_position_factory.\
         FrontOfficePositionFactory(None, None)
