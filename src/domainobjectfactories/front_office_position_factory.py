@@ -57,21 +57,50 @@ class FrontOfficePositionFactory(Creatable):
 
     @staticmethod
     def create_as_of_date():
+        """ Return the 'as of date', which must be the current date
+
+        Returns
+        -------
+        Date
+            Date object representing the current date
+        """
         return datetime.date.today()
 
     @staticmethod
     def create_value_date():
+        """ Return the 'value date', which must be today or in 2 days time
+
+        Returns
+        -------
+        Date
+            Date object representing the current date or the date in 2 days
+            time
+        """
         today = datetime.date.today()
         day_after_tomorrow = today + datetime.timedelta(days=2)
         return random.choice((today, day_after_tomorrow))
 
     def create_account_id(self):
+        """ Return a account id from an account persisted in the database
+
+        Returns
+        -------
+        String
+            account id from the local database
+        """
         account = self.get_random_account()
         while account['account_type'] not in ('Client', 'Firm'):
             account = self.get_random_account()
         return account['account_id']
 
     def create_cusip(self):
+        """ Return a cusip from an instrument persisted in the database
+
+        Returns
+        -------
+        String
+            cusip from the local database
+        """
         instrument = self.get_random_instrument()
         return instrument['cusip']
 
