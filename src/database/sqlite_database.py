@@ -78,7 +78,7 @@ class Sqlite_Database:
             self.__connection.row_factory = sqlite3.Row
 
             instrument_def = {"instrument_id": "text",
-                              "ric": "text", #Todo remove this once the
+                              "ric": "text",  #Todo remove this once the
                               # dependency on ric has been
                               # removed from objects depending on instrument
                               "cusip": "text",

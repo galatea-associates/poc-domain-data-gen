@@ -50,20 +50,27 @@ def ticker_valid(record):
     ticker = record['ticker']
     assert ticker in tickers
 
+
 def valoren_valid(record):
     """"Valoren must be a number between 6 and 9 digits long"""
     valoren = record['valoren']
-    assert shared.is_int(valoren) and (shared.is_length(6, valoren) or shared.is_length(7, valoren) or shared.is_length(8, valoren) or shared.is_length(9, valoren))
-    
+    assert shared.is_int(valoren) and (shared.is_length(6, valoren) or
+                                       shared.is_length(7, valoren) or
+                                       shared.is_length(8, valoren) or
+                                       shared.is_length(9, valoren))
+
+
 def quick_valid(record):
     """Quick must be a 4 digit number"""
     quick = record['quick']
     assert shared.is_int(quick) and shared.is_length(4, quick)
 
+
 def sicovam_valid(record):
     """sicovam must be a 6 digit number"""
     sicovam = record['sicovam']
     assert shared.is_int(sicovam) and shared.is_length(6, sicovam)
+
 
 def asset_class_valid(record):
     asset_class = record['asset_class']
@@ -80,6 +87,7 @@ def asset_subclass_valid(record):
         assert asset_subclass in ['Active', 'Passive']
     if asset_class == 'Derivative':
         assert asset_subclass in ['Right', 'Warrant']
+
 
 def country_of_issuance_valid(record):
     """ country_of_issuance must be within the set as provided within
@@ -124,7 +132,7 @@ def is_primary_listing_valid(record):
 
 def figi_valid(record):
     figi = record['figi']
-    assert bool(re.search('[A-Z][A-Z]', figi[:2])) == True
+    assert re.search('[A-Z][A-Z]', figi[:2])
 
     invalid_combinations = ['BS', 'BM', 'GG', 'GB', 'GH', 'KY', 'VG']
     assert figi[:2] not in invalid_combinations

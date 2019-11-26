@@ -11,11 +11,13 @@ class InstrumentFactory(Creatable):
     only domain object requiring these.
     """
 
-
     ASSET_CLASS_TO_SUBCLASS = {'Equity': ['Common', 'Preferred'],
                                'Fund': ['ETF', 'MTF'],
                                'Index': ['Active', 'Passive'],
                                'Derivative': ['Right', 'Warrant']}
+
+    INDUSTRY_CLASSIFICATIONS = \
+        ['MANUFACTURING', 'TELECOMS', 'FINANCIAL SERVICES', 'GROCERIES']
 
     def create(self, record_count, start_id):
         """ Create a set number of instruments
@@ -238,8 +240,7 @@ class InstrumentFactory(Creatable):
         return combination + character_three + ''.join(
             characters_four_to_eleven) + character_twelve
 
-    @staticmethod
-    def __get_industry_classification():
+    def __get_industry_classification(self):
         """Randomly select an industry classification
 
         Returns
@@ -247,6 +248,4 @@ class InstrumentFactory(Creatable):
         String
             A randomly chosen industry classification
         """
-        industry_classifications = \
-            ['MANUFACTURING', 'TELECOMS', 'FINANCIAL SERVICES', 'GROCERIES']
-        return random.choice(industry_classifications)
+        return random.choice(self.INDUSTRY_CLASSIFICATIONS)
