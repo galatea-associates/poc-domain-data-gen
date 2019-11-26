@@ -91,7 +91,7 @@ class DepotPositionFactory(Creatable):
         market = instrument['market']
         return isin, cusip, market
 
-    def __get_depot_id(self):
+    def __create_depot_id(self):
         account = self.get_random_account()
         while account['account_type'] != 'Depot':
             account = self.get_random_account()
