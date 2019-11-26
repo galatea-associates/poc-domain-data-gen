@@ -87,15 +87,42 @@ class BackOfficePositionFactory(Creatable):
         return random.choice((today, day_after_tomorrow))
 
     def __create_ledger(self):
+        """ Return the 'ledger' string, which must be of the values specified'
+        -------
+        String
+           The ledger, one of 'TD' or 'SD'
+        """
         return random.choice(self.LEDGERS)
 
     def __create_instrument_details(self):
+        """ Return the instrument id and isin of an instrument persisted in the
+        local database.
+
+        Returns
+        -------
+        String
+            instrument id of instrument from local database
+        String
+            isin of instrument from local database
+        """
         instrument = self.get_random_instrument()
         instrument_id = instrument['instrument_id']
         isin = instrument['isin']
         return instrument_id, isin
 
     def __create_account_details(self):
+        """ Return the account id and account type of an account persisted in
+        the database where the type is one of 'Firm', 'Client' or
+        'Counterparty'
+
+        Returns
+        -------
+        String
+            account id of account from database
+        String
+            account type of acocunt from database, must be one of 'Firm',
+            'Client' or 'Counterparty'
+        """
         account = self.get_random_account()
         while account['account_type'] not in \
                 ['Client', 'Firm', 'Counterparty']:
@@ -110,7 +137,7 @@ class BackOfficePositionFactory(Creatable):
         Returns
         -------
         int
-            positive or negative integer with magnitude < 10000
+            positive or negative integer with magnitude <= 10000
         """
         return self.create_random_integer(
             negative=random.choice(self.TRUE_FALSE)

@@ -35,10 +35,13 @@ def value_date_valid(record):
 
 
 def ledger_valid(record):
+    """ ledger must be one of 'TD' or 'SD' """
     assert record['ledger'] in ['TD', 'SD']
 
 
 def instrument_details_valid(record, domain_obj):
+    """ instrument id and isin must both match to one instrument record in the
+    local database """
     instrument_id, isin = record['instrument_id'], record['isin']
     instrument_table = domain_obj.retrieve_records('instruments')
     details_in_database = False
@@ -51,7 +54,11 @@ def instrument_details_valid(record, domain_obj):
 
 
 def account_details_valid(record, domain_obj):
+    """ account id and account type must both match to one account record in
+    the local database, and account type must be one of 'Client', 'Firm',
+    'Counterparty' """
     account_id, account_type = record['account_id'], record['account_type']
+    assert account_type in ['Client', 'Firm', 'Counterparty']
     account_table = domain_obj.retrieve_records('accounts')
     details_in_database = False
     for account in account_table:
@@ -63,8 +70,11 @@ def account_details_valid(record, domain_obj):
 
 
 def quantity_valid(record):
+    """ quantity must be a positive or negative integer with absolute value
+    not greater than 10000 """
     assert abs(record['quantity']) <= 10000
 
 
 def purpose_valid(record):
+    """ purpose must be 'Outright'  """
     assert record['purpose'] == 'Outright'
