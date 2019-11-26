@@ -76,6 +76,7 @@ def asset_class_valid(record):
     asset_class = record['asset_class']
     assert asset_class in ['Equity', 'Fund', 'Index', 'Derivative']
 
+
 def asset_subclass_valid(record):
     asset_class = record['asset_class']
     asset_subclass = record['asset_subclass']
