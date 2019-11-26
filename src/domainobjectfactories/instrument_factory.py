@@ -1,3 +1,4 @@
+import itertools
 import random
 from datetime import datetime
 
@@ -9,6 +10,12 @@ class InstrumentFactory(Creatable):
     of positions. Other creation methods included where instruments are the
     only domain object requiring these.
     """
+
+
+    ASSET_CLASS_TO_SUBCLASS = {'Equity': ['Common', 'Preferred'],
+                               'Fund': ['ETF', 'MTF'],
+                               'Index': ['Active', 'Passive'],
+                               'Derivative': ['Right', 'Warrant']}
 
     def create(self, record_count, start_id):
         """ Create a set number of instruments
@@ -31,16 +38,20 @@ class InstrumentFactory(Creatable):
         records = []
 
         for i in range(start_id, start_id + record_count):
-            record = self.create_record(i)
+            record = self.__create_record(i)
             records.append(record)
             self.persist_record(
-                [record['ric'], str(record['cusip']), str(record['isin'])]
+                [str(record['instrument_id']),
+                 record['ric'],
+                 str(record['cusip']),
+                 str(record['isin']),
+                 str(record['market'])]
             )
 
         self.persist_records("instruments")
         return records
 
-    def create_record(self, id):
+    def __create_record(self, id):
         """ Create a single instrument
 
         Parameters
@@ -55,16 +66,28 @@ class InstrumentFactory(Creatable):
             A single back office position object
         """
 
-        asset_class = self.create_asset_class()
-        ticker = self.create_ticker()
+        ticker = self.__create_ticker()
         random_exchanges_row = self.get_random_row('exchanges')
         country_of_issuance = \
             self.__create_country_of_issuance(random_exchanges_row)
         exchange_code = self.__create_exchange_code(random_exchanges_row)
+        ric = self.create_ric(ticker, exchange_code)
         cusip = self.create_random_integer(length=9)
         isin = self.create_isin(country_of_issuance, cusip)
-        ric = self.create_ric(ticker, exchange_code)
         sedol = self.create_random_integer(length=7)
+        valoren = self.create_random_integer(100000,
+                                             999999999)
+        quick = self.create_random_integer(length=4)
+        sicovam = self.create_random_integer(length=6)
+        asset_class = self.__create_asset_class()
+        asset_subclass = self.__create_asset_sub_class(asset_class)
+        primary_market = self.__get_market()
+        market = self.__get_market()
+        is_primary_listing = primary_market == market
+        figi = self.__create_figi()
+        issuer_name = self.create_random_string(10)
+        industry_classification = self.__get_industry_classification()
+
         record = {
             'instrument_id': id,
             'ric': ric,
@@ -72,9 +95,20 @@ class InstrumentFactory(Creatable):
             'sedol': sedol,
             'ticker': ticker,
             'cusip': cusip,
+            'valoren': valoren,
+            'quick': quick,
+            'sicovam': sicovam,
             'asset_class': asset_class,
+            'asset_subclass': asset_subclass,
             'country_of_issuance': country_of_issuance,
-            'time_stamp': datetime.now()
+            'primary_market': primary_market,
+            'market': market,
+            'is_primary_listing': is_primary_listing,
+            'figi': figi,
+            'issuer_name': issuer_name,
+            'industry_classification': industry_classification,
+            'created_timestamp': datetime.now(),
+            'last_updated_time_stamp': datetime.now()
         }
 
         for key, value in self.create_dummy_field_generator():
@@ -82,19 +116,42 @@ class InstrumentFactory(Creatable):
 
         return record
 
-    def create_asset_class(self):
+    def __create_asset_class(self):
         """ Create a predetermined asset class for instruments
 
         Returns
         -------
         String
-            Asset class of an instrument will be 'Stock'
+            Asset class of an instrument will be one of
+            'Stock', 'Equity', 'Index' or 'Derivative'
         """
 
-        return 'Stock'
+        return random.choice(list(self.ASSET_CLASS_TO_SUBCLASS.keys()))
 
-    def __create_country_of_issuance(self, random_exchanges_row):
-        """ Create a random country of issuance
+    def __create_asset_sub_class(self, asset_class):
+        """ Create a predetermined asset sub-class for instruments
+
+        Returns
+        -------
+        String
+            Asset sub-class of an instrument depends on its asset class
+        """
+
+        return random.choice(self.ASSET_CLASS_TO_SUBCLASS[asset_class])
+
+    def __get_market(self):
+        """Select a random country to be market
+
+        Returns
+        -------
+        String
+            Randomly selected country selected from database
+        """
+        return self.get_random_row('exchanges')['exchange_code']
+
+    @staticmethod
+    def __create_country_of_issuance(random_exchanges_row):
+        """ Select a random country of issuance
 
         Returns
         -------
@@ -107,19 +164,20 @@ class InstrumentFactory(Creatable):
             f"{random_exchanges_row.keys()}"
         return random_exchanges_row['country_of_issuance']
 
-    def create_ticker(self):
+    def __create_ticker(self):
         """ Create a random ticker
 
         Returns
         -------
         String
-            Randomly selected ticker from those in the cache
+            Randomly selected ticker from those in the database
         """
 
         return random.choice(self.tickers)
 
-    def __create_exchange_code(self, random_exchanges_row):
-        """ Create a random exchange code
+    @staticmethod
+    def __create_exchange_code(random_exchanges_row):
+        """ Select a random exchange code
 
         Returns
         -------
@@ -132,3 +190,63 @@ class InstrumentFactory(Creatable):
             f"exchange_code not present in row.  Fields are: " \
             f"{random_exchanges_row.keys()}"
         return random_exchanges_row['exchange_code']
+
+    def __create_issuer_name(self):
+        """Create a random 10 character issuer name
+
+        Returns
+        -------
+        String
+            Randomly generate a ten character string to be issuer name
+        """
+        return self.create_random_string(length=10, include_numbers=False)
+
+    @staticmethod
+    def __create_figi():
+        """Create a random valid FIGI
+
+        Returns
+        -------
+        String
+            Randomly generate a FIGI
+        """
+
+        consonants = ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N',
+                      'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'Y', 'Z']
+        consonants_and_numbers = consonants + ['1', '2', '3', '4', '5', '6',
+                                               '7', '8', '9']
+
+        random.shuffle(consonants)
+        combination_generator = map(''.join,
+                                    itertools.permutations(consonants, 2))
+        invalid_combinations = ['BS', 'BM', 'GG', 'GB', 'GH', 'KY', 'VG']
+
+        while True:
+            combination = next(combination_generator)
+            if combination not in invalid_combinations:
+                break
+
+        character_three = 'G'
+
+        characters_four_to_eleven = \
+            random.choices(consonants_and_numbers, k=8)
+
+        # TODO Currently the final digit is being randomly generated,
+        #  whereas in a true FIGI it is based on the preceding characters
+        character_twelve = str(random.randint(0, 9))
+
+        return combination + character_three + ''.join(
+            characters_four_to_eleven) + character_twelve
+
+    @staticmethod
+    def __get_industry_classification():
+        """Randomly select an industry classification
+
+        Returns
+        -------
+        String
+            A randomly chosen industry classification
+        """
+        industry_classifications = \
+            ['MANUFACTURING', 'TELECOMS', 'FINANCIAL SERVICES', 'GROCERIES']
+        return random.choice(industry_classifications)

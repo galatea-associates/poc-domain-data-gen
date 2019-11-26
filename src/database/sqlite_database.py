@@ -77,9 +77,13 @@ class Sqlite_Database:
                                                 timeout=30.0)
             self.__connection.row_factory = sqlite3.Row
 
-            instrument_def = {"ric": "text",
+            instrument_def = {"instrument_id": "text",
+                              "ric": "text", #Todo remove this once the
+                              # dependency on ric has been
+                              # removed from objects depending on instrument
                               "cusip": "text",
-                              "isin": "text"}
+                              "isin": "text",
+                              "market": "text"}
 
             accounts_def = {"account_id": "text",
                             "account_type": "text",
