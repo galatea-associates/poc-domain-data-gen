@@ -85,6 +85,18 @@ class DepotPositionFactory(Creatable):
         return random.choice((today, day_after_tomorrow))
 
     def __create_instrument_details(self):
+        """ Return the isin, cusip and market of an instrument persisted in the
+        local database.
+
+        Returns
+        -------
+        String
+            isin of instrument from local database
+        String
+            cusip of instrument from local database
+        String
+            market of instrument from local database
+        """
         instrument = self.get_random_instrument()
         isin = instrument['isin']
         cusip = instrument['cusip']
@@ -92,6 +104,14 @@ class DepotPositionFactory(Creatable):
         return isin, cusip, market
 
     def __create_depot_id(self):
+        """ Return the account id value of an account persisted in the
+        database that is type 'Depot'
+
+        Returns
+        -------
+        String
+            account id of 'Depot' type account from database
+        """
         account = self.get_random_account()
         while account['account_type'] != 'Depot':
             account = self.get_random_account()

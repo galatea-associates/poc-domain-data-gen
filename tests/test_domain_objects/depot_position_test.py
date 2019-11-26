@@ -31,6 +31,8 @@ def value_date_valid(record):
 
 
 def instrument_details_valid(record, domain_obj):
+    """ isin, cusip and market must all match to one instrument record in the
+    local database """
     isin, cusip, market = record['isin'], record['cusip'], record['market']
     instrument_table = domain_obj.retrieve_records('instruments')
     details_in_database = False
@@ -42,6 +44,8 @@ def instrument_details_valid(record, domain_obj):
 
 
 def depot_id_valid(record, domain_obj):
+    """ depot id must match to the account id of an acocunt from the local
+    database that has account type 'Depot' """
     depot_id = record['depot_id']
     account_table = domain_obj.retrieve_records('accounts')
     details_in_database = False
@@ -54,8 +58,10 @@ def depot_id_valid(record, domain_obj):
 
 
 def purpose_valid(record):
+    """ purpose must be in the values specified """
     assert record['purpose'] in ['Holdings', 'Seg', 'Pending Holdings']
 
 
 def quantity_valid(record):
+    """ quantity must be a positive integer not more than 10000 """
     assert 0 < record['quantity'] <= 10000
