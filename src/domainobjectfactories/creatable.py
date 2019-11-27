@@ -513,7 +513,7 @@ class Creatable(ABC):
         table_name : String
             Name of the database table to select the valid record from
         attribute_to_validate: String
-            Attribute key for which the value will determine if the record is valid
+            Attribute key for which the value will determine if record is valid
         invalid_values: List
             List of 1 or more invalid values for the attribute given by the
             attribute_to_validate parameter. Only records with values for
