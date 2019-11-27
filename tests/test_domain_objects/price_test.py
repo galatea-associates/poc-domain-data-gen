@@ -15,6 +15,7 @@ def test_prices():
         correct_datetime(record['created_timestamp'])
         correct_datetime(record['last_updated_time_stamp'])
 
+
 def correct_datetime(price_datetime):
     """Ensure that the datetime passed in has a date value that matches the
      current date in UTC"""
