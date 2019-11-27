@@ -24,7 +24,6 @@ class PriceFactory(Creatable):
         """
 
         records = []
-        self.instruments = self.retrieve_records('instruments')
 
         for _ in range(start_id, start_id+record_count):
             record = self.create_record()

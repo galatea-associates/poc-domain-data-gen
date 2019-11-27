@@ -120,13 +120,12 @@ class BackOfficePositionFactory(Creatable):
         String
             account id of account from database
         String
-            account type of acocunt from database, must be one of 'Firm',
+            account type of account from database, must be one of 'Firm',
             'Client' or 'Counterparty'
         """
-        account = self.get_random_account()
-        while account['account_type'] not in \
-                ['Client', 'Firm', 'Counterparty']:
-            account = self.get_random_account()
+        account = self.get_random_record_with_valid_attribute(
+            'accounts', 'account_type', ['Depot']
+        )
         account_id = account['account_id']
         account_type = account['account_type']
         return account_id, account_type

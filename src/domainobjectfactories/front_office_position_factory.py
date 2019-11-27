@@ -88,10 +88,11 @@ class FrontOfficePositionFactory(Creatable):
         String
             account id from the local database
         """
-        account = self.get_random_account()
-        while account['account_type'] not in ('Client', 'Firm'):
-            account = self.get_random_account()
-        return account['account_id']
+        account = self.get_random_record_with_valid_attribute(
+            'accounts', 'account_type', ['Client', 'Firm']
+        )
+        account_id = account['account_id']
+        return account_id
 
     def __create_cusip(self):
         """ Return a cusip from an instrument persisted in the database

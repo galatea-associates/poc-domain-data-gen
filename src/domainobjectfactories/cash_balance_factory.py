@@ -100,10 +100,12 @@ class CashBalanceFactory(Creatable):
         string
             account type
         """
-        account = self.get_random_account()
-        while account['account_type'] not in ('Client', 'Firm'):
-            account = self.get_random_account()
-        return account['account_id'], account['account_type']
+        account = self.get_random_record_with_valid_attribute(
+            'accounts', 'account_type', ['Counterparty', 'Depot']
+        )
+        account_id = account['account_id']
+        account_type = account['account_type']
+        return account_id, account_type
 
     def __create_purpose(self):
         """ Create a purpose for a cash balance
