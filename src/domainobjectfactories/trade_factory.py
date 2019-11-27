@@ -3,7 +3,7 @@ from datetime import datetime
 from domainobjectfactories.creatable import Creatable
 
 
-class OrderExecutionFactory(Creatable):
+class TradeFactory(Creatable):
     """ Class to create order executions. Create method will create a
     set amount of executions. """
 
