@@ -43,10 +43,11 @@ class PriceFactory(Creatable):
 
         instrument = self.get_random_instrument()
         record = {
-                'ric': instrument['ric'],
-                'price': self.create_random_decimal(),
-                'currency': self.create_currency(),
-                'time_stamp': datetime.now()
+            'instrument_id': instrument['instrument_id'],
+            'price': self.create_random_decimal(),
+            'currency': self.create_currency(),
+            'created_timestamp': datetime.now(),
+            'last_updated_time_stamp': datetime.now()
             }
 
         for key, value in self.create_dummy_field_generator():
