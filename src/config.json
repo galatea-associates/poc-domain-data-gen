@@ -262,10 +262,10 @@
       }
     },
     {
-      "order_execution" : {
+      "trade" : {
         "max_objects_per_file" : 50,
-        "file_name" : "order_executions",
-        "output_file_type": "XML",
+        "file_name" : "trades",
+        "output_file_type": "CSV",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
@@ -285,8 +285,8 @@
           }
         ],
         "file_type_args" : {
-          "xml_root_element" : "order_executions",
-          "xml_item_name" : "order_execution"
+          "xml_root_element" : "trades",
+          "xml_item_name" : "trade"
         }
       }
     }
