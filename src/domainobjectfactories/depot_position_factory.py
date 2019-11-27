@@ -43,7 +43,7 @@ class DepotPositionFactory(Creatable):
             A single depot position object
         """
 
-        isin, cusip, market = self.__create_instrument_details()
+        isin, cusip, market = self.__get_instrument_details()
 
         record = {
             'as_of_date': self.__create_as_of_date(),
@@ -51,7 +51,7 @@ class DepotPositionFactory(Creatable):
             'isin': isin,
             'cusip': cusip,
             'market': market,
-            'depot_id': self.__create_depot_id(),
+            'depot_id': self.__get_depot_id(),
             'purpose': self.__create_purpose(),
             'quantity': self.__create_quantity()
         }
@@ -84,7 +84,7 @@ class DepotPositionFactory(Creatable):
         day_after_tomorrow = today + datetime.timedelta(days=2)
         return random.choice((today, day_after_tomorrow))
 
-    def __create_instrument_details(self):
+    def __get_instrument_details(self):
         """ Return the isin, cusip and market of an instrument persisted in the
         local database.
 
@@ -103,7 +103,7 @@ class DepotPositionFactory(Creatable):
         market = instrument['market']
         return isin, cusip, market
 
-    def __create_depot_id(self):
+    def __get_depot_id(self):
         """ Return the account id value of an account persisted in the
         database that is type 'Depot'
 
@@ -112,9 +112,9 @@ class DepotPositionFactory(Creatable):
         String
             account id of 'Depot' type account from database
         """
-        account = self.get_random_account()
-        while account['account_type'] != 'Depot':
-            account = self.get_random_account()
+        account = self.get_random_record_with_valid_attribute(
+            'accounts', 'account_type', ['Client', 'Firm', 'Counterparty']
+        )
         return account['account_id']
 
     def __create_purpose(self):

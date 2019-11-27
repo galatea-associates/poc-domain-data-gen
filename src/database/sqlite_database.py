@@ -211,6 +211,25 @@ class Sqlite_Database:
         rows = cur.fetchall()
         return rows
 
+    def execute_select_query(self, query):
+        """ Retrieves all records as specified by the query
+
+        Parameters
+        ----------
+        query : String
+            A SELECT query
+
+        Returns
+        -------
+        SQLite3 Row
+            Iterable object containing the rows returned by the query
+        """
+
+        cur = self.__connection.cursor()
+        cur.execute(query)
+        rows = cur.fetchall()
+        return rows
+
     def retrieve_column_as_list(self, table_name, column_name):
         """ Retrieves one column of records from a given table.
 

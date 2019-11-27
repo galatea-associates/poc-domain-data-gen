@@ -501,6 +501,40 @@ class Creatable(ABC):
 
     # THESE ARE NON-GENERATING, UTILITY METHODS USED WHERE NECESSARY #
 
+    def get_random_record_with_valid_attribute(
+            self, table_name, attribute_to_validate, invalid_values
+    ):
+        """ returns a random record from a specified database table, subject
+        to the constraint that a specified attribute not have a value in a
+        specified list of invalid values
+
+        Parameters
+        ----------
+        table_name : String
+            Name of the database table to select the valid record from
+        attribute_to_validate: String
+            Attribute key for which the value will determine if the record is valid
+        invalid_values: List
+            List of 1 or more invalid values for the attribute given by the
+            attribute_to_validate parameter. Only records with values for
+            that attribute not in this list will be selected in the database
+            query.
+        """
+        # turn the invalid_values list into a string with format:
+        # "('value1', 'value2', etc..)"
+        invalid_values = \
+            ', '.join([f"\'{value}\'" for value in invalid_values])
+
+        # query: select a random valid row
+        query = f"SELECT * FROM {table_name} WHERE " + \
+            f"{attribute_to_validate} NOT IN ({invalid_values})" + \
+            "ORDER BY RANDOM() LIMIT 1;"
+
+        if self.__database is None:
+            self.establish_db_connection()
+
+        return self.__database.execute_select_query(query)[0]
+
     def get_random_instrument(self):
         """ Returns a random instrument from those created prior
 
