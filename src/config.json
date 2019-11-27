@@ -149,7 +149,7 @@
       "front_office_position" : {
         "max_objects_per_file" : 50,
         "file_name" : "front_office_positions",
-        "output_file_type": "XML",
+        "output_file_type": "CSV",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
@@ -178,7 +178,7 @@
       "depot_position" : {
         "max_objects_per_file" : 50,
         "file_name" : "depot_positions",
-        "output_file_type": "XML",
+        "output_file_type": "CSV",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
