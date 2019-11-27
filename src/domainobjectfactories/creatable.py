@@ -519,21 +519,19 @@ class Creatable(ABC):
             attribute_to_validate parameter. Only records with values for
             that attribute not in this list will be selected in the database
             query.
-        """
-        # turn the invalid_values list into a string with format:
-        # "('value1', 'value2', etc..)"
-        invalid_values = \
-            ', '.join([f"\'{value}\'" for value in invalid_values])
 
-        # query: select a random valid row
-        query = f"SELECT * FROM {table_name} WHERE " + \
-            f"{attribute_to_validate} NOT IN ({invalid_values})" + \
-            "ORDER BY RANDOM() LIMIT 1;"
+        Returns
+        -------
+        SQLite3 Row
+            The single row returned by the query
+        """
 
         if self.__database is None:
             self.establish_db_connection()
 
-        return self.__database.execute_select_query(query)[0]
+        return self.__database.retrieve_row_with_valid_attribute(
+            table_name, attribute_to_validate, invalid_values
+        )
 
     def get_random_instrument(self):
         """ Returns a random instrument from those created prior
