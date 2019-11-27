@@ -173,7 +173,7 @@ def set_up_instrument_tests():
     return create_instrument(50)
 
 
-def set_up_traden_tests():
+def set_up_trade_tests():
     delete_local_database()
     create_instrument(50)
     return create_trade(50)

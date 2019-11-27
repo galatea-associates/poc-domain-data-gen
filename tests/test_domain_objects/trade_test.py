@@ -5,7 +5,7 @@ from utils import helper_methods as helper
 
 
 def test_trades():
-    records = helper.set_up_trades()
+    records = helper.set_up_trade_tests()
     shared.unique_ids(records, 'order')
     for record in records:
         shared.attribute_quantity_valid('trade', record, 10)
