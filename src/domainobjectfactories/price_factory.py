@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from domainobjectfactories.creatable import Creatable
 
@@ -46,8 +46,8 @@ class PriceFactory(Creatable):
             'instrument_id': instrument['instrument_id'],
             'price': self.create_random_decimal(),
             'currency': self.create_currency(),
-            'created_timestamp': datetime.now(),
-            'last_updated_time_stamp': datetime.now()
+            'created_timestamp': datetime.now(timezone.utc),
+            'last_updated_time_stamp': datetime.now(timezone.utc)
             }
 
         for key, value in self.create_dummy_field_generator():
