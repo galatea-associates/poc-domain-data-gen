@@ -1,5 +1,5 @@
 import random
-import datetime
+from datetime import datetime, timezone
 
 from domainobjectfactories.creatable import Creatable
 
@@ -91,9 +91,9 @@ class TradeFactory(Creatable):
     @staticmethod
     def __create_trade_lifecycle_dates():
         # TODO: fix correct dates
-        booking_datetime = datetime.date.today()
-        trade_datetime = datetime.date.today()
-        value_datetime = datetime.date.today()
+        booking_datetime = datetime.now(timezone.utc)
+        trade_datetime = datetime.now(timezone.utc)
+        value_datetime = datetime.now(timezone.utc)
         return booking_datetime, trade_datetime, value_datetime
 
     def __create_order_id(self):
@@ -129,4 +129,4 @@ class TradeFactory(Creatable):
 
     @staticmethod
     def __created_timestamp():
-        return datetime.date.today()
+        return datetime.now(timezone.utc)
