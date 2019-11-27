@@ -153,6 +153,7 @@ def set_up_counterparty_tests():
 def set_up_depot_position_tests():
     delete_local_database()
     create_instrument(50)
+    create_account(50)
     records = create_depot_position(50)
     domain_obj_factory = depot_position_factory.DepotPositionFactory(None,
                                                                      None)
