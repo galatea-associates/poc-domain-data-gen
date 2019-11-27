@@ -29,7 +29,7 @@
         "module_name": "front_office_position_factory",
         "class_name": "FrontOfficePositionFactory"
       },
-      "order_execution": {
+      "trade": {
         "module_name": "trade_factory",
         "class_name": "TradeFactory"
       },
