@@ -50,7 +50,7 @@ class TradeFactory(Creatable):
 
         booking_datetime, trade_datetime, value_datetime = \
             self.__create_trade_lifecycle_dates()
-        isin, market, unit_price = self.__create_instrument_details()
+        isin, market = self.__create_instrument_details()
         quantity = self.__create_quantity()
 
         record = {
@@ -63,7 +63,7 @@ class TradeFactory(Creatable):
             'account_id': self.__create_account_id,
             'counterparty_id': self.__create_counterparty_id(),
             'trader_id': self.__create_trader_id(),
-            'price': self.__create_price(unit_price, quantity),
+            'price': self.__create_price(quantity),
             'currency': self.create_currency(),
             'isin': isin,
             'market': market,
@@ -80,14 +80,10 @@ class TradeFactory(Creatable):
         return record
 
     def __create_instrument_details(self):
-        # TODO: add get_random_price and get_instrument_from_id to Creatable
-        price = self.get_random_price()
-        instrument_id = price['instrument_id']
-        unit_price = price['price']
-        instrument = self.get_instrument_from_id(instrument_id)
+        instrument = self.get_random_instrument()
         isin = instrument['isin']
         market = instrument['market']
-        return isin, market, unit_price
+        return isin, market
 
     def __create_contract_id(self):
         return self.create_random_string(10)
@@ -118,8 +114,8 @@ class TradeFactory(Creatable):
     def __create_trader_id(self):
         return self.create_random_string(10)
 
-    @staticmethod
-    def __create_price(unit_price, quantity):
+    def __create_price(self, quantity):
+        unit_price = self.create_random_decimal()
         return unit_price * quantity
 
     def __create_trade_leg(self):
