@@ -31,7 +31,7 @@ class AccountFactory(Creatable):
         records = []
 
         for i in range(start_id, start_id + record_count):
-            record = self.create_record(i)
+            record = self.__create_record(i)
             records.append(record)
             self.persist_record(
                 [
@@ -44,7 +44,7 @@ class AccountFactory(Creatable):
         self.persist_records('accounts')
         return records
 
-    def create_record(self, id):
+    def __create_record(self, id):
         """ Create a single account
 
         Parameters
@@ -58,19 +58,19 @@ class AccountFactory(Creatable):
             A single account record
         """
 
-        opening_date = self.create_opening_date()
+        opening_date = self.__create_opening_date()
 
         record = {
             'account_id': id,
-            'account_type': self.create_account_type(),
-            'account_purpose': self.create_account_purpose(),
-            'account_description': self.create_account_description(),
-            'account_status': self.create_account_status(),
-            'iban': self.create_iban(),
-            'account_set_id': self.create_account_set_id(),
-            'legal_entity_id': self.create_legal_entity_id(),
+            'account_type': self.__create_account_type(),
+            'account_purpose': self.__create_account_purpose(),
+            'account_description': self.__create_account_description(),
+            'account_status': self.__create_account_status(),
+            'iban': self.__create_iban(),
+            'account_set_id': self.__create_account_set_id(),
+            'legal_entity_id': self.__create_legal_entity_id(),
             'opening_date': opening_date,
-            'closing_date': self.create_closing_date(opening_date)
+            'closing_date': self.__create_closing_date(opening_date)
         }
 
         for key, value in self.create_dummy_field_generator():
@@ -78,7 +78,7 @@ class AccountFactory(Creatable):
 
         return record
 
-    def create_account_type(self):
+    def __create_account_type(self):
         """ Return an account type for from a collection of valid strings
 
         Returns
@@ -88,7 +88,7 @@ class AccountFactory(Creatable):
         """
         return random.choice(self.ACCOUNT_TYPES)
 
-    def create_account_purpose(self):
+    def __create_account_purpose(self):
         """ Return an account purpose for from a collection of valid strings
 
         Returns
@@ -98,7 +98,7 @@ class AccountFactory(Creatable):
         """
         return random.choice(self.ACCOUNT_PURPOSES)
 
-    def create_account_description(self):
+    def __create_account_description(self):
         """ Return an account purpose dummy string
 
         Returns
@@ -108,7 +108,7 @@ class AccountFactory(Creatable):
         """
         return self.create_random_string(10)
 
-    def create_account_status(self):
+    def __create_account_status(self):
         """ Return an account status for from a collection of valid strings
 
         Returns
@@ -118,7 +118,7 @@ class AccountFactory(Creatable):
         """
         return random.choice(self.ACCOUNT_STATUSES)
 
-    def create_iban(self):
+    def __create_iban(self):
         """
         Returns an IBAN representative of the format from either the UK (GB),
         Switzerland (CH), France (FR), Germany (DE), or Saudi Arabia (SA).
@@ -145,7 +145,7 @@ class AccountFactory(Creatable):
             bban = str(self.create_random_integer(length=20))
         return country + check_digits + bban
 
-    def create_account_set_id(self):
+    def __create_account_set_id(self):
         """ Return an account set id dummy string
 
         Returns
@@ -155,7 +155,7 @@ class AccountFactory(Creatable):
         """
         return self.create_random_string(10)
 
-    def create_legal_entity_id(self):
+    def __create_legal_entity_id(self):
         """ Return a legal entity id dummy string
 
         Returns
@@ -165,7 +165,7 @@ class AccountFactory(Creatable):
         """
         return self.create_random_string(10)
 
-    def create_opening_date(self):
+    def __create_opening_date(self):
         """ Return a randomly generated date as a string in format YYYYMMDD
 
         Returns
@@ -175,7 +175,7 @@ class AccountFactory(Creatable):
         """
         return self.create_random_date().strftime('%Y%m%d')
 
-    def create_closing_date(self, opening_date):
+    def __create_closing_date(self, opening_date):
         """ Return a randomly generated date as a string in format YYYYMMDD
 
         Parameters
