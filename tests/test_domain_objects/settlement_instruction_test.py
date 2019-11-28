@@ -44,7 +44,8 @@ def function_valid(record):
 
 
 def linked_message_valid(record):
-    assert (re.match('^[A-Z0-9]{10}[0-9]+$', record['message_reference']) or record['message_reference'] == 'EMPTY')
+    assert (re.match('^[A-Z0-9]{10}[0-9]+$', record['message_reference']) or
+            record['message_reference'] == 'EMPTY')
 
 
 def linkage_type_valid(record):
@@ -64,7 +65,8 @@ def party_iban_valid(record, domain_obj):
     details_in_database = False
 
     for account in account_table:
-        if account['iban'] == record['party_iban'] and account['account_type'] in ['Client', 'Firm']:
+        if account['iban'] == record['party_iban'] and \
+                account['account_type'] in ['Client', 'Firm']:
             details_in_database = True
             break
 
@@ -84,7 +86,8 @@ def counterparty_iban_valid(record, domain_obj):
     details_in_database = False
 
     for account in account_table:
-        if account['iban'] == record['counterparty_iban'] and account['account_type'] == 'Counterparty':
+        if account['iban'] == record['counterparty_iban'] and \
+                account['account_type'] == 'Counterparty':
             details_in_database = True
             break
 
@@ -94,11 +97,13 @@ def counterparty_iban_valid(record, domain_obj):
 def correct_settlement_date(record):
     """Ensure that the datetime passed in has a date value that matches the
      current date in UTC"""
-    assert record['settlement_date'] == datetime.now(timezone.utc).date() + timedelta(days=2)
+    assert record['settlement_date'] == \
+           datetime.now(timezone.utc).date() + timedelta(days=2)
 
 
 def valid_instruction_type(record):
-    assert record['instruction_type'] in ['DVP', 'RVP', 'DELIVERY FREE', 'RECEIVABLE FREE']
+    assert record['instruction_type'] in \
+           ['DVP', 'RVP', 'DELIVERY FREE', 'RECEIVABLE FREE']
 
 
 def valid_status(record):

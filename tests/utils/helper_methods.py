@@ -96,7 +96,8 @@ def create_price(amount=1):
 
 
 def create_settlement_instruction(amount=1):
-    obj = settlement_instruction_factory.SettlementInstructionFactory(None, None)
+    obj = \
+        settlement_instruction_factory.SettlementInstructionFactory(None, None)
     return obj.create(amount, 0)
 
 

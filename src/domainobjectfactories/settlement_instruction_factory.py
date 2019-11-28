@@ -59,7 +59,8 @@ class SettlementInstructionFactory(Creatable):
             message_reference_beginning, id)
         function = self.__get_function()
         message_creation_timestamp = datetime.now(timezone.utc)
-        linked_message = self.__get_linked_message(self.message_reference_list)
+        linked_message = \
+            self.__get_linked_message(self.message_reference_list)
         # message_reference is added to message_reference_list after
         # generating linked_message, otherwise the linked_message
         # could be this settlement instruction's own message reference
@@ -130,12 +131,14 @@ class SettlementInstructionFactory(Creatable):
 
     @staticmethod
     def __get_linked_message(message_reference_list):
-        """ 50/50 chance of returning EMPTY or the message reference of a previously generated settlement instruction
+        """ 50/50 chance of returning EMPTY or the message reference of
+        a previously generated settlement instruction
 
         Returns
         -------
         String
-            EMPTY or the message reference of a previously generated settlement instruction
+            EMPTY or the message reference of
+            a previously generated settlement instruction
         """
         if not message_reference_list:
             return "EMPTY"
@@ -159,7 +162,8 @@ class SettlementInstructionFactory(Creatable):
         Returns
         -------
         String
-            Select exchange code from a randomly selected row of the exchanges table
+            Select exchange code from a randomly selected row
+            of the exchanges table
         """
         return self.get_random_row('exchanges')['exchange_code']
 
@@ -202,12 +206,14 @@ class SettlementInstructionFactory(Creatable):
         #  the best description of this field is any account where the type
         #  IS Client or Firm
 
-        """ Get iban value from randomly chosen account with account type Firm or Client
+        """ Get iban value from randomly chosen account
+        with account type Firm or Client
 
         Returns
         -------
         String
-            iban value from randomly chosen account with account type Firm or Client
+            iban value from randomly chosen account
+            with account type Firm or Client
         """
         account = self.get_random_record_with_valid_attribute(
             'accounts', 'account_type', ['Counterparty', 'Depot']
@@ -242,12 +248,14 @@ class SettlementInstructionFactory(Creatable):
         #  the best description of this field is any account where the type
         #  IS Counterparty
 
-        """ Get iban value from randomly chosen account with account type Counterparty
+        """ Get iban value from randomly chosen account with
+        account type Counterparty
 
         Returns
         -------
         String
-            iban value from randomly chosen account with account type Counterparty
+            iban value from randomly chosen account with
+            account type Counterparty
         """
         account = self.get_random_record_with_valid_attribute(
             'accounts', 'account_type', ['Client', 'Firm', 'Depot']
