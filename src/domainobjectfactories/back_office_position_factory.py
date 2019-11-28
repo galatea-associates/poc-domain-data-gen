@@ -124,7 +124,7 @@ class BackOfficePositionFactory(Creatable):
             'Client' or 'Counterparty'
         """
         account = self.get_random_record_with_valid_attribute(
-            'accounts', 'account_type', ['Depot']
+            'accounts', 'account_type', ['Firm', 'Client', 'Counterparty']
         )
         account_id = account['account_id']
         account_type = account['account_type']

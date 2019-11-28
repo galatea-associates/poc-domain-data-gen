@@ -113,7 +113,7 @@ class DepotPositionFactory(Creatable):
             account id of 'Depot' type account from database
         """
         account = self.get_random_record_with_valid_attribute(
-            'accounts', 'account_type', ['Client', 'Firm', 'Counterparty']
+            'accounts', 'account_type', ['Depot']
         )
         return account['account_id']
 

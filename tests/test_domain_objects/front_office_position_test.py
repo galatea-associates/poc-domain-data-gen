@@ -33,9 +33,17 @@ def value_date_valid(record):
 
 
 def account_id_valid(record, domain_obj):
-    """ account id must exist in the database 'accounts' table """
+    """ account id must exist in the database 'accounts' table and must match
+    an account of type 'Client' or 'Firm'"""
     account_id = record['account_id']
-    assert account_id in domain_obj.retrieve_column('accounts', 'account_id')
+    account_table = domain_obj.retrieve_records('accounts')
+    details_in_database = False
+    for account in account_table:
+        if account['account_type'] in ['Client', 'Firm'] \
+                and account['account_id'] == account_id:
+            details_in_database = True
+            break
+    assert details_in_database
 
 
 def cusip_valid(record, domain_obj):
