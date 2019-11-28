@@ -23,8 +23,8 @@ def test_instruments():
         asset_class_valid(record)
         asset_subclass_valid(record)
         country_of_issuance_valid(record)
-        primary_market_valid(record)
-        market_valid(record)
+        shared.value_is_valid_market(record['primary_market'])
+        shared.value_is_valid_market(record['market'])
         is_primary_listing_valid(record)
         figi_valid(record)
         issuer_name_valid(record)
@@ -98,30 +98,6 @@ def country_of_issuance_valid(record):
 
     country_of_issuance = record['country_of_issuance']
     assert country_of_issuance in countries_of_issuance
-
-
-def primary_market_valid(record):
-    """ primary_market must be within the set as provided within
-        exchanges database table """
-
-    database = helper.create_db()
-    exchange_codes = \
-        database.retrieve_column_as_list("exchanges", "exchange_code")
-
-    primary_market = record['primary_market']
-    assert primary_market in exchange_codes
-
-
-def market_valid(record):
-    """ market must be within the set as provided within
-        exchanges database table """
-
-    database = helper.create_db()
-    exchange_codes = \
-        database.retrieve_column_as_list("exchanges", "exchange_code")
-
-    market = record['market']
-    assert market in exchange_codes
 
 
 def is_primary_listing_valid(record):

@@ -197,7 +197,11 @@ def set_up_settlement_instruction_tests():
     delete_local_database()
     create_instrument(50)
     create_account(50)
-    return create_settlement_instruction(50)
+    records = create_settlement_instruction(50)
+    domain_obj_factory = settlement_instruction_factory.\
+        SettlementInstructionFactory(None, None)
+
+    return records, domain_obj_factory
 
 
 def set_up_stock_loan_position_tests():
