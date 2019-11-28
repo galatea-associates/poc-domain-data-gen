@@ -76,5 +76,5 @@ def quantity_valid(record):
 
 
 def purpose_valid(record):
-    """ purpose must be 'Outright'  """
-    assert record['purpose'] == 'Outright'
+    """ purpose must be 'Outright' or 'Obligation' """
+    assert record['purpose'] in ["Outright", "Obligation"]

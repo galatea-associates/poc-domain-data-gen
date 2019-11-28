@@ -197,11 +197,11 @@ def trade_position_effective_date_valid(record):
 
 
 def price_valid(record):
-    """ Random float between 10 and 10,000 to 2 d.p """
+    """ Random float between 1 and 10 to 2 d.p """
     price = record['price']
     string_price = str(price)
     decimal = string_price.split(".")[1]
-    assert 10 < price < 10000 and len(decimal) <= 2
+    assert 1 <= price <= 10 and len(decimal) <= 2
 
 
 #  General Methods

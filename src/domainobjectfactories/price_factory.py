@@ -43,7 +43,7 @@ class PriceFactory(Creatable):
         instrument = self.get_random_instrument()
         record = {
             'instrument_id': instrument['instrument_id'],
-            'price': self.create_random_decimal(),
+            'price': self.create_random_decimal(min=1, max=10, dp=2),
             'currency': self.create_currency(),
             'created_timestamp': datetime.now(timezone.utc),
             'last_updated_time_stamp': datetime.now(timezone.utc)
