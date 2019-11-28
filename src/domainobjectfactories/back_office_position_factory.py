@@ -1,5 +1,5 @@
 import random
-import datetime
+from datetime import datetime, timezone, timedelta
 
 from domainobjectfactories.creatable import Creatable
 
@@ -43,8 +43,8 @@ class BackOfficePositionFactory(Creatable):
             A single back office position object
         """
 
-        instrument_id, isin = self.__create_instrument_details()
-        account_id, account_type = self.__create_account_details()
+        instrument_id, isin = self.__get_instrument_details()
+        account_id, account_type = self.__get_account_details()
 
         record = {
             'as_of_date': self.__create_as_of_date(),
@@ -71,7 +71,7 @@ class BackOfficePositionFactory(Creatable):
         Date
             Date object representing the current date
         """
-        return datetime.date.today()
+        return datetime.now(timezone.utc).date()
 
     @staticmethod
     def __create_value_date():
@@ -82,8 +82,8 @@ class BackOfficePositionFactory(Creatable):
             Date object representing the current date or the date in 2 days
             time
         """
-        today = datetime.date.today()
-        day_after_tomorrow = today + datetime.timedelta(days=2)
+        today = datetime.now(timezone.utc).date()
+        day_after_tomorrow = today + timedelta(days=2)
         return random.choice((today, day_after_tomorrow))
 
     def __create_ledger(self):
@@ -94,7 +94,7 @@ class BackOfficePositionFactory(Creatable):
         """
         return random.choice(self.LEDGERS)
 
-    def __create_instrument_details(self):
+    def __get_instrument_details(self):
         """ Return the instrument id and isin of an instrument persisted in the
         local database.
 
@@ -110,7 +110,7 @@ class BackOfficePositionFactory(Creatable):
         isin = instrument['isin']
         return instrument_id, isin
 
-    def __create_account_details(self):
+    def __get_account_details(self):
         """ Return the account id and account type of an account persisted in
         the database where the type is one of 'Firm', 'Client' or
         'Counterparty'
