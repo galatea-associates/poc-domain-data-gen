@@ -29,22 +29,27 @@ def test_trades():
 
 
 def contract_id_valid(record):
+    """ contract id must be a 10 character string """
     contract_id = record['contract_id']
     assert shared.is_length(10, contract_id)
     assert isinstance(contract_id, str)
 
 
 def booking_datetime_valid(record):
+    """ booking datetime must be a time within the current date in UTC """
     booking_datetime = record['booking_datetime']
     assert booking_datetime.date() == datetime.now(timezone.utc).date()
 
 
 def trade_datetime_valid(record):
+    """ trade datetime must be a time within the current date in UTC """
     trade_datetime = record['trade_datetime']
     assert trade_datetime.date() == datetime.now(timezone.utc).date()
 
 
 def value_datetime_valid(record):
+    """ booking datetime must be exactly 1 minute past midgnight on the
+    morning of the day after the current date in UTC """
     value_datetime = record['value_datetime']
     assert value_datetime.date() == datetime.now(timezone.utc).date() + \
         timedelta(days=2)
@@ -55,10 +60,13 @@ def value_datetime_valid(record):
 
 
 def order_id_valid(record):
+    """ order id must be a positive integer between 1 and 10000 inclusive"""
     assert 1 <= record['order_id'] <= 10000
 
 
 def account_id_valid(record):
+    """ account id must match to a row in the accounts database table with
+    account type of 'Client' or 'Firm'"""
     account_id = record['account_id']
     account_table = shared.domain_obj.retrieve_records('accounts')
     details_in_database = False
@@ -71,6 +79,8 @@ def account_id_valid(record):
 
 
 def counterparty_id_valid(record):
+    """ counterparty id must match an account in the accounts database table
+    of account type 'Counterparty'"""
     counterparty_id = record['counterparty_id']
     account_table = shared.domain_obj.retrieve_records('accounts')
     details_in_database = False
@@ -83,12 +93,14 @@ def counterparty_id_valid(record):
 
 
 def trader_id_valid(record):
+    """ trader id must be a 10 character string """
     trader_id = record['trader_id']
     assert shared.is_length(10, trader_id)
     assert isinstance(trader_id, str)
 
 
 def price_valid(record):
+    """ price must be a float with 1 or 2 decimal places """
     price = record['price']
     assert isinstance(price, float)
     price_string = str(price)
@@ -97,6 +109,8 @@ def price_valid(record):
 
 
 def instrument_details_valid(record):
+    """ isin and market must bot come from the same row in the instruments
+    database table """
     isin = record['isin']
     market = record['market']
     instrument_table = shared.domain_obj.retrieve_records('instruments')
@@ -110,14 +124,17 @@ def instrument_details_valid(record):
 
 
 def trade_leg_valid(record):
+    """ trade leg must be one of the values specified"""
     assert record['trade_leg'] in ["EMPTY", "1", "2"]
 
 
 def is_otc_valid(record):
+    """ otc valid must be True or False"""
     assert record['is_otc'] in [True, False]
 
 
 def direction_valid(record):
+    """ direction must be one of the values specified """
     assert record['direction'] in ['BUY', 'SELL']
 
 
@@ -128,5 +145,6 @@ def quantity_valid(record):
 
 
 def created_timestamp_valid(record):
+    """ created timestamp must be a time within the current date in UTC """
     created_timestamp = record['created_timestamp']
     assert created_timestamp.date() == datetime.now(timezone.utc).date()
