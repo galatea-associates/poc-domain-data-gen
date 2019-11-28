@@ -74,7 +74,7 @@ def sicovam_valid(record):
 
 def asset_class_valid(record):
     asset_class = record['asset_class']
-    assert asset_class in ['Equity', 'Fund', 'Index', 'Derivative']
+    assert asset_class in ['Equity', 'Fund', 'Derivative']
 
 
 def asset_subclass_valid(record):
@@ -83,9 +83,7 @@ def asset_subclass_valid(record):
     if asset_class == 'Equity':
         assert asset_subclass in ['Common', 'Preferred']
     if asset_class == 'Fund':
-        assert asset_subclass in ['ETF', 'MTF']
-    if asset_class == 'Index':
-        assert asset_subclass in ['Active', 'Passive']
+        assert asset_subclass in ['ETF', 'Mutual Fund']
     if asset_class == 'Derivative':
         assert asset_subclass in ['Right', 'Warrant']
 
