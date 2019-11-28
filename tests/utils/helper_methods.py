@@ -7,9 +7,10 @@ sys.path.insert(0, 'src/')
 from database.sqlite_database import Sqlite_Database
 from domainobjectfactories import back_office_position_factory, \
     cash_balance_factory, cashflow_factory, counterparty_factory, \
-    depot_position_factory, front_office_position_factory, instrument_factory,\
-    order_execution_factory, price_factory, stock_loan_position_factory, \
-    swap_contract_factory, swap_position_factory, account_factory
+    depot_position_factory, front_office_position_factory, \
+    instrument_factory, order_execution_factory, price_factory, \
+    stock_loan_position_factory, swap_contract_factory, \
+    swap_position_factory, account_factory, settlement_instruction_factory
 
 
 # Helper Methods
@@ -91,6 +92,11 @@ def create_order_execution(amount=1):
 
 def create_price(amount=1):
     obj = price_factory.PriceFactory(None, None)
+    return obj.create(amount, 0)
+
+
+def create_settlement_instruction(amount=1):
+    obj = settlement_instruction_factory.SettlementInstructionFactory(None, None)
     return obj.create(amount, 0)
 
 
@@ -185,6 +191,13 @@ def set_up_price_tests():
     delete_local_database()
     create_instrument(50)
     return create_price(50)
+
+
+def set_up_settlement_instruction_tests():
+    delete_local_database()
+    create_instrument(50)
+    create_account(50)
+    return create_settlement_instruction(50)
 
 
 def set_up_stock_loan_position_tests():
