@@ -98,7 +98,7 @@ def correct_settlement_date(record):
     """Ensure that the datetime passed in has a date value that matches the
      current date in UTC"""
     assert record['settlement_date'] == \
-           datetime.now(timezone.utc).date() + timedelta(days=2)
+       datetime.now(timezone.utc).date() + timedelta(days=2)
 
 
 def valid_instruction_type(record):
