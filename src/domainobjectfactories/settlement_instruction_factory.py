@@ -68,16 +68,16 @@ class SettlementInstructionFactory(Creatable):
         place_of_trade = self.__get_place_of_trade()
         trade_datetime = datetime.now(timezone.utc)
         deal_price = self.__get_deal_price()
-        currency = self.__get_currency()
+        currency = self.create_currency(),
         isin = self.__get_isin(instrument)
         place_of_listing = self.__get_place_of_listing(instrument)
-        quantity = self.__get_quantity()
-        party_bic = self.__get_party_bic()
+        quantity = self.create_random_integer()
+        party_bic = self.create_random_string(10)
         party_iban = self.__get_party_iban()
         account_type = self.__get_account_type()
-        safekeeper_bic = self.__get_safekeeper_bic()
+        safekeeper_bic = self.create_random_string(10)
         settlement_type = self.__get_settlement_type()
-        counterparty_bic = self.__get_counterparty_bic()
+        counterparty_bic = self.create_random_string(10)
         counterparty_iban = self.__get_counterparty_iban()
         settlement_date = self.__get_settlement_date()
         instruction_type = self.__get_instruction_type()
@@ -119,9 +119,24 @@ class SettlementInstructionFactory(Creatable):
         return message_reference_beginning + str(id)
 
     def __get_function(self):
+        """Randomly select a function
+
+        Returns
+        -------
+        String
+            A randomly chosen function
+        """
         return random.choice(self.FUNCTIONS)
 
-    def __get_linked_message(self, message_reference_list):
+    @staticmethod
+    def __get_linked_message(message_reference_list):
+        """ 50/50 chance of returning EMPTY or the message reference of a previously generated settlement instruction
+
+        Returns
+        -------
+        String
+            EMPTY or the message reference of a previously generated settlement instruction
+        """
         if not message_reference_list:
             return "EMPTY"
         else:
@@ -129,28 +144,56 @@ class SettlementInstructionFactory(Creatable):
                 ["EMPTY", random.choice(message_reference_list)])
 
     def __get_linkage_type(self):
+        """ Randomly select a linkage type
+
+        Returns
+        -------
+        String
+            A randomly chosen linkage type
+        """
         return random.choice(self.LINKAGE_TYPE)
 
     def __get_place_of_trade(self):
+        """ Select a random exchange code
+
+        Returns
+        -------
+        String
+            Select exchange code from a randomly selected row of the exchanges table
+        """
         return self.get_random_row('exchanges')['exchange_code']
 
     def __get_deal_price(self):
+        """ Create random decimal between 1 and 100,000
+
+        Returns
+        -------
+        float
+            Randomly created value between 1 and 100,000
+        """
         return self.create_random_decimal(min=1, max=100000)
 
-    def __get_currency(self):
-        return self.create_currency()
+    @staticmethod
+    def __get_isin(instrument):
+        """ Get isin from instrument passed in
 
-    def __get_isin(self, instrument):
+        Returns
+        -------
+        String
+            isin from instrument passed in
+        """
         return instrument['isin']
 
-    def __get_place_of_listing(self, instrument):
+    @staticmethod
+    def __get_place_of_listing(instrument):
+        """ Get market from instrument passed in
+
+        Returns
+        -------
+        String
+            market from instrument passed in
+        """
         return instrument['market']
-
-    def __get_quantity(self):
-        return self.create_random_integer()
-
-    def __get_party_bic(self):
-        return self.create_random_string(10)
 
     def __get_party_iban(self):
         # TODO We're using the existing
@@ -158,6 +201,14 @@ class SettlementInstructionFactory(Creatable):
         #  replace this with one that is opt-in rather than opt-out because
         #  the best description of this field is any account where the type
         #  IS Client or Firm
+
+        """ Get iban value from randomly chosen account with account type Firm or Client
+
+        Returns
+        -------
+        String
+            iban value from randomly chosen account with account type Firm or Client
+        """
         account = self.get_random_record_with_valid_attribute(
             'accounts', 'account_type', ['Counterparty', 'Depot']
         )
@@ -165,16 +216,24 @@ class SettlementInstructionFactory(Creatable):
         return account['iban']
 
     def __get_account_type(self):
+        """Randomly select an account type
+
+        Returns
+        -------
+        String
+            A randomly chosen account type
+        """
         return random.choice(self.ACCOUNT_TYPE)
 
-    def __get_safekeeper_bic(self):
-        return self.create_random_string(10)
-
-    def __get_settlement_type(self):
+    @staticmethod
+    def __get_settlement_type():
+        """ Get settlement type
+        Returns
+        -------
+        String
+            Hardcoded to always return string 'Beneficial Ownership'
+        """
         return 'Beneficial Ownership'
-
-    def __get_counterparty_bic(self):
-        return self.create_random_string(10)
 
     def __get_counterparty_iban(self):
         # TODO We're using the existing
@@ -182,17 +241,47 @@ class SettlementInstructionFactory(Creatable):
         #  replace this with one that is opt-in rather than opt-out because
         #  the best description of this field is any account where the type
         #  IS Counterparty
+
+        """ Get iban value from randomly chosen account with account type Counterparty
+
+        Returns
+        -------
+        String
+            iban value from randomly chosen account with account type Counterparty
+        """
         account = self.get_random_record_with_valid_attribute(
             'accounts', 'account_type', ['Client', 'Firm', 'Depot']
         )
 
         return account['iban']
 
-    def __get_settlement_date(self):
+    @staticmethod
+    def __get_settlement_date():
+        """ Gets the date in two days' time
+
+        Returns
+        -------
+        Date
+            Date in two days' time
+        """
         return datetime.now(timezone.utc).date() + timedelta(days=2)
 
     def __get_instruction_type(self):
+        """Randomly select an instruction type
+
+        Returns
+        -------
+        String
+            A randomly chosen instruction type
+        """
         return random.choice(self.INSTRUCTION_TYPE)
 
     def __get_status(self):
+        """Randomly select a status
+
+        Returns
+        -------
+        String
+            A randomly chosen status
+        """
         return random.choice(self.STATUS)
