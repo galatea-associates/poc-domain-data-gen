@@ -12,8 +12,7 @@ class InstrumentFactory(Creatable):
     """
 
     ASSET_CLASS_TO_SUBCLASS = {'Equity': ['Common', 'Preferred'],
-                               'Fund': ['ETF', 'MTF'],
-                               'Index': ['Active', 'Passive'],
+                               'Fund': ['ETF', 'Mutual Fund'],
                                'Derivative': ['Right', 'Warrant']}
 
     INDUSTRY_CLASSIFICATIONS = \
