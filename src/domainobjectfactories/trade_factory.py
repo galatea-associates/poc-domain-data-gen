@@ -90,8 +90,7 @@ class TradeFactory(Creatable):
 
     @staticmethod
     def __create_trade_lifecycle_dates():
-        booking_datetime = datetime.now(timezone.utc)
-        trade_datetime = datetime.now(timezone.utc)
+        booking_datetime = trade_datetime = datetime.now(timezone.utc)
         day_after_tomorrow = datetime.now(timezone.utc) + timedelta(days=2)
         value_datetime = day_after_tomorrow.replace(
             hour=0, minute=1, second=0, microsecond=0
