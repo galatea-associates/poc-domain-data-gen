@@ -8,7 +8,7 @@ from database.sqlite_database import Sqlite_Database
 from domainobjectfactories import back_office_position_factory, \
     cash_balance_factory, cashflow_factory, counterparty_factory, \
     depot_position_factory, front_office_position_factory, \
-    instrument_factory, order_execution_factory, price_factory, \
+    instrument_factory, trade_factory, price_factory, \
     stock_loan_position_factory, swap_contract_factory, \
     swap_position_factory, account_factory, settlement_instruction_factory
 
@@ -85,8 +85,8 @@ def create_instrument(amount=1):
     return obj.create(amount, 0)
 
 
-def create_order_execution(amount=1):
-    obj = order_execution_factory.OrderExecutionFactory(None, None)
+def create_trade(amount=1):
+    obj = trade_factory.TradeFactory(None, None)
     return obj.create(amount, 0)
 
 
@@ -182,10 +182,11 @@ def set_up_instrument_tests():
     return create_instrument(50)
 
 
-def set_up_order_execution_tests():
+def set_up_trade_tests():
     delete_local_database()
     create_instrument(50)
-    return create_order_execution(50)
+    create_account(50)
+    return create_trade(50)
 
 
 def set_up_price_tests():
