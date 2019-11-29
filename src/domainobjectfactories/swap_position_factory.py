@@ -1,6 +1,6 @@
 import random
 import string
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pandas as pd
 
@@ -41,7 +41,9 @@ class SwapPositionFactory(Creatable):
         self.all_instruments = self.retrieve_records('instruments')
 
         start_date = datetime.strptime(self.get_start_date(), '%Y%m%d')
-        date_range = pd.date_range(start_date, datetime.today(), freq='D')
+        date_range = pd.date_range(
+            start_date, datetime.now(timezone.utc).date(), freq='D'
+        )
         swap_contract_batch =\
             self.retrieve_batch_records('swap_contracts',
                                         record_count, start_id)

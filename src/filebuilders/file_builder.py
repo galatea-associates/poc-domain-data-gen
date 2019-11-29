@@ -1,6 +1,6 @@
 import abc
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 class FileBuilder(abc.ABC):
     """ A base class for all file builders. Contains utility functions for
@@ -112,7 +112,7 @@ class FileBuilder(abc.ABC):
             Name of file on local machine
         """
         root_folder_id = self.__google_drive_connector.root_folder_id
-        todays_date = datetime.today().strftime('%Y-%m-%d')
+        todays_date = datetime.now(timezone.utc).date().strftime('%Y-%m-%d')
 
         # Check if a folder for today's date exists, create if it doesn't
         folder_id = self.__google_drive_connector\

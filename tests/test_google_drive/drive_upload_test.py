@@ -6,7 +6,7 @@ from src.filebuilders.jsonl_builder import JSONLBuilder
 from tests.resources.drive_files.config_stub import csv_config, xml_config, \
     json_config, jsonl_config
 from tests.resources.drive_files.data_stub import data
-from datetime import datetime
+from datetime import datetime, timezone
 import pytest
 
 
@@ -32,7 +32,7 @@ def gd_conn():
 
 def get_folder_id(gd_conn):
     """ get the ID for the folder that test files have been uploaded into"""
-    today = datetime.today().strftime('%Y-%m-%d')
+    today = datetime.now(timezone.utc).date().strftime('%Y-%m-%d')
     return gd_conn.get_folder_id(today, 'root')
 
 
