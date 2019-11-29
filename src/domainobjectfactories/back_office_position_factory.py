@@ -10,6 +10,7 @@ class BackOfficePositionFactory(Creatable):
     office positions are the only domain object requiring them. """
 
     LEDGERS = ['TD', 'SD']
+    PURPOSES = ['Outright', 'Obligation']
 
     def create(self, record_count, start_id):
         """ Create a set number of back office positions
@@ -142,14 +143,13 @@ class BackOfficePositionFactory(Creatable):
             negative=random.choice(self.TRUE_FALSE)
         )
 
-    @staticmethod
-    def __create_purpose():
+    def __create_purpose(self):
         """ Create a purpose for a back office position
 
         Returns
         -------
         String
-            Back office position purposes are always outright
+            Back office position purposes are 'outright' or 'obligation''
         """
 
-        return "Outright"
+        return random.choice(self.PURPOSES)

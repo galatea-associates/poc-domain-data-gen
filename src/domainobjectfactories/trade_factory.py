@@ -188,7 +188,7 @@ class TradeFactory(Creatable):
         Float
             Total trade price to 2 decimal places
         """
-        unit_price = self.create_random_decimal()
+        unit_price = self.create_random_decimal(min=1, max=10)
         return round(unit_price * quantity, 2)
 
     def __create_trade_leg(self):
