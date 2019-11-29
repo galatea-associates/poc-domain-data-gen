@@ -108,7 +108,7 @@ class SwapPositionFactory(Creatable):
             'long_short': long_short,
             'td_quantity': quantity,
             'purpose': purpose,
-            'time_stamp': datetime.now()
+            'time_stamp': datetime.now(timezone.utc)
         }
 
         for key, value in self.create_dummy_field_generator():

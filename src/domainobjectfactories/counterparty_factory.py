@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from domainobjectfactories.creatable import Creatable
 
@@ -49,7 +49,7 @@ class CounterpartyFactory(Creatable):
         record = {
             'counterparty_id': current_id,
             'book': self.create_random_string(5, include_numbers=False),
-            'time_stamp': datetime.now()
+            'time_stamp': datetime.now(timezone.utc)
         }
 
         for key, value in self.create_dummy_field_generator():

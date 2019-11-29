@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 
 from domainobjectfactories.creatable import Creatable
 
@@ -73,7 +73,7 @@ class StockLoanPositionFactory(Creatable):
                 'account': self.create_account(),
                 'is_callable': self.create_random_boolean(),
                 'return_type': self.create_return_type(),
-                'time_stamp': datetime.now()
+                'time_stamp': datetime.now(timezone.utc)
             }
 
         for key, value in self.create_dummy_field_generator():

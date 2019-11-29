@@ -1,6 +1,6 @@
 import random
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from domainobjectfactories.creatable import Creatable
 
@@ -78,7 +78,7 @@ class SwapContractFactory(Creatable):
                                     status=status),
             'swap_type': self.create_swap_type(),
             'reference_rate': self.create_reference_rate(),
-            'time_stamp': datetime.now()
+            'time_stamp': datetime.now(timezone.utc)
         }
 
         for key, value in self.create_dummy_field_generator():
