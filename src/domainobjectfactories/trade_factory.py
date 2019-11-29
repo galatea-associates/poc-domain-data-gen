@@ -180,7 +180,9 @@ class TradeFactory(Creatable):
 
     def __create_price(self, quantity):
         """ Return total value of the trade, found by multiplying instrument
-        quantity by a rnadomly generated unit price
+        quantity by a randomly generated unit price. Unit price is generated
+        to represent the trade being done at a different price to the market
+        price that might be given by a Price domain object
         Returns
         -------
         Float

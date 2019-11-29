@@ -18,7 +18,7 @@ def test_trades():
         account_id_valid(record)
         counterparty_id_valid(record)
         trader_id_valid(record)
-        price_valid(record)
+        shared.price_valid(record, min=10, max=100000000)
         shared.currency_valid(record)
         instrument_details_valid(record)
         trade_leg_valid(record)
@@ -99,17 +99,8 @@ def trader_id_valid(record):
     assert isinstance(trader_id, str)
 
 
-def price_valid(record):
-    """ price must be a float with 1 or 2 decimal places """
-    price = record['price']
-    assert isinstance(price, float)
-    price_string = str(price)
-    decimal_point_position = price_string.find('.')
-    assert len(price_string) - decimal_point_position
-
-
 def instrument_details_valid(record):
-    """ isin and market must bot come from the same row in the instruments
+    """ isin and market must both come from the same row in the instruments
     database table """
     isin = record['isin']
     market = record['market']
