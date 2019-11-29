@@ -144,7 +144,7 @@ def swap_position_size(custom_args, target_num_records):
     start_date = custom_args['start_date']
     start_date = datetime.strptime(start_date, '%Y%m%d')
     end_date = datetime.now(timezone.utc).date()
-    num_dates = (end_date-start_date).days + 1
+    num_dates = (end_date - start_date).days + 1
     ins_per_swap = custom_args['ins_per_swap']
     ins_min = int(ins_per_swap['min'])
     ins_max = int(ins_per_swap['max'])
