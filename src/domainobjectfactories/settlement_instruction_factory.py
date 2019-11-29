@@ -255,7 +255,7 @@ class SettlementInstructionFactory(Creatable):
             Date in two days' time
         """
         day_after_tomorrow = datetime.now(timezone.utc).date() + \
-                             timedelta(days=2)
+            timedelta(days=2)
         settlement_date = day_after_tomorrow.strftime("%Y%m%d")
 
         return settlement_date
