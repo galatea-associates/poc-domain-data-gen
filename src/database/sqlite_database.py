@@ -105,6 +105,8 @@ class Sqlite_Database:
 
             tickers_def = {"symbol": "text"}
 
+            settlement_instruction_def = {"message_reference": "text"}
+
             tables_dict = {
                 "instruments": instrument_def,
                 "accounts": accounts_def,
@@ -112,7 +114,8 @@ class Sqlite_Database:
                 "swap_contracts": swap_contract_def,
                 "swap_positions": swap_position_def,
                 "exchanges": exchanges_def,
-                "tickers": tickers_def
+                "tickers": tickers_def,
+                "settlement_instructions": settlement_instruction_def
             }
 
             for table_name, table_def in tables_dict.items():

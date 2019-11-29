@@ -26,13 +26,13 @@ class CounterpartyFactory(Creatable):
         records = []
 
         for i in range(start_id, record_count+start_id):
-            records.append(self.create_record(i))
+            records.append(self.__create_record(i))
             self.persist_record([str(i)])
 
         self.persist_records("counterparties")
         return records
 
-    def create_record(self, current_id):
+    def __create_record(self, current_id):
         """ Create a single counterparty record
 
         Parameters
