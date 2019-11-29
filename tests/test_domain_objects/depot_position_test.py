@@ -45,7 +45,7 @@ def instrument_details_valid(record, domain_obj):
 
 
 def depot_id_valid(record, domain_obj):
-    """ depot id must match to the account id of an acocunt from the local
+    """ depot id must match to the account id of an account from the local
     database that has account type 'Depot' """
     depot_id = record['depot_id']
     account_table = domain_obj.retrieve_records('accounts')

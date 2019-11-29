@@ -81,7 +81,8 @@ class FrontOfficePositionFactory(Creatable):
         return random.choice((today, day_after_tomorrow))
 
     def __create_account_id(self):
-        """ Return a account id from an account persisted in the database
+        """ Return a account id from an account persisted in the database where
+        account type is 'Client' or 'Firm'
 
         Returns
         -------

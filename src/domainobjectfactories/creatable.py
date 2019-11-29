@@ -502,11 +502,11 @@ class Creatable(ABC):
     # THESE ARE NON-GENERATING, UTILITY METHODS USED WHERE NECESSARY #
 
     def get_random_record_with_valid_attribute(
-            self, table_name, attribute_to_validate, invalid_values
+            self, table_name, attribute_to_validate, valid_values
     ):
         """ returns a random record from a specified database table, subject
-        to the constraint that a specified attribute not have a value in a
-        specified list of invalid values
+        to the constraint that a specified attribute must have a value in a
+        specified list of valid values
 
         Parameters
         ----------
@@ -514,10 +514,10 @@ class Creatable(ABC):
             Name of the database table to select the valid record from
         attribute_to_validate: String
             Attribute for which the value will determine if record is valid
-        invalid_values: List
-            List of 1 or more invalid values for the attribute given by the
+        valid_values: List
+            List of 1 or more valid values for the attribute given by the
             attribute_to_validate parameter. Only records with values for
-            that attribute not in this list will be selected in the database
+            that attribute in this list will be selected in the database
             query.
 
         Returns
@@ -530,7 +530,7 @@ class Creatable(ABC):
             self.establish_db_connection()
 
         return self.__database.retrieve_row_with_valid_attribute(
-            table_name, attribute_to_validate, invalid_values
+            table_name, attribute_to_validate, valid_values
         )
 
     def get_random_instrument(self):

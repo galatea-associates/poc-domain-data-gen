@@ -101,7 +101,7 @@ class CashBalanceFactory(Creatable):
             account type
         """
         account = self.get_random_record_with_valid_attribute(
-            'accounts', 'account_type', ['Counterparty', 'Depot']
+            'accounts', 'account_type', ['Client', 'Firm']
         )
         account_id = account['account_id']
         account_type = account['account_type']

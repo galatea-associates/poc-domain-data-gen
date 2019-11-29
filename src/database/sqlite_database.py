@@ -215,12 +215,12 @@ class Sqlite_Database:
         return rows
 
     def retrieve_row_with_valid_attribute(
-            self, table_name, attribute_to_validate, invalid_values
+            self, table_name, attribute_to_validate, valid_values
     ):
         """ Retrieves the row selected by the query. The query selects a
         random row from a specified database table, subject to the constraint
-        that a specified attribute not have a value in a specified list of
-        invalid values
+        that a specified attribute must have a value in a specified list of
+        valid values
 
         Parameters
         ----------
@@ -229,9 +229,9 @@ class Sqlite_Database:
         attribute_to_validate: String
             Attribute for which the value will determine if record is valid
         invalid_values: List
-            List of 1 or more invalid values for the attribute given by the
+            List of 1 or more valid values for the attribute given by the
             attribute_to_validate parameter. Only records with values for
-            that attribute not in this list will be selected in the database
+            that attribute in this list will be selected in the database
             query.
 
         Returns
@@ -240,14 +240,14 @@ class Sqlite_Database:
             The single row returned by the query
         """
 
-        # turn the invalid_values list into a string with format:
+        # turn the valid_values list into a string with format:
         # "('value1', 'value2', etc..)"
-        invalid_values = \
-            ', '.join([f"\'{value}\'" for value in invalid_values])
+        valid_values = \
+            ', '.join([f"\'{value}\'" for value in valid_values])
 
         # query: select a random valid row
         query = f"SELECT * FROM {table_name} WHERE " + \
-            f"{attribute_to_validate} NOT IN ({invalid_values})" + \
+            f"{attribute_to_validate} IN ({valid_values})" + \
             "ORDER BY RANDOM() LIMIT 1;"
 
         cur = self.__connection.cursor()
