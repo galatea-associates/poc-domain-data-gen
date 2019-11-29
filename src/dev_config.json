@@ -29,9 +29,9 @@
         "module_name": "front_office_position_factory",
         "class_name": "FrontOfficePositionFactory"
       },
-      "order_execution": {
-        "module_name": "order_execution_factory",
-        "class_name": "OrderExecutionFactory"
+      "trade": {
+        "module_name": "trade_factory",
+        "class_name": "TradeFactory"
       },
       "price": {
         "module_name": "price_factory",
