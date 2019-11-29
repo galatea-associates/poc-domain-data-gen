@@ -52,6 +52,10 @@
       "cashflow": {
         "module_name": "cashflow_factory",
         "class_name": "CashflowFactory"
+      },
+      "settlement_instruction": {
+        "module_name": "settlement_instruction_factory",
+        "class_name": "SettlementInstructionFactory"
       }
     }
   ],

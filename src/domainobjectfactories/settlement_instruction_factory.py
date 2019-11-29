@@ -254,7 +254,11 @@ class SettlementInstructionFactory(Creatable):
         Date
             Date in two days' time
         """
-        return datetime.now(timezone.utc).date() + timedelta(days=2)
+        day_after_tomorrow = datetime.now(timezone.utc).date() + \
+                             timedelta(days=2)
+        settlement_date = day_after_tomorrow.strftime("%Y%m%d")
+
+        return settlement_date
 
     def __get_instruction_type(self):
         """Randomly select an instruction type
