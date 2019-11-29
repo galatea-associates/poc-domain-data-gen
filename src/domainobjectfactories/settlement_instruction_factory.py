@@ -29,19 +29,13 @@ class SettlementInstructionFactory(Creatable):
         """
 
         message_reference_beginning = self.create_random_string(10)
-        self.message_reference_list = self.retrieve_column(
-            "settlement_instructions", "message_reference")
 
         records = []
 
         for i in range(start_id, record_count + start_id):
             record = self.__create_record(i, message_reference_beginning)
             records.append(record)
-            self.persist_record(
-                [record['message_reference']]
-            )
 
-        self.persist_records("settlement_instructions")
         return records
 
     def __create_record(self, id, message_reference_beginning):
@@ -69,7 +63,7 @@ class SettlementInstructionFactory(Creatable):
         place_of_trade = self.__get_place_of_trade()
         trade_datetime = datetime.now(timezone.utc)
         deal_price = self.__get_deal_price()
-        currency = self.create_currency(),
+        currency = self.create_currency()
         isin = self.__get_isin(instrument)
         place_of_listing = self.__get_place_of_listing(instrument)
         quantity = self.create_random_integer()
