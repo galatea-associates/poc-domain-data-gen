@@ -1,5 +1,5 @@
 import sys
-import datetime
+from datetime import datetime, timezone, timedelta
 sys.path.insert(0, 'tests/')
 from utils import shared_tests as shared
 from utils import helper_methods as helper
@@ -21,14 +21,14 @@ def test_front_office_position():
 
 def as_of_date_valid(record):
     """ as of date must be the current date """
-    assert record['as_of_date'] == datetime.date.today()
+    assert record['as_of_date'] == datetime.now(timezone.utc).date()
 
 
 def value_date_valid(record):
     """ value date must be either the current date or 2 days later """
     value_date = record['value_date']
-    today = datetime.date.today()
-    day_after_tomorrow = today + datetime.timedelta(days=2)
+    today = datetime.now(timezone.utc).date()
+    day_after_tomorrow = today + timedelta(days=2)
     assert value_date in (today, day_after_tomorrow)
 
 

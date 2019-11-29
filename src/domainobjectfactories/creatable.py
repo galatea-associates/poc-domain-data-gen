@@ -1,7 +1,7 @@
 import random
 import string
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 
 import multi_processing.batch_size_calc as batch_size_calc
 from database.sqlite_database import Sqlite_Database
@@ -444,7 +444,7 @@ class Creatable(ABC):
             Todays date
         """
 
-        return datetime.today()
+        return datetime.now(timezone.utc).date()
 
     def create_effective_date(self, n_days_to_add=3,
                                 knowledge_date=None, position_type=None):

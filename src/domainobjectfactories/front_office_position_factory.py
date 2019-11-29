@@ -1,5 +1,5 @@
 import random
-import datetime
+from datetime import datetime, timezone, timedelta
 
 from domainobjectfactories.creatable import Creatable
 
@@ -64,7 +64,7 @@ class FrontOfficePositionFactory(Creatable):
         Date
             Date object representing the current date
         """
-        return datetime.date.today()
+        return datetime.now(timezone.utc).date()
 
     @staticmethod
     def __create_value_date():
@@ -76,8 +76,8 @@ class FrontOfficePositionFactory(Creatable):
             Date object representing the current date or the date in 2 days
             time
         """
-        today = datetime.date.today()
-        day_after_tomorrow = today + datetime.timedelta(days=2)
+        today = datetime.now(timezone.utc).date()
+        day_after_tomorrow = today + timedelta(days=2)
         return random.choice((today, day_after_tomorrow))
 
     def __create_account_id(self):

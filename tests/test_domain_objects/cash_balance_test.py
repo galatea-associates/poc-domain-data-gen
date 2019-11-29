@@ -1,5 +1,5 @@
 import sys
-import datetime
+from datetime import datetime, timezone, timedelta
 sys.path.insert(0, 'tests/')
 from utils import shared_tests as shared
 from utils import helper_methods as helper
@@ -24,8 +24,8 @@ def as_of_date_valid(record):
     """ as of date must be represent either the current date or the date
     in 2 days time """
     as_of_date = record['as_of_date']
-    today = datetime.date.today()
-    day_after_tomorrow = today + datetime.timedelta(days=2)
+    today = datetime.now(timezone.utc).date()
+    day_after_tomorrow = today + timedelta(days=2)
     assert as_of_date in (today, day_after_tomorrow)
 
 

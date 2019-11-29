@@ -176,8 +176,8 @@ def position_type_valid(record):
 
 def knowledge_date_valid(record):
     """ Ensure the knowledge date generated is todays date.
-    Hours/Minutes/Seconds/Milliseconds have been ommitted. """
-    today = datetime.today().strftime("%Y-%m-%d")
+    Hours/Minutes/Seconds/Milliseconds have been omitted. """
+    today = datetime.now(timezone.utc).date().strftime("%Y-%m-%d")
     gen_date = record['knowledge_date'].strftime("%Y-%m-%d")
     assert gen_date == today
 
