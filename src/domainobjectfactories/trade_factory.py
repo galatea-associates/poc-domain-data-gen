@@ -151,7 +151,7 @@ class TradeFactory(Creatable):
             account id of 'Client' or 'Firm' type account from database
         """
         account = self.get_random_record_with_valid_attribute(
-            'accounts', 'account_type', ['Counterparty', 'Depot']
+            'accounts', 'account_type', ['Client', 'Firm']
         )
         return account['account_id']
 
@@ -165,7 +165,7 @@ class TradeFactory(Creatable):
             account id of 'Counterparty' type account from database
         """
         account = self.get_random_record_with_valid_attribute(
-            'accounts', 'account_type', ['Client', 'Firm', 'Depot']
+            'accounts', 'account_type', ['Counterparty']
         )
         return account['account_id']
 

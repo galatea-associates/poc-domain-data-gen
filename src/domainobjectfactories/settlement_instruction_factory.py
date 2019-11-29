@@ -194,12 +194,6 @@ class SettlementInstructionFactory(Creatable):
         return instrument['market']
 
     def __get_party_iban(self):
-        # TODO We're using the existing
-        #  get_random_record_with_valid_attribute method but we should
-        #  replace this with one that is opt-in rather than opt-out because
-        #  the best description of this field is any account where the type
-        #  IS Client or Firm
-
         """ Get iban value from randomly chosen account
         with account type Firm or Client
 
@@ -210,7 +204,7 @@ class SettlementInstructionFactory(Creatable):
             with account type Firm or Client
         """
         account = self.get_random_record_with_valid_attribute(
-            'accounts', 'account_type', ['Counterparty', 'Depot']
+            'accounts', 'account_type', ['Firm', 'Client']
         )
 
         return account['iban']
@@ -236,12 +230,6 @@ class SettlementInstructionFactory(Creatable):
         return 'Beneficial Ownership'
 
     def __get_counterparty_iban(self):
-        # TODO We're using the existing
-        #  get_random_record_with_valid_attribute method but we should
-        #  replace this with one that is opt-in rather than opt-out because
-        #  the best description of this field is any account where the type
-        #  IS Counterparty
-
         """ Get iban value from randomly chosen account with
         account type Counterparty
 
@@ -252,7 +240,7 @@ class SettlementInstructionFactory(Creatable):
             account type Counterparty
         """
         account = self.get_random_record_with_valid_attribute(
-            'accounts', 'account_type', ['Client', 'Firm', 'Depot']
+            'accounts', 'account_type', ['Counterparty']
         )
 
         return account['iban']
