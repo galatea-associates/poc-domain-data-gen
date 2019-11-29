@@ -26,12 +26,12 @@ class PriceFactory(Creatable):
         records = []
 
         for _ in range(start_id, start_id+record_count):
-            record = self.create_record()
+            record = self.__create_record()
             records.append(record)
 
         return records
 
-    def create_record(self):
+    def __create_record(self):
         """ Create a single price
 
         Returns

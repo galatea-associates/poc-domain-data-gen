@@ -1,5 +1,5 @@
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import re
 
 sys.path.insert(0, 'src/')
@@ -196,12 +196,12 @@ def trade_position_effective_date_valid(record):
     assert effective_date == knowledge_date + timedelta(days=2)
 
 
-def price_valid(record):
-    """ Random float between 1 and 10 to 2 d.p """
-    price = record['price']
+def price_valid(record, field_name='price', min=10, max=10000):
+    """ Random float between 10 and 10,000 to 2 d.p """
+    price = record[field_name]
     string_price = str(price)
     decimal = string_price.split(".")[1]
-    assert 1 <= price <= 10 and len(decimal) <= 2
+    assert min < price < max and len(decimal) <= 2
 
 
 #  General Methods
@@ -218,6 +218,23 @@ def actual_contains_expected(expected, actual):
             valid = False
             print("obj " + obj + " is not in the list")
     assert valid
+
+
+def correct_datetime(record_datetime):
+    """Ensure that the datetime passed in has a date value that matches the
+     current date in UTC"""
+    assert record_datetime.date() == datetime.now(timezone.utc).date()
+
+
+def value_is_valid_market(value):
+    """ checks that the value provided is listed in the exchange_code column
+    of exchanges database table"""
+
+    database = helper.create_db()
+    exchange_codes = \
+        database.retrieve_column_as_list("exchanges", "exchange_code")
+
+    assert value in exchange_codes
 
 
 def is_int(obj):
