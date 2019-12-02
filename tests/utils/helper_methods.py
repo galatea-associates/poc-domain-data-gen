@@ -6,9 +6,11 @@ import ujson
 sys.path.insert(0, 'src/')
 from database.sqlite_database import Sqlite_Database
 from domainobjectfactories import back_office_position_factory, \
-    cash_balance_factory, depot_position_factory, front_office_position_factory, \
+    cash_balance_factory, depot_position_factory, \
+    front_office_position_factory, \
     instrument_factory, trade_factory, price_factory, \
-    account_factory, settlement_instruction_factory
+    account_factory, settlement_instruction_factory, \
+    stock_loan_position_factory
 
 
 # Helper Methods
@@ -87,6 +89,11 @@ def create_settlement_instruction(amount=1):
     return obj.create(amount, 0)
 
 
+def create_stock_loan_position(amount=1):
+    obj = stock_loan_position_factory.StockLoanPositionFactory(None, None)
+    return obj.create(amount, 0)
+
+
 def create_account(amount=1):
     obj = account_factory.AccountFactory(None, None)
     return obj.create(amount, 0)
@@ -160,6 +167,16 @@ def set_up_settlement_instruction_tests():
     return records, domain_obj_factory
 
 
+def set_up_stock_loan_position_tests():
+    delete_local_database()
+    create_instrument(50)
+    records = create_stock_loan_position(50)
+    domain_obj_factory = stock_loan_position_factory.StockLoanPositionFactory(
+        None,
+        None)
+    return records, domain_obj_factory
+
+
 def set_up_account_tests():
     delete_local_database()
     return create_account(50)
@@ -175,10 +192,6 @@ def set_up_account_tests():
 
 # def create_counterparty(amount=1):
 #     obj = counterparty_factory.CounterpartyFactory(None, None)
-#     return obj.create(amount, 0)
-
-# def create_stock_loan_position(amount=1):
-#     obj = stock_loan_position_factory.StockLoanPositionFactory(None, None)
 #     return obj.create(amount, 0)
 
 
@@ -206,15 +219,6 @@ def set_up_account_tests():
 
 # def set_up_counterparty_tests():
 #     return create_counterparty(50)
-
-# def set_up_stock_loan_position_tests():
-#     delete_local_database()
-#     create_instrument(50)
-#     records = create_stock_loan_position(50)
-#     domain_obj_factory = stock_loan_position_factory.StockLoanPositionFactory(
-#         None,
-#         None)
-#     return records, domain_obj_factory
 
 
 # def set_up_swap_contract_tests():
