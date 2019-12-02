@@ -1,4 +1,5 @@
 import sys
+
 sys.path.insert(0, 'tests/')
 from utils import shared_tests as shared
 from utils import helper_methods as helper

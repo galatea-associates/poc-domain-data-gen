@@ -6,11 +6,11 @@ import ujson
 sys.path.insert(0, 'src/')
 from database.sqlite_database import Sqlite_Database
 from domainobjectfactories import back_office_position_factory, \
-    cash_balance_factory, cashflow_factory, counterparty_factory, \
-    depot_position_factory, front_office_position_factory, \
+    cash_balance_factory, depot_position_factory, \
+    front_office_position_factory, \
     instrument_factory, trade_factory, price_factory, \
-    stock_loan_position_factory, swap_contract_factory, \
-    swap_position_factory, account_factory, settlement_instruction_factory
+    account_factory, settlement_instruction_factory, \
+    stock_loan_position_factory
 
 
 # Helper Methods
@@ -58,18 +58,6 @@ def create_cash_balance(amount=1):
     return obj.create(amount, 0)
 
 
-def create_cashflow(amount=1):
-    config = get_configuration()
-    cashflow_config = config['domain_objects'][11]
-    obj = cashflow_factory.CashflowFactory(cashflow_config)
-    return obj.create(amount, 0)
-
-
-def create_counterparty(amount=1):
-    obj = counterparty_factory.CounterpartyFactory(None, None)
-    return obj.create(amount, 0)
-
-
 def create_depot_position(amount=1):
     obj = depot_position_factory.DepotPositionFactory(None, None)
     return obj.create(amount, 0)
@@ -106,20 +94,6 @@ def create_stock_loan_position(amount=1):
     return obj.create(amount, 0)
 
 
-def create_swap_contract(amount=1):
-    config = get_configuration()
-    swap_contract_config = config['domain_objects'][9]
-    obj = swap_contract_factory.SwapContractFactory(swap_contract_config, None)
-    return obj.create(amount, 0)
-
-
-def create_swap_position(amount=1):
-    config = get_configuration()
-    swap_position_config = config['domain_objects'][10]
-    obj = swap_position_factory.SwapPositionFactory(swap_position_config, None)
-    return obj.create(amount, 0)
-
-
 def create_account(amount=1):
     obj = account_factory.AccountFactory(None, None)
     return obj.create(amount, 0)
@@ -142,19 +116,6 @@ def set_up_cash_balance_tests():
     domain_obj_factory = cash_balance_factory.CashBalanceFactory(None, None)
     records = create_cash_balance(50)
     return records, domain_obj_factory
-
-
-def set_up_cashflow_tests():
-    delete_local_database()
-    create_instrument(50)
-    create_counterparty(20)
-    create_swap_contract(20)
-    create_swap_position(40)
-    return create_cashflow(20)
-
-
-def set_up_counterparty_tests():
-    return create_counterparty(50)
 
 
 def set_up_depot_position_tests():
@@ -216,23 +177,66 @@ def set_up_stock_loan_position_tests():
     return records, domain_obj_factory
 
 
-def set_up_swap_contract_tests():
-    delete_local_database()
-    create_counterparty(20)
-    records = create_swap_contract(20)
-    domain_obj_factory = swap_contract_factory.SwapContractFactory(None, None)
-    return records, domain_obj_factory
-
-
-def set_up_swap_position_tests():
-    create_instrument(50)
-    create_counterparty(20)
-    create_swap_contract(20)
-    records = create_swap_position(50)
-    domain_obj_factory = swap_position_factory.SwapPositionFactory(None, None)
-    return records, domain_obj_factory
-
-
 def set_up_account_tests():
     delete_local_database()
     return create_account(50)
+
+
+# Methods related to Tampa PoC
+# def create_cashflow(amount=1):
+#     config = get_configuration()
+#     cashflow_config = config['domain_objects'][11]
+#     obj = cashflow_factory.CashflowFactory(cashflow_config)
+#     return obj.create(amount, 0)
+
+
+# def create_counterparty(amount=1):
+#     obj = counterparty_factory.CounterpartyFactory(None, None)
+#     return obj.create(amount, 0)
+
+
+# def create_swap_contract(amount=1):
+#     config = get_configuration()
+#     swap_contract_config = config['domain_objects'][9]
+#     obj =
+#     swap_contract_factory.SwapContractFactory(swap_contract_config, None)
+#     return obj.create(amount, 0)
+
+
+# def create_swap_position(amount=1):
+#     config = get_configuration()
+#     swap_position_config = config['domain_objects'][10]
+#     obj =
+#     swap_position_factory.SwapPositionFactory(swap_position_config, None)
+#     return obj.create(amount, 0)
+
+# def set_up_cashflow_tests():
+#     delete_local_database()
+#     create_instrument(50)
+#     create_counterparty(20)
+#     create_swap_contract(20)
+#     create_swap_position(40)
+#     return create_cashflow(20)
+
+
+# def set_up_counterparty_tests():
+#     return create_counterparty(50)
+
+
+# def set_up_swap_contract_tests():
+#     delete_local_database()
+#     create_counterparty(20)
+#     records = create_swap_contract(20)
+#     domain_obj_factory =
+#     swap_contract_factory.SwapContractFactory(None, None)
+#     return records, domain_obj_factory
+
+
+# def set_up_swap_position_tests():
+#     create_instrument(50)
+#     create_counterparty(20)
+#     create_swap_contract(20)
+#     records = create_swap_position(50)
+#     domain_obj_factory =
+#     swap_position_factory.SwapPositionFactory(None, None)
+#     return records, domain_obj_factory

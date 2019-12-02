@@ -88,35 +88,6 @@
       }
     },
     {
-      "counterparty" : {
-        "max_objects_per_file" : 50,
-        "file_name" : "counterparties",
-        "output_file_type": "JSONL",
-        "output_directory": "out",
-        "upload_to_google_drive": "false",
-        "generation_type": "fixed",
-        "fixed_args": {
-          "record_count" : 50
-        },
-        "dummy_fields": [
-          {
-            "data_type": "string",
-            "data_length": 10,
-            "field_count": 10
-          },
-          {
-            "data_type": "numeric",
-            "data_length": 10,
-            "field_count": 10
-          }
-        ],
-        "file_type_args" : {
-          "xml_root_element" : "counterparties",
-          "xml_item_name" : "counterparty"
-        }
-      }
-    },
-    {
       "back_office_position" : {
         "max_objects_per_file" : 50,
         "file_name" : "back_office_positions",
@@ -200,35 +171,6 @@
         "file_type_args" : {
           "xml_root_element": "depot_positions",
           "xml_item_name": "depot_position"
-        }
-      }
-    },
-    {
-      "stock_loan_position" : {
-        "max_objects_per_file" : 50,
-        "file_name" : "stock_loan_positions",
-        "output_file_type": "XML",
-        "output_directory": "out",
-        "upload_to_google_drive": "false",
-        "generation_type": "fixed",
-        "fixed_args": {
-          "record_count" : 50
-        },
-        "dummy_fields": [
-          {
-            "data_type": "string",
-            "data_length": 10,
-            "field_count": 10
-          },
-          {
-            "data_type": "numeric",
-            "data_length": 10,
-            "field_count": 10
-          }
-        ],
-        "file_type_args" : {
-          "xml_root_element" : "stock_loan_positions",
-          "xml_item_name" : "stock_loan_position"
         }
       }
     },

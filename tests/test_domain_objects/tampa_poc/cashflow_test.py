@@ -1,9 +1,14 @@
 import sys
+
+import pytest
+
 sys.path.insert(0, 'tests/')
 from utils import shared_tests as shared
 from utils import helper_methods as helper
 
 
+@pytest.mark.skip(reason="Object being tested belongs to Tampa PoC and is "
+                         "not mentioned in the one-pager")
 def test_cashflows():
     """ Ensure all generated cashflow attributes adhere to their
     specification. Dependent on Swap Positions """

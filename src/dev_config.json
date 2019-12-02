@@ -9,10 +9,6 @@
         "module_name": "account_factory",
         "class_name": "AccountFactory"
       },
-      "counterparty": {
-        "module_name": "counterparty_factory",
-        "class_name": "CounterpartyFactory"
-      },
       "back_office_position": {
         "module_name": "back_office_position_factory",
         "class_name": "BackOfficePositionFactory"
@@ -36,22 +32,6 @@
       "price": {
         "module_name": "price_factory",
         "class_name": "PriceFactory"
-      },
-      "stock_loan_position": {
-        "module_name": "stock_loan_position_factory",
-        "class_name": "StockLoanPositionFactory"
-      },
-      "swap_contract": {
-        "module_name": "swap_contract_factory",
-        "class_name": "SwapContractFactory"
-      },
-      "swap_position": {
-        "module_name": "swap_position_factory",
-        "class_name": "SwapPositionFactory"
-      },
-      "cashflow": {
-        "module_name": "cashflow_factory",
-        "class_name": "CashflowFactory"
       },
       "settlement_instruction": {
         "module_name": "settlement_instruction_factory",
