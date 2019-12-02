@@ -182,7 +182,7 @@ def set_up_account_tests():
     return create_account(50)
 
 
-#Methods related to Tampa PoC
+# Methods related to Tampa PoC
 # def create_cashflow(amount=1):
 #     config = get_configuration()
 #     cashflow_config = config['domain_objects'][11]
@@ -198,14 +198,16 @@ def set_up_account_tests():
 # def create_swap_contract(amount=1):
 #     config = get_configuration()
 #     swap_contract_config = config['domain_objects'][9]
-#     obj = swap_contract_factory.SwapContractFactory(swap_contract_config, None)
+#     obj =
+#     swap_contract_factory.SwapContractFactory(swap_contract_config, None)
 #     return obj.create(amount, 0)
 
 
 # def create_swap_position(amount=1):
 #     config = get_configuration()
 #     swap_position_config = config['domain_objects'][10]
-#     obj = swap_position_factory.SwapPositionFactory(swap_position_config, None)
+#     obj =
+#     swap_position_factory.SwapPositionFactory(swap_position_config, None)
 #     return obj.create(amount, 0)
 
 # def set_up_cashflow_tests():
@@ -225,7 +227,8 @@ def set_up_account_tests():
 #     delete_local_database()
 #     create_counterparty(20)
 #     records = create_swap_contract(20)
-#     domain_obj_factory = swap_contract_factory.SwapContractFactory(None, None)
+#     domain_obj_factory =
+#     swap_contract_factory.SwapContractFactory(None, None)
 #     return records, domain_obj_factory
 
 
@@ -234,5 +237,6 @@ def set_up_account_tests():
 #     create_counterparty(20)
 #     create_swap_contract(20)
 #     records = create_swap_position(50)
-#     domain_obj_factory = swap_position_factory.SwapPositionFactory(None, None)
+#     domain_obj_factory =
+#     swap_position_factory.SwapPositionFactory(None, None)
 #     return records, domain_obj_factory
