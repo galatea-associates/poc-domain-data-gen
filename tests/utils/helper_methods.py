@@ -98,6 +98,7 @@ def create_account(amount=1):
     obj = account_factory.AccountFactory(None, None)
     return obj.create(amount, 0)
 
+
 def create_cash_flow(amount=1):
     obj = cash_flow_factory.CashFlowFactory(None, None)
     return obj.create(amount, 0)
