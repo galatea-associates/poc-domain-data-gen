@@ -189,10 +189,9 @@ def set_up_account_tests():
 def set_up_cash_flow_tests():
     delete_local_database()
     create_account(50)
-    return create_cash_flow(50)
-    # records = create_cash_flow(50)
-    # domain_obj_factory = cash_flow_factory.CashFlowFactory(None, None)
-    # return records, domain_obj_factory
+    records = create_cash_flow(50)
+    domain_obj_factory = cash_flow_factory.CashFlowFactory(None, None)
+    return records, domain_obj_factory
 
 
 # Methods related to Tampa PoC
