@@ -10,7 +10,7 @@ from domainobjectfactories import back_office_position_factory, \
     front_office_position_factory, \
     instrument_factory, trade_factory, price_factory, \
     account_factory, settlement_instruction_factory, \
-    stock_loan_position_factory
+    stock_loan_position_factory, cash_flow_factory
 
 
 # Helper Methods
@@ -98,6 +98,10 @@ def create_account(amount=1):
     obj = account_factory.AccountFactory(None, None)
     return obj.create(amount, 0)
 
+def create_cash_flow(amount=1):
+    obj = cash_flow_factory.CashFlowFactory(None, None)
+    return obj.create(amount, 0)
+
 
 # Set-up Methods
 def set_up_back_office_position_tests():
@@ -180,6 +184,15 @@ def set_up_stock_loan_position_tests():
 def set_up_account_tests():
     delete_local_database()
     return create_account(50)
+
+
+def set_up_cash_flow_tests():
+    delete_local_database()
+    create_account(50)
+    return create_cash_flow(50)
+    # records = create_cash_flow(50)
+    # domain_obj_factory = cash_flow_factory.CashFlowFactory(None, None)
+    # return records, domain_obj_factory
 
 
 # Methods related to Tampa PoC
