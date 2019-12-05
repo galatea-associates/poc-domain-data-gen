@@ -260,6 +260,35 @@
           "xml_item_name" : "settlement_instruction"
         }
       }
+      },
+      {
+        "cash_flow": {
+          "max_objects_per_file": 50,
+          "file_name": "cash_flows",
+          "output_file_type": "XML",
+          "output_directory": "out",
+          "upload_to_google_drive": "false",
+          "generation_type": "fixed",
+          "fixed_args": {
+            "record_count": 50
+          },
+          "dummy_fields": [
+          {
+            "data_type": "string",
+            "data_length": 10,
+            "field_count": 10
+          },
+          {
+            "data_type": "numeric",
+            "data_length": 10,
+            "field_count": 10
+          }
+          ],
+          "file_type_args": {
+            "xml_root_element": "cash_flows",
+            "xml_item_name": "cash_flow"
+        }
+      }
     }
   ],
   "shared_args" : {
