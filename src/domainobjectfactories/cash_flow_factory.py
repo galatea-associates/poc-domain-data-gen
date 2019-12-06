@@ -45,7 +45,7 @@ class CashFlowFactory(Creatable):
             'account_id': self.__get_account_id(),
             'corporate_action_id': self.__create_corporate_action_id(),
             'quantity': self.__get_quantity(),
-            'currency': self.__get_currency(),
+            'currency': self.create_currency(),
             'payment_status': self.__get_payment_status(),
             'payment_type': self.__get_payment_type(),
             'payment_date': self.__get_payment_date()
@@ -85,22 +85,11 @@ class CashFlowFactory(Creatable):
         """ Return quantity of cash in this cashflow
             Returns
             -------
-            Double
+            float
                 random number between 1 and 10000 to 2 dp
             """
 
         return self.create_random_decimal()
-
-    def __get_currency(self):
-        """ Return a random currency from a set list
-
-            Returns
-            -------
-            String
-                Random currency from a pre-defined list
-            """
-
-        return random.choice(self.CURRENCIES)
 
     def __get_payment_status(self):
         """ Return the payment status
