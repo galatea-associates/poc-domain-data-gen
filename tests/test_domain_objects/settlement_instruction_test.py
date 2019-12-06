@@ -18,8 +18,9 @@ def test_settlement_instructions():
         linkage_type_valid(record)
         shared.value_is_valid_market(record['place_of_trade'])
         shared.correct_datetime(record['trade_datetime'])
-        shared.monetary_amount_valid\
-            (record, field_name='deal_price', min=1, max=100000)
+        shared.monetary_amount_valid(
+            record, field_name='deal_price', min=1, max=100000
+        )
         shared.currency_valid(record)
         shared.isin_exists(record)
         shared.value_is_valid_market(record['place_of_listing'])
