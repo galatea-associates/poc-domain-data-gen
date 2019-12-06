@@ -18,7 +18,7 @@ def test_trades():
         account_id_valid(record)
         counterparty_id_valid(record)
         trader_id_valid(record)
-        shared.price_valid(record, min=1, max=100000)
+        shared.monetary_amount_valid(record, max=100000)
         shared.currency_valid(record)
         instrument_details_valid(record)
         trade_leg_valid(record)
