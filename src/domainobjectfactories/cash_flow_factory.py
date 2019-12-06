@@ -44,11 +44,11 @@ class CashFlowFactory(Creatable):
         record = {
             'account_id': self.__get_account_id(),
             'corporate_action_id': self.__create_corporate_action_id(),
-            'quantity': self.__get_quantity(),
+            'quantity': self.__create_quantity(),
             'currency': self.create_currency(),
-            'payment_status': self.__get_payment_status(),
-            'payment_type': self.__get_payment_type(),
-            'payment_date': self.__get_payment_date()
+            'payment_status': self.__create_payment_status(),
+            'payment_type': self.__create_payment_type(),
+            'payment_date': self.__create_payment_date()
         }
 
         for key, value in self.create_dummy_field_generator():
@@ -81,7 +81,7 @@ class CashFlowFactory(Creatable):
         """
         return self.create_random_string(10)
 
-    def __get_quantity(self):
+    def __create_quantity(self):
         """ Return quantity of cash in this cashflow
             Returns
             -------
@@ -91,7 +91,7 @@ class CashFlowFactory(Creatable):
 
         return self.create_random_decimal()
 
-    def __get_payment_status(self):
+    def __create_payment_status(self):
         """ Return the payment status
             Returns
             -------
@@ -101,7 +101,7 @@ class CashFlowFactory(Creatable):
         return random.choice(self.PAYMENT_STATUSES)
 
     @staticmethod
-    def __get_payment_type():
+    def __create_payment_type():
         """ Return the payment type.  Currently all cash flows represent
          dividend payments, so the value returned will always be 'Dividend'
         Returns
@@ -113,7 +113,7 @@ class CashFlowFactory(Creatable):
         return 'Dividend'
 
     @staticmethod
-    def __get_payment_date():
+    def __create_payment_date():
         """ Return the payment date, which currently will always be the current date
         Returns
         -------
