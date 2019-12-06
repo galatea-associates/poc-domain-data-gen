@@ -176,7 +176,8 @@ class AccountFactory(Creatable):
         return self.create_random_date().strftime('%Y%m%d')
 
     def __create_closing_date(self, opening_date):
-        """ Return a randomly generated date as a string in format YYYYMMDD
+        """ Return either a randomly generated date between opening_date and
+        today as a string in format YYYYMMDD, or 'Empty'
 
         Parameters
         ----------
@@ -196,6 +197,7 @@ class AccountFactory(Creatable):
             from_year = int(opening_date[:4])
             from_month = int(opening_date[4:6])
             from_day = int(opening_date[6:])
-            return self.create_random_date(
-                from_year=from_year, from_month=from_month, from_day=from_day
-            ).strftime('%Y%m%d')
+            closing_date = self.create_random_date(
+                from_year, from_month, from_day
+            )
+            return closing_date.strftime('%Y%m%d')

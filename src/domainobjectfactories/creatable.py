@@ -63,9 +63,8 @@ class Creatable(ABC):
     create_random_boolean()
         Select a random boolean value
 
-    create_random_date(from_year, to_year, from_month,
-                         to_month, from_day, to_day)
-        Select a random date between a given range
+    create_random_date(from_year, to_year, from_month)
+        Creates a random date between a given date and today
 
     create_random_integer(min, max, length, negative)
         Create a random digit between given values of set length. Boolean
@@ -251,36 +250,34 @@ class Creatable(ABC):
 
         return random.choice(self.TRUE_FALSE)
 
-    def create_random_date(self, from_year=2016, to_year=2017,
-                             from_month=1, to_month=12,
-                             from_day=1, to_day=28):
-        """ Creates a random date between two given days
+    @staticmethod
+    def create_random_date(from_year=2016, from_month=1, from_day=1):
+        """ Creates a random date between a 'from_date' and today. if not
+        specified, the 'from_date' defaults to 1/1/2016 to ensure a reasonably
+        range of dates is available to be selected from.
 
         Parameters
         ----------
         from_year : int
             Start year for the range
-        to year : int
-            End year for the range
         from_month : int
             Start month for the range
-        to_month : int
-            End month for the range
         from_day : int
             Start day for the range
-        to_day : int
-            End day for the range
 
         Returns
         -------
         Date
             Random date between the provided ranges
         """
-
-        year = random.randint(from_year, to_year)
-        month = random.randint(from_month, to_month)
-        day = random.randint(from_day, to_day)
-        return datetime(year, month, day).date()
+        from_date = datetime(from_year, from_month, from_day).date()
+        today = datetime.now(timezone.utc).date()
+        date_range_in_days = (today - from_date).days
+        if date_range_in_days < 0:
+            raise Exception("from date is in the future")
+        return from_date + timedelta(
+            days=random.randint(0, date_range_in_days)
+        )
 
     def create_random_integer(self, min=1, max=10000,
                                 length=None, negative=False):
