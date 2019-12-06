@@ -79,10 +79,14 @@ def date_valid(date_string):
     """ checks a string is format YYYYMMDD with valid values for DD and MM """
     pattern = "^[0-9]{8}$"
     assert re.match(pattern, date_string)
-    month = date_string[4:6]
-    assert int(month) in range(1, 13)
-    day = date_string[6:]
-    assert int(day) in range(1, 29)
+    is_valid = True
+    try:
+        # not assigned since we are only checking to see if ValueError raised
+        datetime.strptime(date_string, "%Y%m%d")
+    except ValueError:
+        is_valid = False
+    finally:
+        assert is_valid
 
 
 def opening_date_valid(record):
@@ -93,13 +97,15 @@ def opening_date_valid(record):
 
 
 def closing_date_valid(record):
-    """ Closing Date must be format YYYYMMDD with valid values for DD and MM
-    and must represent a date on or after the Opening Date in the record """
+    """ Closing Date must be "Empty" or a date string of format YYYYMMDD with
+    valid values for DD and MM and must represent a date on or after the
+    Opening Date in the record """
     closing_date = record["closing_date"]
-    date_valid(closing_date)
-    opening_date = record["opening_date"]
-    o_year, o_month, o_day = int(opening_date[:4]), int(opening_date[4:6]),\
-        int(opening_date[6:])
-    c_year, c_month, c_day = int(closing_date[:4]), int(closing_date[4:6]),\
-        int(closing_date[6:])
-    assert datetime(o_year, o_month, o_day) <= datetime(c_year, c_month, c_day)
+    pattern = "^[0-9]{8}$"  # matches any 8-digit integer
+    if re.match(pattern, closing_date):
+        date_valid(closing_date)
+        opening_date = record["opening_date"]
+        assert datetime.strptime(opening_date, "%Y%m%d") <= \
+            datetime.strptime(closing_date, "%Y%m%d")
+    else:
+        assert closing_date == "Empty"
