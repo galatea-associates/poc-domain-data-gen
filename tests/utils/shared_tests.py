@@ -196,13 +196,14 @@ def trade_position_effective_date_valid(record):
     assert effective_date == knowledge_date + timedelta(days=2)
 
 
-def price_valid(record, field_name='price', min=1, max=10):
+def monetary_amount_valid(record, field_name='price', min=1, max=10):
     """ Random float between specified min and max values
     inclusive to 2 d.p """
-    price = record[field_name]
-    string_price = str(price)
+    monetary_amount = record[field_name]
+    assert isinstance(monetary_amount, float)
+    string_price = str(monetary_amount)
     decimal = string_price.split(".")[1]
-    assert min <= price <= max and len(decimal) <= 2
+    assert min <= monetary_amount <= max and len(decimal) <= 2
 
 
 #  General Methods

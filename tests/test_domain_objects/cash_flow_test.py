@@ -12,7 +12,7 @@ def test_cash_flows():
         shared.attribute_quantity_valid('cash_flow', record, 7)
         account_id_valid(record, domain_obj)
         corporate_action_id_valid(record)
-        quantity_valid(record)
+        shared.monetary_amount_valid(record, 'quantity', max=10000)
         shared.currency_valid(record)
         payment_status_valid(record)
         payment_type_valid(record)
@@ -38,12 +38,6 @@ def corporate_action_id_valid(record):
     account_description = record['corporate_action_id']
     assert shared.is_length(10, account_description)
     assert isinstance(account_description, str)
-
-
-def quantity_valid(record):
-    quantity = record['quantity']
-    assert isinstance(quantity, float)
-    assert 1 <= quantity <= 10000
 
 
 def payment_status_valid(record):
