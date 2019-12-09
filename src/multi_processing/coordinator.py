@@ -7,7 +7,7 @@ from multi_processing.writer import Writer
 # objects, such as the database connection.
 
 
-class Coordinator():
+class Coordinator:
     """ Coordination class for the multiprocessing implementation. Required
     to abstract multiprocessing calls from unpickleable objects in the main
     program, such as database connections. Holds, instantiates and passes job
@@ -15,10 +15,10 @@ class Coordinator():
 
     Attributes
     ----------
-    generation_job_queue : Multiprocessing Queue
+    queue_of_generation_jobs : Multiprocessing Queue
         Multiprocessing-safe, holds jobs for the generation process to format
         and execute.
-    write_job_queue : Multiprocessing Queue
+    queue_of_write_jobs : Multiprocessing Queue
         Multiprocessing-safe, holds jobs for the writing process to format and
         execute.
     generation_coordinator : Generator
@@ -62,22 +62,22 @@ class Coordinator():
         file_builder : File_Builder
             Instantiated and pre-configured file builder to write files of
             the necessary format.
-        object_factory : Generatable
+        object_factory : Creatable
             Instantiated and pre-configured object factory which produces
             the current object.
         """
 
         queue_manager = Manager()
-        self.__generation_job_queue = queue_manager.Queue()
-        self.__write_job_queue = queue_manager.Queue()
+        self.__queue_of_generation_jobs = queue_manager.Queue()
+        self.__queue_of_write_jobs = queue_manager.Queue()
 
-        self.__generation_coordinator = Generator(
-            self.__generation_job_queue,
-            self.__write_job_queue
+        self.__generator = Generator(
+            self.__queue_of_generation_jobs,
+            self.__queue_of_write_jobs
         )
 
-        self.__write_coordinator = Writer(
-            self.__write_job_queue,
+        self.__writer = Writer(
+            self.__queue_of_write_jobs,
             file_builder.get_max_objects_per_file(),
             file_builder
         )
@@ -85,7 +85,7 @@ class Coordinator():
         self.object_factory = object_factory
         self.processes = []
 
-    def create_jobs(self):
+    def add_jobs_to_generation_queue(self):
         """Populate the generation queue with jobs.
 
         Continually places jobs into the queue, counting down record_count,
@@ -102,43 +102,53 @@ class Coordinator():
         """
 
         start_id = 0
-        record_count = self.object_factory.get_record_count()
-        job_size = self.object_factory.get_shared_args()['pool_job_size']
+        number_of_records_not_yet_queued = \
+            self.object_factory.get_record_count()
+        number_of_records_per_job = \
+            self.object_factory.get_shared_args()['pool_job_size']
 
-        while record_count > 0:
-            if record_count > job_size:
-                job = {'quantity': job_size,
-                       'start_id': start_id}
-                record_count = record_count - job_size
-                start_id = start_id + job_size
+        while number_of_records_not_yet_queued > 0:
+            if number_of_records_not_yet_queued > number_of_records_per_job:
+                generate_job = {
+                    'quantity': number_of_records_per_job,
+                    'start_id': start_id
+                }
+                number_of_records_not_yet_queued -= number_of_records_per_job
+                start_id += number_of_records_per_job
             else:
-                job = {'quantity': record_count,
-                       'start_id': start_id}
-                record_count = 0
-            self.__generation_job_queue.put(job)
+                generate_job = {
+                    'quantity': number_of_records_not_yet_queued,
+                    'start_id': start_id
+                }
+                number_of_records_not_yet_queued = 0
+            self.__queue_of_generation_jobs.put(generate_job)
 
-        self.__generation_job_queue.put("terminate")
+        self.__queue_of_generation_jobs.put("terminate")
 
     def start_generator(self):
         """ Start the generation coordinator as a subprocess """
 
-        generator_p = Process(target=self.get_generation_coordinator().start,
-                              args=(self.object_factory,))
-        generator_p.start()
-        self.processes.append(generator_p)
+        generator_process = Process(
+            target=self.get_generator().start,
+            args=(self.object_factory,)
+        )
+        generator_process.start()
+        self.processes.append(generator_process)
 
     def start_writer(self):
         """ Starts the writing coordinator as a subprocess """
 
-        writer_pool_size =\
+        number_of_write_processes_per_pool =\
             self.object_factory.get_shared_args()['writer_pool_size']
 
-        writer_p = Process(target=self.get_write_coordinator().start,
-                           args=(writer_pool_size,))
-        writer_p.start()
-        self.processes.append(writer_p)
+        writer_process = Process(
+            target=self.get_writer().start,
+            args=(number_of_write_processes_per_pool,)
+        )
+        writer_process.start()
+        self.processes.append(writer_process)
 
-    def get_generation_coordinator(self):
+    def get_generator(self):
         """
         Returns
         -------
@@ -146,9 +156,9 @@ class Coordinator():
             Instantiated Generator class, handles generation of domain objects
         """
 
-        return self.__generation_coordinator
+        return self.__generator
 
-    def get_write_coordinator(self):
+    def get_writer(self):
         """
         Returns
         -------
@@ -157,7 +167,7 @@ class Coordinator():
             file
         """
 
-        return self.__write_coordinator
+        return self.__writer
 
     def await_termination(self):
         """Waits for spawned subprocesses to terminate."""

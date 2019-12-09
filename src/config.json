@@ -295,6 +295,6 @@
     "google_drive_root_folder_id" : "1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv",
     "generator_pool_size" : 1,
     "writer_pool_size" : 1,
-    "pool_job_size" : 10000
+    "pool_job_size" : 30
   }
 }

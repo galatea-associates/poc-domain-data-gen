@@ -1,51 +1,51 @@
 import time
-import multi_processing.pool_tasks as mp_p
+import pool_tasks
 
 
-class Generator():
+class Generator:
     """ A class to coordinate the generation of domain objects as per jobs
     observed within a multiprocessed queue. Data is then generated in a pool
     before the result of which is put into the write queue.
 
     Attributes
     ----------
-    generate_queue : Multiprocess Queue
+    queue_of_generate_jobs : Multiprocess Queue
         Multiprocess safe queue from which jobs to generate data is taken
-    write_queue : Multiprocess Queue
+    queue_of_write_jobs : Multiprocess Queue
         Multiprocess safe queue on which generated data is placed
     terminate : Boolean
         Boolean flag which when True indicates the coordinator is to terminate
 
     Methods
     -------
-    start(obj_class, pool_size)
+    start(obj_class, number_of_processes_per_generate_job)
         Begin the cycle of waiting for, formatting and running jobs. Continue
         this until termination instruction observed
-    wait_for_jobs()
+    sleep_while_generate_queue_empty()
         Sleep whilst the generation queue is empty
-    format_jobs(obj_class, pool_size)
+    format_jobs(obj_class, number_of_processes_per_generate_job)
         Retrieve jobs from queue and place them into an iterable structure
     issue_termination()
         Set flag to terminate to True
-    run_jobs(job_list, pool_size)
+    run_jobs(job_list, number_of_processes_per_generate_job)
         Pass formatted jobs to the generation pool for execution
-    get_generation_queue()
+    get_queue_of_generate_jobs()
         Return a pointer to the multiprocess safe generation job queue
     """
 
-    def __init__(self, generate_queue, write_queue):
+    def __init__(self, queue_of_generate_jobs, queue_of_write_jobs):
         """ Assign variables from input, and set termination to False
 
         Parameters
         ----------
-        generate_queue : Multiprocessed Queue
+        queue_of_generate_jobs : Multiprocessed Queue
             Queue containing jobs to generate an amount of domain objects
-        write_queue : Multiprocessed Queue
+        queue_of_write_jobs : Multiprocessed Queue
             Queue containing resultant generated objects for writing to file
         """
 
-        self.generate_queue = generate_queue
-        self.write_queue = write_queue
+        self.queue_of_generate_jobs = queue_of_generate_jobs
+        self.queue_of_write_jobs = queue_of_write_jobs
         self.terminate = False
 
     def start(self, object_factory):
@@ -59,24 +59,34 @@ class Generator():
             the current object.
         """
 
-        generation_pool_size =\
+        number_of_processes_per_generate_job =\
             object_factory.get_shared_args()['generator_pool_size']
+        maximum_length_of_generate_job_list \
+            = 2 * number_of_processes_per_generate_job
 
         while not self.terminate:
-            self.wait_for_jobs()
-            job_list = self.format_jobs(object_factory, generation_pool_size)
-            self.run_jobs(job_list, generation_pool_size)
+            self.sleep_while_generate_queue_empty()
+            list_of_generate_jobs = \
+                self.get_list_of_generate_jobs_from_generate_queue(
+                    object_factory, maximum_length_of_generate_job_list
+                )
+            records = self.get_records_from_generate_jobs(
+                list_of_generate_jobs, number_of_processes_per_generate_job
+            )
+            self.queue_of_write_jobs.put(records)
 
-        self.write_queue.put("terminate")
+        self.queue_of_write_jobs.put("terminate")
 
-    def wait_for_jobs(self):
+    def sleep_while_generate_queue_empty(self):
         """ Sleep until jobs are on the queue """
 
-        while self.generate_queue.empty():
+        while self.queue_of_generate_jobs.empty():
             time.sleep(1)
         return
 
-    def format_jobs(self, object_factory, generation_pool_size):
+    def get_list_of_generate_jobs_from_generate_queue(
+            self, object_factory, maximum_length_of_generate_job_list
+    ):
         """ Takes jobs from the Multiprocess Safe Queue and places them into
         a list for later execution. If twice the pool size of jobs are
         formatted, then this list is returned. If the termination flag is
@@ -88,8 +98,8 @@ class Generator():
         object_factory : Generatable
             Instantiated and pre-configured object factory which produces
             the current object.
-        generator_pool_size : int
-            The number of processes running in the generator's pool
+        maximum_length_of_generate_job_list : int
+            Max length the job list can reach before it is added to the queue
 
         Returns
         -------
@@ -99,35 +109,26 @@ class Generator():
             which a multiprocessing queue is not.
         """
 
-        job_list = []
+        list_of_generate_jobs = []
 
-        while (not self.generate_queue.empty()
-                and len(job_list) < (generation_pool_size*2)):
-            job = self.get_job()
-            if (job == "terminate"):
-                self.issue_termination()
+        while not self.queue_of_generate_jobs.empty() and \
+                len(list_of_generate_jobs) < \
+                maximum_length_of_generate_job_list:
+
+            generate_job = self.queue_of_generate_jobs.get()
+
+            if generate_job == "terminate":
+                self.terminate = True
+
             else:
-                job_list.append([job, object_factory])
-        return job_list
+                list_of_generate_jobs.append([generate_job, object_factory])
 
-    def get_job(self):
-        """ Return the job at the front of the generate queue
+        return list_of_generate_jobs
 
-        Returns
-        -------
-        dict
-            As defined within coordinator, a job dictionary containing an
-            instantiated object class, the amount to generate, and the id
-            from which generation is to commence.
-        """
-
-        return self.generate_queue.get()
-
-    def issue_termination(self):
-        """ Alter the termination flag to be True """
-        self.terminate = True
-
-    def run_jobs(self, job_list, pool_size):
+    @staticmethod
+    def get_records_from_generate_jobs(
+        list_of_generate_jobs, number_of_processes_per_generate_job
+    ):
         """ Pass a list of jobs to the multiprocessing pool scripts generate
         method. This instantiates a pool and begins execution of the provided
         list of jobs on it. The returned generated data is then placed on the
@@ -135,21 +136,12 @@ class Generator():
 
         Parameters
         ----------
-        job_list : List
+        list_of_generate_jobs : List
             Containing jobs to be ran over a Pool
-        pool_size : int
+        number_of_processes_per_generate_job : int
             The size of pool on which to execute the job list
         """
 
-        records = mp_p.generate(job_list, pool_size)
-        self.write_queue.put(records)
-
-    def get_generation_queue(self):
-        """Return the generation queue
-
-        Returns
-        -------
-        Multiprocessed Queue
-            Contains the generation jobs yet to execute
-        """
-        return self.generate_queue
+        return pool_tasks.generate(
+            list_of_generate_jobs, number_of_processes_per_generate_job
+        )

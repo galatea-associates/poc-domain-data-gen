@@ -1,15 +1,15 @@
 import time
-import multi_processing.pool_tasks as mp_p
+import pool_tasks
 
 
-class Writer():
+class Writer:
     """ A class to coordinate the writing of pre-generated records by
     compiling pre-generated records from a Multiprocessed Queue into larger
     sets such that files can be written in user-requested sizes.
 
     Attributes
     ----------
-    write_queue : Multiprocessed Queue
+    queue_of_write_jobs : Multiprocessed Queue
         Contains results of the generation process. Each element is a list of
         lists of records.
     all_records : dict
@@ -17,7 +17,7 @@ class Writer():
         written to file.
     file_number : int
         The current file number to be writing to.
-    max_size : int
+    max_records_per_file : int
         The maximum number of records in each output file.
     job_list : List
         List of jobs to be executed
@@ -29,12 +29,12 @@ class Writer():
 
     Methods
     -------
-    start(pool_size)
+    start(number_of_write_processes_per_pool)
         Begin the cycle of waiting for, handling and running jobs. Continue
         this until termination instruction observed
     wait_for_jobs()
         Sleeps until items are observed on the Multiprocessed Queue.
-    handle_jobs(pool_size)
+    handle_jobs(number_of_write_processes_per_pool)
         Pulls an item from the Multiprocessed Queue if terminate, issues
         termination, otherwise passes the List containing lists of records
         to the format method.
@@ -51,7 +51,7 @@ class Writer():
         Calculate any writes to perform based on currently observed data
     get_file_num()
         Increment & return a value recording current file number
-    run_jobs(pool_size)
+    run_jobs(number_of_write_processes_per_pool)
         Execute the current job list on the write pool
     reset_job_list()
         Clear contents of the job list
@@ -59,74 +59,79 @@ class Writer():
         Calculate any remaining writes after terminate has been observed
     """
 
-    def __init__(self, write_queue, max_file_size, file_builder):
+    def __init__(
+            self, queue_of_write_jobs, max_records_per_file, file_builder
+    ):
         """ Assign write queue, maximum file size, and the file builder to
         use. Additionally, set starting/deafult values for all records,
 
         Parameters
         ----------
-        write_queue : Multiprocessing Queue
+        queue_of_write_jobs : Multiprocessing Queue
             Shared, multiprocessing safe, queue holding lists of lists of
             records
-        max_file_size : int
+        max_records_per_file : int
             Value representing the maximum number of records per file
         file_builder : File_Builder
             Instantiated file builder, pre-configured to output the necessary
             file extension.
         """
 
-        self.write_queue = write_queue
+        self.queue_of_write_jobs = queue_of_write_jobs
 
         self.all_records = []
         self.file_number = 0
-        self.max_size = int(max_file_size)
+        self.max_records_per_file = int(max_records_per_file)
 
-        self.job_list = []
+        self.list_of_write_jobs = []
         self.terminate = False
         self.file_builder = file_builder
 
-    def start(self, pool_size):
+    def start(self, number_of_write_processes_per_pool):
         """ Begin the cycle of waiting for, handling, and running jobs,
         continuing this until an instruction to terminate is observed. Once
         observed, calculate any residual write to be made and terminate.
 
         Parameters
         ----------
-        pool_size : int
-            The number of processes running in the generator's pool
+        number_of_write_processes_per_pool : int
+            The number of processes running in the write pool
         """
 
+        maximum_length_of_write_job_list = \
+            2 * number_of_write_processes_per_pool
         while not self.terminate:
-            self.wait_for_jobs()
-            self.handle_jobs(pool_size)
-            self.run_jobs(pool_size)
+            self.sleep_while_write_queue_empty()
+            self.handle_jobs(maximum_length_of_write_job_list)
+            self.run_jobs(number_of_write_processes_per_pool)
             self.reset_job_list()
 
         self.calculate_residual_writes()
-        self.run_jobs(pool_size)
+        self.run_jobs(number_of_write_processes_per_pool)
 
-    def wait_for_jobs(self):
+    def sleep_while_write_queue_empty(self):
         """ Sleep until records are on the queue """
 
-        while self.write_queue.empty():
+        while self.queue_of_write_jobs.empty():
             time.sleep(1)
         return
 
-    def handle_jobs(self, pool_size):
+    def handle_jobs(self, maximum_length_of_write_job_list):
         """ Takes items from the Multiprocess safe queue, if a terminate
         instruction, the appropriate flag is set. If not, it must be a list
         of records, thus it is formatted.
 
         Parameters
         ----------
-        pool_size : int
-            The number of processes running in the generator's pool
+        maximum_length_of_write_job_list : int
+            Max length the job list can reach before it is added to the queue
         """
 
-        while (not self.write_queue.empty()
-                and len(self.job_list) < pool_size*2):
-            record_list = self.get_job()
-            if (record_list == "terminate"):
+        while not self.queue_of_write_jobs.empty() and \
+                len(self.list_of_write_jobs) < \
+                maximum_length_of_write_job_list:
+            record_list = self.queue_of_write_jobs.get()
+            if record_list == "terminate":
                 self.issue_termination()
             else:
                 self.format_jobs(record_list)
@@ -144,20 +149,6 @@ class Writer():
         for records in record_list:
             self.add_to_stored_records(records)
             self.calculate_writes()
-
-    def get_job(self):
-        """ Return the record list at the front of the generate queue
-
-        Returns
-        -------
-        list
-            A list of lists. The primary list is a set of records as returned
-            by a set of generation jobs executing on the generation job pool.
-            Therefore, each contained list is the set of records generated by
-            a single Process within the generation pool.
-        """
-
-        return self.write_queue.get()
 
     def issue_termination(self):
         """ Alter the termination flag to be True """
@@ -183,14 +174,14 @@ class Writer():
         The job is enqueued once created.
         """
 
-        # self.max_size indicates largest file size
+        # self.max_records_per_file indicates largest file size
         # self.all_records contains all records currently received
-        file_size = self.max_size
+        max_records_per_file = self.max_records_per_file
         file_builder = self.file_builder
-        if len(self.all_records) > int(file_size):
+        if len(self.all_records) > int(max_records_per_file):
             file_num = self.get_file_num()
-            records = self.all_records[:file_size]
-            del self.all_records[:file_size]
+            records = self.all_records[:max_records_per_file]
+            del self.all_records[:max_records_per_file]
             job = {
                 'file_number': file_num,
                 'file_builder': file_builder,
@@ -211,13 +202,15 @@ class Writer():
         self.file_number = cur+1
         return cur
 
-    def run_jobs(self, pool_size):
+    def run_jobs(self, number_of_write_processes_per_pool):
         """ Pass a list of jobs to the job pool coordinator to be executed.
         Jobs contain the file number, the pre-instantiated file builder to
         use, as well as  the data itself.
         """
 
-        mp_p.write(self.job_list, pool_size)
+        pool_tasks.execute_write_jobs(
+            self.job_list, number_of_write_processes_per_pool
+        )
 
     def reset_job_list(self):
         """ Resets the list of records to be written out to file """

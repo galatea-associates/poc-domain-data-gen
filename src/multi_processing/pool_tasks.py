@@ -8,15 +8,17 @@ generation/writing tasks.
 from multiprocessing import Pool
 
 
-def generate(job_list, pool_size):
+def execute_generate_jobs(
+        list_of_generate_jobs, number_of_generate_processes_per_pool
+):
     """ Instantiates a job Pool for user-defined size, and begins execution
     of provided jobs on the pool.
 
     Parameters
     ----------
-    job_list : list
+    list_of_generate_jobs : list
         Jobs to be executed on the
-    pool_size : int
+    number_of_generate_processes_per_pool : int
         The number of processes sitting within the pool for execution of jobs
         to be ran on.
 
@@ -27,26 +29,23 @@ def generate(job_list, pool_size):
         to be written to file.
     """
 
-    pool = Pool(pool_size)
-    result = pool.map(generate_data, job_list)
+    pool = Pool(number_of_generate_processes_per_pool)
+    result = pool.map(create_records_from_generate_job, list_of_generate_jobs)
     pool.close()
     pool.join()
     return result
 
 
-def generate_data(job):
+def create_records_from_generate_job(generate_job):
     """ Generates a single set of records based on an individual job.
 
     Instruction contains the number of records to generate, or the number of
     records to retrieve from the database (in the case of dependent objects),
     as well as the starting ID for this set in the case of sequential IDs.
 
-    Where objects are generated in nondeterministic amounts, sequential IDs
-    are not possible.
-
     Parameters
     ----------
-    job : list
+    generate_job : list
         List of 2 elements, firstly, the production instructions for objects:
         quantity to produce and the id to start generation from. The second
         element is the instantiated factory.
@@ -58,47 +57,47 @@ def generate_data(job):
         instruction set.
     """
 
-    instructions = job[0]
-    object_factory = job[1]
+    instructions, object_factory = generate_job
 
     quantity = instructions['quantity']
     start_id = instructions['start_id']
 
     records = object_factory.create(quantity, start_id)
+
     return records
 
 
-def write(job_list, pool_size):
+def execute_write_jobs(list_of_write_jobs, number_of_write_processes_per_pool):
     """ Instantiates a job Pool for user-defined size, and begins execution
     of provided jobs on the pool.
 
     Parameters
     ----------
-    job_list : list
+    list_of_write_jobs : list
         Jobs to be executed on the
-    pool_size : int
+    number_of_write_processes_per_pool : int
         The number of processes sitting within the pool for execution of jobs
         to be ran on.
     """
 
-    pool = Pool(pool_size)
-    pool.map(write_data, job_list)
+    pool = Pool(number_of_write_processes_per_pool)
+    pool.map(build_file_from_write_job, list_of_write_jobs)
     pool.close()
     pool.join()
 
 
-def write_data(job):
+def build_file_from_write_job(write_job):
     """ Writes a single file of data based on the provided records.
 
     Parameters
     ----------
-    job : dict
+    write_job : dict
         Contains the file number, for sequential ordering. Contains the
         instantiated file builder, pre-configured to output the necessary
         file extension. Contains the records to be written to file.
     """
-    file_number = job['file_number']
-    file_builder = job['file_builder']
-    records = job['records']
+    file_number = write_job['file_number']
+    file_builder = write_job['file_builder']
+    records = write_job['records']
 
     file_builder.build(file_number, records)

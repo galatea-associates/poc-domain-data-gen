@@ -83,9 +83,9 @@ def process_object_factory(file_builder, object_factory):
     object_factory.set_batch_size()
     coordinator = Coordinator(file_builder, object_factory)
 
-    coordinator.start_generator()
-    coordinator.start_writer()
-    coordinator.create_jobs()
+    coordinator.start_generate_process()
+    coordinator.start_write_process()
+    coordinator.add_jobs_to_generation_queue()
     coordinator.await_termination()
 
 
@@ -157,7 +157,6 @@ def get_google_drive_connector(factory_definition, shared_args):
     if google_drive_flag == 'TRUE':
         root_folder_id = shared_args['google_drive_root_folder_id']
         return GoogleDriveConnector(root_folder_id)
-
 
 
 def instantiate_object_factory(dev_factory_args,
