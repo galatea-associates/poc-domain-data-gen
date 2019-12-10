@@ -11,7 +11,7 @@ class DepotPositionFactory(Creatable):
 
     DEPOT_POSITION_PURPOSES = ['Holdings', 'Seg', 'Pending Holdings']
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of depot positions
 
         Parameters

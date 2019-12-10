@@ -130,7 +130,7 @@ class Coordinator:
 
         generator_process = Process(
             target=self.get_generator().start,
-            args=(self.object_factory)
+            args=(self.object_factory,)
         )
         generator_process.start()
         self.processes.append(generator_process)

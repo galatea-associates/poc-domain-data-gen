@@ -9,7 +9,7 @@
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
         "fixed_args" : {
-          "record_count" : 50
+          "record_count" : 40
         },
         "dummy_fields": [
           {
@@ -270,7 +270,7 @@
           "upload_to_google_drive": "false",
           "generation_type": "fixed",
           "fixed_args": {
-            "record_count": 500
+            "record_count": 50
           },
           "dummy_fields": [
           {
@@ -293,8 +293,8 @@
   ],
   "shared_args" : {
     "google_drive_root_folder_id" : "1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv",
-    "number_of_generate_processes_per_pool" : 2,
-    "number_of_write_processes_per_pool" : 2,
-    "number_of_records_per_job" : 40
+    "number_of_generate_processes_per_pool" : 1,
+    "number_of_write_processes_per_pool" : 1,
+    "number_of_records_per_job" : 50
   }
 }

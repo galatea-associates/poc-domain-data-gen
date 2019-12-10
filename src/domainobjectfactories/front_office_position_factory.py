@@ -10,7 +10,7 @@ class FrontOfficePositionFactory(Creatable):
     where front office positions are the only domain object requiring them.
     """
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of front office positions
 
         Parameters

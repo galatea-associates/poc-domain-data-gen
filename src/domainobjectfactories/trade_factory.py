@@ -11,7 +11,7 @@ class TradeFactory(Creatable):
     TRADE_LEGS = ["EMPTY", "1", "2"]
     DIRECTIONS = ["BUY", "SELL"]
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of trades
 
         Parameters
