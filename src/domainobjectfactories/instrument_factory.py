@@ -18,7 +18,7 @@ class InstrumentFactory(Creatable):
     INDUSTRY_CLASSIFICATIONS = \
         ['MANUFACTURING', 'TELECOMS', 'FINANCIAL SERVICES', 'GROCERIES']
 
-    def create(self, record_count, start_id, lock=None):
+    def create(self, record_count, start_id, lock):
         """ Create a set number of instruments
 
         Parameters
