@@ -160,7 +160,7 @@ class Writer:
         """
 
         for list_of_generated_records in list_of_lists_of_generated_records:
-            self.list_of_dequeued_generated_records.append(
+            self.list_of_dequeued_generated_records.extend(
                 list_of_generated_records
             )
             self.update_list_of_write_jobs()
