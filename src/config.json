@@ -4,7 +4,7 @@
       "instrument" : {
         "max_objects_per_file" : 50,
         "file_name" : "instruments",
-        "output_file_type": "XML",
+        "output_file_type": "CSV",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
@@ -33,7 +33,7 @@
       "account": {
         "max_objects_per_file" : 50,
         "file_name" : "accounts",
-        "output_file_type": "XML",
+        "output_file_type": "CSV",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
@@ -62,7 +62,7 @@
       "price" : {
         "max_objects_per_file" : 50,
         "file_name" : "prices",
-        "output_file_type": "JSON",
+        "output_file_type": "CSV",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
@@ -178,7 +178,7 @@
       "cash_balance" : {
         "max_objects_per_file" : 50,
         "file_name" : "cash_balances",
-        "output_file_type": "XML",
+        "output_file_type": "CSV",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
@@ -265,12 +265,12 @@
         "cash_flow": {
           "max_objects_per_file": 50,
           "file_name": "cash_flows",
-          "output_file_type": "XML",
+          "output_file_type": "CSV",
           "output_directory": "out",
           "upload_to_google_drive": "false",
           "generation_type": "fixed",
           "fixed_args": {
-            "record_count": 50
+            "record_count": 500
           },
           "dummy_fields": [
           {
@@ -293,8 +293,8 @@
   ],
   "shared_args" : {
     "google_drive_root_folder_id" : "1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv",
-    "generator_pool_size" : 1,
-    "writer_pool_size" : 1,
-    "pool_job_size" : 30
+    "number_of_generate_processes_per_pool" : 2,
+    "number_of_write_processes_per_pool" : 2,
+    "number_of_records_per_job" : 40
   }
 }

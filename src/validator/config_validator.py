@@ -188,11 +188,11 @@ def validate_pool_sizes_non_zero(shared_args):
 
     errors = []
 
-    gen_pool_size = shared_args['generator_pool_size']
-    write_pool_size = shared_args['writer_pool_size']
+    gen_pool_size = shared_args['number_of_generate_processes_per_pool']
+    number_of_write_processes_per_pool = shared_args['number_of_write_processes_per_pool']
     if gen_pool_size <= 0:
         errors.append("- Generation pool size must be a positive value.")
-    if write_pool_size <= 0:
+    if number_of_write_processes_per_pool <= 0:
         errors.append("- Writing pool size must be a positive value.")
     return errors
 
@@ -213,7 +213,7 @@ def validate_job_size_non_zero(shared_args):
     """
 
     error = []
-    job_size = shared_args['pool_job_size']
+    job_size = shared_args['number_of_records_per_job']
     if job_size <= 0:
         error = ["- Pool job size must be a positive value"]
     return error

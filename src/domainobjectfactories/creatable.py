@@ -137,7 +137,6 @@ class Creatable(ABC):
     """
 
     LONG_SHORT = ['Long', 'Short']
-    ACCOUNT_TYPES = ['ICP', 'ECP']  # TODO: remove after data model refactor
     TRUE_FALSE = [True, False]
     CURRENCIES = ['USD', 'CAD', 'EUR', 'GBP', 'CHF', 'JPY', 'SGD']
     ASSET_CLASSES = ['Stock', 'Cash']
@@ -466,25 +465,6 @@ class Creatable(ABC):
         return knowledge_date if position_type == 'SD' \
             else knowledge_date + timedelta(days=n_days_to_add)
 
-    def create_account(self, account_types=ACCOUNT_TYPES):
-        """ Creates an account value
-
-        Parameters
-        ----------
-        account_types : List
-            Contains all potential account_types
-
-        Returns
-        -------
-        String
-            Randomly selected account type from list provided/default list
-            appended with a 4-digit random string of characters
-        """
-        # TODO: REMOVE COMPLETELY ONCE ALL FACTORIES UPDATED
-        account_type = random.choice(account_types)
-        random_string = ''.join(random.choices(string.digits, k=4))
-        return ''.join([account_type, random_string])
-
     def create_return_type(self):
         """ Create a return type
 
@@ -675,7 +655,6 @@ class Creatable(ABC):
         SQLite3 Connection
             Connection to the database
         """
-
         self.__database = Sqlite_Database()
         return self.__database
 

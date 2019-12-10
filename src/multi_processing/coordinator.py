@@ -18,7 +18,7 @@ class Coordinator:
     queue_of_generation_jobs : Multiprocessing Queue
         Multiprocessing-safe, holds jobs for the generation process to format
         and execute.
-    queue_of_write_jobs : Multiprocessing Queue
+    queue_of_generated_records : Multiprocessing Queue
         Multiprocessing-safe, holds jobs for the writing process to format and
         execute.
     generation_coordinator : Generator
@@ -36,10 +36,10 @@ class Coordinator:
     create_jobs(domain_obj, quantity, job_size)
         Populate the generation job queue with jobs
 
-    start_generator(obj_class, pool_size)
+    start_generator(obj_class, number_of_generate_processes_per_pool)
         Begin the generation coordinator as a subprocess, with job pool size
 
-    start_writer(pool_size)
+    start_writer(number_of_write_processes_per_pool)
         Begin the writing coordinator as a subprocess, with job pool size
 
     get_generation_coordinator()
@@ -69,15 +69,15 @@ class Coordinator:
 
         queue_manager = Manager()
         self.__queue_of_generation_jobs = queue_manager.Queue()
-        self.__queue_of_write_jobs = queue_manager.Queue()
+        self.__queue_of_generated_records = queue_manager.Queue()
 
         self.__generator = Generator(
             self.__queue_of_generation_jobs,
-            self.__queue_of_write_jobs
+            self.__queue_of_generated_records
         )
 
         self.__writer = Writer(
-            self.__queue_of_write_jobs,
+            self.__queue_of_generated_records,
             file_builder.get_max_objects_per_file(),
             file_builder
         )
@@ -105,7 +105,7 @@ class Coordinator:
         number_of_records_not_yet_queued = \
             self.object_factory.get_record_count()
         number_of_records_per_job = \
-            self.object_factory.get_shared_args()['pool_job_size']
+            self.object_factory.get_shared_args()['number_of_records_per_job']
 
         while number_of_records_not_yet_queued > 0:
             if number_of_records_not_yet_queued > number_of_records_per_job:
@@ -125,21 +125,23 @@ class Coordinator:
 
         self.__queue_of_generation_jobs.put("terminate")
 
-    def start_generator(self):
+    def start_generator_process(self):
         """ Start the generation coordinator as a subprocess """
 
         generator_process = Process(
             target=self.get_generator().start,
-            args=(self.object_factory,)
+            args=(self.object_factory)
         )
         generator_process.start()
         self.processes.append(generator_process)
 
-    def start_writer(self):
+    def start_write_process(self):
         """ Starts the writing coordinator as a subprocess """
 
         number_of_write_processes_per_pool =\
-            self.object_factory.get_shared_args()['writer_pool_size']
+            self.object_factory.get_shared_args()[
+                'number_of_write_processes_per_pool'
+            ]
 
         writer_process = Process(
             target=self.get_writer().start,

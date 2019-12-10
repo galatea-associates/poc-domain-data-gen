@@ -96,11 +96,11 @@ def test_file_extension_failure():
     assert success is False
 
 
-def test_generator_pool_size_failure():
+def test_number_of_generate_processes_per_pool_failure():
     """ Ensure a negative integer for pool sizes fails """
 
     invalid_shared_args = copy.deepcopy(default_shared_args)
-    invalid_shared_args['generator_pool_size'] = -1
+    invalid_shared_args['number_of_generate_processes_per_pool'] = -1
 
     configurations = configuration.Configuration({
         "factory_definitions": default_factory_definitions,
@@ -113,11 +113,11 @@ def test_generator_pool_size_failure():
     assert success is False
 
 
-def test_writer_pool_size_failure():
+def test_number_of_write_processes_per_pool_failure():
     """ Ensure a negative integer for pool sizes fails """
 
     invalid_shared_args = copy.deepcopy(default_shared_args)
-    invalid_shared_args['writer_pool_size'] = -1
+    invalid_shared_args['number_of_write_processes_per_pool'] = -1
 
     configurations = configuration.Configuration({
         "factory_definitions": default_factory_definitions,
@@ -134,7 +134,7 @@ def test_job_size_failure():
     """ Ensure a negative integer for job size fails """
 
     invalid_shared_args = copy.deepcopy(default_shared_args)
-    invalid_shared_args['pool_job_size'] = -1
+    invalid_shared_args['number_of_records_per_job'] = -1
 
     configurations = configuration.Configuration({
         "factory_definitions": default_factory_definitions,

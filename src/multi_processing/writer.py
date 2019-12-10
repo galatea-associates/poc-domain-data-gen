@@ -1,5 +1,5 @@
 import time
-import pool_tasks
+import multi_processing.pool_tasks as pool_tasks
 
 
 class Writer:
@@ -9,7 +9,7 @@ class Writer:
 
     Attributes
     ----------
-    queue_of_write_jobs : Multiprocessed Queue
+    queue_of_generated_records : Multiprocessed Queue
         Contains results of the generation process. Each element is a list of
         lists of records.
     all_records : dict
@@ -60,14 +60,15 @@ class Writer:
     """
 
     def __init__(
-            self, queue_of_write_jobs, max_records_per_file, file_builder
+            self, queue_of_generated_records, max_records_per_file,
+            file_builder
     ):
         """ Assign write queue, maximum file size, and the file builder to
         use. Additionally, set starting/deafult values for all records,
 
         Parameters
         ----------
-        queue_of_write_jobs : Multiprocessing Queue
+        queue_of_generated_records : Multiprocessing Queue
             Shared, multiprocessing safe, queue holding lists of lists of
             records
         max_records_per_file : int
@@ -77,14 +78,12 @@ class Writer:
             file extension.
         """
 
-        self.queue_of_write_jobs = queue_of_write_jobs
-
-        self.all_records = []
-        self.file_number = 0
-        self.max_records_per_file = int(max_records_per_file)
-
+        self.queue_of_generated_records = queue_of_generated_records
+        self.list_of_dequeued_generated_records = []
         self.list_of_write_jobs = []
-        self.terminate = False
+        self.file_number = 0
+        self.max_records_per_file = max_records_per_file
+        self.terminate_job_dequeued = False
         self.file_builder = file_builder
 
     def start(self, number_of_write_processes_per_pool):
@@ -100,23 +99,32 @@ class Writer:
 
         maximum_length_of_write_job_list = \
             2 * number_of_write_processes_per_pool
-        while not self.terminate:
-            self.sleep_while_write_queue_empty()
-            self.handle_jobs(maximum_length_of_write_job_list)
-            self.run_jobs(number_of_write_processes_per_pool)
-            self.reset_job_list()
+
+        while not self.terminate_job_dequeued:
+            self.sleep_until_records_generated()
+            self.create_write_jobs(
+                maximum_length_of_write_job_list
+            )
+            pool_tasks.execute_write_jobs(
+                self.list_of_write_jobs, number_of_write_processes_per_pool
+            )
+            self.list_of_write_jobs = []
 
         self.calculate_residual_writes()
-        self.run_jobs(number_of_write_processes_per_pool)
+        pool_tasks.execute_write_jobs(
+            self.list_of_write_jobs, number_of_write_processes_per_pool
+        )
 
-    def sleep_while_write_queue_empty(self):
+    def sleep_until_records_generated(self):
         """ Sleep until records are on the queue """
 
-        while self.queue_of_write_jobs.empty():
+        while self.queue_of_generated_records.empty():
             time.sleep(1)
         return
 
-    def handle_jobs(self, maximum_length_of_write_job_list):
+    def create_write_jobs(
+            self, maximum_length_of_write_job_list
+    ):
         """ Takes items from the Multiprocess safe queue, if a terminate
         instruction, the appropriate flag is set. If not, it must be a list
         of records, thus it is formatted.
@@ -127,47 +135,37 @@ class Writer:
             Max length the job list can reach before it is added to the queue
         """
 
-        while not self.queue_of_write_jobs.empty() and \
+        while not self.queue_of_generated_records.empty() and \
                 len(self.list_of_write_jobs) < \
                 maximum_length_of_write_job_list:
-            record_list = self.queue_of_write_jobs.get()
-            if record_list == "terminate":
-                self.issue_termination()
+            list_of_lists_of_generated_records = \
+                self.queue_of_generated_records.get()
+            if list_of_lists_of_generated_records == "terminate":
+                self.terminate_job_dequeued = True
             else:
-                self.format_jobs(record_list)
+                self.update_list_of_dequeued_generated_records(
+                    list_of_lists_of_generated_records
+                )
 
-    def format_jobs(self, record_list):
+    def update_list_of_dequeued_generated_records(
+            self, list_of_lists_of_generated_records
+    ):
         """ Amalgamate all content from the record list into a single store.
 
         Parameters
         ----------
-        record_list
+        list_of_lists_of_generated_records
             List of record lists, each arising from an individual writing
             process.
         """
 
-        for records in record_list:
-            self.add_to_stored_records(records)
-            self.calculate_writes()
+        for list_of_generated_records in list_of_lists_of_generated_records:
+            self.list_of_dequeued_generated_records.append(
+                list_of_generated_records
+            )
+            self.update_list_of_write_jobs()
 
-    def issue_termination(self):
-        """ Alter the termination flag to be True """
-
-        self.terminate = True
-
-    def add_to_stored_records(self, records):
-        """ From the dequeued list of records, the record lists are combined
-        within a central store.
-
-        Parameters
-        ----------
-        records : List
-            List of records
-        """
-
-        self.all_records.append(records)
-
-    def calculate_writes(self):
+    def update_list_of_write_jobs(self):
         """ Calculates jobs from the currently dequeued information observed.
         For each chunk of stored records of size equal to the maximum file
         size, a new job is created and that data removed from primary store.
@@ -176,46 +174,22 @@ class Writer:
 
         # self.max_records_per_file indicates largest file size
         # self.all_records contains all records currently received
-        max_records_per_file = self.max_records_per_file
-        file_builder = self.file_builder
-        if len(self.all_records) > int(max_records_per_file):
-            file_num = self.get_file_num()
-            records = self.all_records[:max_records_per_file]
-            del self.all_records[:max_records_per_file]
-            job = {
-                'file_number': file_num,
-                'file_builder': file_builder,
+
+        if len(self.list_of_dequeued_generated_records) > \
+                self.max_records_per_file:
+            records = self.list_of_dequeued_generated_records[
+                      :self.max_records_per_file
+                      ]
+            del self.list_of_dequeued_generated_records[
+                :self.max_records_per_file
+                ]
+            write_job = {
+                'file_number': self.file_number,
+                'file_builder': self.file_builder,
                 'records': records
             }
-            self.job_list.append(job)
-
-    def get_file_num(self):
-        """ Return an incremented integer for sequentially named files
-
-        Returns
-        -------
-        int
-            The file number to be written next
-         """
-
-        cur = self.file_number
-        self.file_number = cur+1
-        return cur
-
-    def run_jobs(self, number_of_write_processes_per_pool):
-        """ Pass a list of jobs to the job pool coordinator to be executed.
-        Jobs contain the file number, the pre-instantiated file builder to
-        use, as well as  the data itself.
-        """
-
-        pool_tasks.execute_write_jobs(
-            self.job_list, number_of_write_processes_per_pool
-        )
-
-    def reset_job_list(self):
-        """ Resets the list of records to be written out to file """
-
-        self.job_list = []
+            self.list_of_write_jobs.append(write_job)
+            self.file_number += 1
 
     def calculate_residual_writes(self):
         """ Largely the same functionality as above calculation of writes, but
@@ -223,13 +197,11 @@ class Writer:
         remaining data in the store to be written to file regardless of size.
         """
 
-        file_builder = self.file_builder
-        file_num = self.get_file_num()
-        records = self.all_records
-        job = {
-                'file_number': file_num,
-                'file_builder': file_builder,
-                'records': records
-            }
-        self.job_list.append(job)
-        self.all_records = None
+        write_job = {
+            'file_number': self.file_number,
+            'file_builder': self.file_builder,
+            'records': self.list_of_dequeued_generated_records
+        }
+
+        self.list_of_write_jobs.append(write_job)
+        self.list_of_dequeued_generated_records = []

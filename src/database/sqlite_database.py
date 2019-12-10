@@ -1,6 +1,5 @@
 import os.path
 import sqlite3
-
 import pandas as pd
 
 
@@ -71,7 +70,6 @@ class Sqlite_Database:
         connection : SQlite Connection
             Connection to the database.
         """
-
         if not os.path.isfile("dependencies.db"):
             self.__connection = sqlite3.connect("dependencies.db",
                                                 timeout=30.0)

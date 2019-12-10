@@ -1,5 +1,5 @@
 import time
-import pool_tasks
+import multi_processing.pool_tasks as pool_tasks
 
 
 class Generator:
@@ -11,7 +11,7 @@ class Generator:
     ----------
     queue_of_generate_jobs : Multiprocess Queue
         Multiprocess safe queue from which jobs to generate data is taken
-    queue_of_write_jobs : Multiprocess Queue
+    queue_of_generated_records : Multiprocess Queue
         Multiprocess safe queue on which generated data is placed
     terminate : Boolean
         Boolean flag which when True indicates the coordinator is to terminate
@@ -33,20 +33,20 @@ class Generator:
         Return a pointer to the multiprocess safe generation job queue
     """
 
-    def __init__(self, queue_of_generate_jobs, queue_of_write_jobs):
+    def __init__(self, queue_of_generate_jobs, queue_of_generated_records):
         """ Assign variables from input, and set termination to False
 
         Parameters
         ----------
         queue_of_generate_jobs : Multiprocessed Queue
             Queue containing jobs to generate an amount of domain objects
-        queue_of_write_jobs : Multiprocessed Queue
+        queue_of_generated_records : Multiprocessed Queue
             Queue containing resultant generated objects for writing to file
         """
 
         self.queue_of_generate_jobs = queue_of_generate_jobs
-        self.queue_of_write_jobs = queue_of_write_jobs
-        self.terminate = False
+        self.queue_of_generated_records = queue_of_generated_records
+        self.terminate_job_dequeued = False
 
     def start(self, object_factory):
         """ Begin the cycle of waiting for, formatting, and running jobs,
@@ -60,22 +60,25 @@ class Generator:
         """
 
         number_of_processes_per_generate_job =\
-            object_factory.get_shared_args()['generator_pool_size']
+            object_factory.get_shared_args()[
+                'number_of_generate_processes_per_pool'
+            ]
         maximum_length_of_generate_job_list \
             = 2 * number_of_processes_per_generate_job
 
-        while not self.terminate:
+        while not self.terminate_job_dequeued:
             self.sleep_while_generate_queue_empty()
             list_of_generate_jobs = \
                 self.get_list_of_generate_jobs_from_generate_queue(
                     object_factory, maximum_length_of_generate_job_list
                 )
-            records = self.get_records_from_generate_jobs(
-                list_of_generate_jobs, number_of_processes_per_generate_job
+            records = pool_tasks.execute_generate_jobs(
+                list_of_generate_jobs,
+                number_of_processes_per_generate_job
             )
-            self.queue_of_write_jobs.put(records)
+            self.queue_of_generated_records.put(records)
 
-        self.queue_of_write_jobs.put("terminate")
+        self.queue_of_generated_records.put("terminate")
 
     def sleep_while_generate_queue_empty(self):
         """ Sleep until jobs are on the queue """
@@ -118,30 +121,9 @@ class Generator:
             generate_job = self.queue_of_generate_jobs.get()
 
             if generate_job == "terminate":
-                self.terminate = True
+                self.terminate_job_dequeued = True
 
             else:
                 list_of_generate_jobs.append([generate_job, object_factory])
 
         return list_of_generate_jobs
-
-    @staticmethod
-    def get_records_from_generate_jobs(
-        list_of_generate_jobs, number_of_processes_per_generate_job
-    ):
-        """ Pass a list of jobs to the multiprocessing pool scripts generate
-        method. This instantiates a pool and begins execution of the provided
-        list of jobs on it. The returned generated data is then placed on the
-        write queue.
-
-        Parameters
-        ----------
-        list_of_generate_jobs : List
-            Containing jobs to be ran over a Pool
-        number_of_processes_per_generate_job : int
-            The size of pool on which to execute the job list
-        """
-
-        return pool_tasks.generate(
-            list_of_generate_jobs, number_of_processes_per_generate_job
-        )

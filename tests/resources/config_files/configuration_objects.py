@@ -39,9 +39,9 @@ default_dev_factory_args = [
     }
 ]
 default_shared_args = {
-    'generator_pool_size': 1,
-    'writer_pool_size': 1,
-    'pool_job_size': 10000
+    'number_of_generate_processes_per_pool': 1,
+    'number_of_write_processes_per_pool': 1,
+    'number_of_records_per_job': 10000
 }
 
 default_dev_file_builder_args = [

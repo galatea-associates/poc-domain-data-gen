@@ -35,7 +35,6 @@ import ujson
 import os
 import sys
 from argparse import ArgumentParser
-from database.sqlite_database import Sqlite_Database
 from multi_processing.coordinator import Coordinator
 from exceptions.config_error import ConfigError
 from configuration.configuration import Configuration
@@ -83,7 +82,7 @@ def process_object_factory(file_builder, object_factory):
     object_factory.set_batch_size()
     coordinator = Coordinator(file_builder, object_factory)
 
-    coordinator.start_generate_process()
+    coordinator.start_generator_process()
     coordinator.start_write_process()
     coordinator.add_jobs_to_generation_queue()
     coordinator.await_termination()
@@ -191,43 +190,6 @@ def instantiate_object_factory(dev_factory_args,
                                      object_factory_config['class_name'])
     return object_factory_class(factory_arguments[object_factory_name],
                                 shared_args)
-
-
-def get_record_count(obj_config, obj_location):
-    """ Returns the number of records to be produced for a given object.
-    Where objects are non-dependent on others, the user-provided configuration
-    amount is used. Otherwise, the record_count is set to be the number of
-    records produced of the domain object the to-generate one is dependent
-    on.
-
-    Parameters
-    ----------
-    obj_config : dict
-        A domain objects configuration as provided by user
-    obj_location : dict
-        domain object location configuration from dev config, specifying
-        module and class names within the file system
-
-    Returns
-    -------
-    int
-        Number of records to generate, or the number of dependent objects
-        generated prior where cur object non-deterministic amount to generate
-    """
-
-    nondeterministic_objects = ['swap_contract', 'swap_position', 'cashflow']
-    object_module = obj_location['module_name']
-
-    if object_module not in nondeterministic_objects:
-        return obj_config['fixed_args']['record_count']
-    else:
-        db = Sqlite_Database()
-        if object_module == 'swap_contract':
-            return db.get_table_size('counterparties')
-        elif object_module == 'swap_position':
-            return db.get_table_size('swap_contracts')
-        elif object_module == 'cashflow':
-            return db.get_table_size('swap_positions')
 
 
 def get_dev_file_builder_config(file_builders, file_extension):
