@@ -1,5 +1,6 @@
 import os
 import sys
+from multiprocessing import Lock
 
 import ujson
 
@@ -70,7 +71,7 @@ def create_front_office_position(amount=1):
 
 def create_instrument(amount=1):
     obj = instrument_factory.InstrumentFactory(None, None)
-    return obj.create(amount, 0)
+    return obj.create(amount, 0, Lock())
 
 
 def create_trade(amount=1):

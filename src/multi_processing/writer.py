@@ -174,7 +174,7 @@ class Writer():
             List of records
         """
 
-        self.all_records.append(records)
+        self.all_records.extend(records)
 
     def calculate_writes(self):
         """ Calculates jobs from the currently dequeued information observed.

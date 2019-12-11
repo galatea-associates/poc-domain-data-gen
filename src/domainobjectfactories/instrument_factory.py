@@ -18,7 +18,7 @@ class InstrumentFactory(Creatable):
     INDUSTRY_CLASSIFICATIONS = \
         ['MANUFACTURING', 'TELECOMS', 'FINANCIAL SERVICES', 'GROCERIES']
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock):
         """ Create a set number of instruments
 
         Parameters
@@ -34,7 +34,9 @@ class InstrumentFactory(Creatable):
             Containing 'record_count' instruments
         """
 
+        lock.acquire()
         self.tickers = self.retrieve_column('tickers', "symbol")
+        lock.release()
 
         records = []
 

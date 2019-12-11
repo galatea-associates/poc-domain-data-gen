@@ -9,7 +9,7 @@ class CashFlowFactory(Creatable):
         a set amount of cash flows."""
     PAYMENT_STATUSES = ['Actual', 'Contractual']
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of cash flows
 
         Parameters

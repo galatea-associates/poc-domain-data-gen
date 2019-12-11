@@ -12,7 +12,7 @@ class SettlementInstructionFactory(Creatable):
     STATUS = ['MATCHED', 'UNMATCHED']
     message_reference_list = []
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of settlement instructions
 
         Parameters

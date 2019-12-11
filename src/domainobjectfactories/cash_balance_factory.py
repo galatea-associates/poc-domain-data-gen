@@ -12,7 +12,7 @@ class CashBalanceFactory(Creatable):
     CASH_BALANCE_PURPOSES = ['Cash Balance', 'P&L', 'Fees',
                              'Collateral Posted', 'Collateral Received']
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of cash balances
 
         Parameters
