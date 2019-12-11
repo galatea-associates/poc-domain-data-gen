@@ -109,18 +109,16 @@ class Coordinator:
 
         while number_of_records_not_yet_queued > 0:
             if number_of_records_not_yet_queued > number_of_records_per_job:
-                generate_job = {
-                    'quantity': number_of_records_per_job,
-                    'start_id': start_id
-                }
-                number_of_records_not_yet_queued -= number_of_records_per_job
-                start_id += number_of_records_per_job
+                quantity = number_of_records_per_job
             else:
-                generate_job = {
-                    'quantity': number_of_records_not_yet_queued,
-                    'start_id': start_id
-                }
-                number_of_records_not_yet_queued = 0
+                quantity = number_of_records_not_yet_queued
+
+            generate_job = {
+                'quantity': quantity,
+                'start_id': start_id
+            }
+            start_id += quantity
+            number_of_records_not_yet_queued -= quantity
             self.__queue_of_generation_jobs.put(generate_job)
 
         self.__queue_of_generation_jobs.put("terminate")

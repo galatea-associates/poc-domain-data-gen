@@ -1,10 +1,17 @@
 import sys
-
+import pytest
 sys.path.insert(0, 'tests/')
 from utils import shared_tests as shared
 from utils import helper_methods as helper
 
+"""
+Tests are skipped because the Stock Loan Position object is deprecated since 
+it is too complex to implement as part of the MVP. It will be refactored in 
+the future with a new set of attributes at which point this test can be 
+rewritten.
+"""
 
+@pytest.mark.skip(reason="Object is deprecated for MVP")
 def test_stock_loan_positions():
     records, domain_obj = helper.set_up_stock_loan_position_tests()
     shared.unique_ids(records, 'stock_loan_contract')
