@@ -12,7 +12,7 @@ class BackOfficePositionFactory(Creatable):
     LEDGERS = ['TD', 'SD']
     PURPOSES = ['Outright', 'Obligation']
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of back office positions
 
         Parameters
@@ -21,7 +21,11 @@ class BackOfficePositionFactory(Creatable):
             Number of back office positions to create
         start_id : int
             Starting id to create from
+        lock : Lock
+            Locks critical section of InstrumentFactory class.
+            Defaults to None in all other Factory classes.
 
+    factory subclasses
         Returns
         -------
         List

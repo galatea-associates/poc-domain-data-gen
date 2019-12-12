@@ -12,7 +12,7 @@ class CashBalanceFactory(Creatable):
     CASH_BALANCE_PURPOSES = ['Cash Balance', 'P&L', 'Fees',
                              'Collateral Posted', 'Collateral Received']
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of cash balances
 
         Parameters
@@ -21,6 +21,9 @@ class CashBalanceFactory(Creatable):
             Number of cash balances to create
         start_id : int
             Starting id to create from
+        lock : Lock
+            Locks critical section of InstrumentFactory class.
+            Defaults to None in all other Factory classes.
 
         Returns
         -------

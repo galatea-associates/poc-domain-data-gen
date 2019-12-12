@@ -5,7 +5,7 @@ pools use for each job in their respective job lists to perform the actual
 generation/writing tasks.
 """
 
-from multiprocessing import Pool
+from multiprocessing import Pool, Lock
 
 
 def generate(job_list, pool_size):
@@ -27,11 +27,23 @@ def generate(job_list, pool_size):
         to be written to file.
     """
 
-    pool = Pool(pool_size)
-    result = pool.map(generate_data, job_list)
-    pool.close()
-    pool.join()
-    return result
+    local_lock = Lock()
+    generate_pool = Pool(
+        processes=pool_size,
+        initializer=make_global,
+        initargs=(local_lock,)
+    )
+    generated_records = generate_pool.map(
+        generate_data, job_list
+    )
+    generate_pool.close()
+    generate_pool.join()
+    return generated_records
+
+
+def make_global(local_lock):
+    global lock
+    lock = local_lock
 
 
 def generate_data(job):
@@ -64,7 +76,11 @@ def generate_data(job):
     quantity = instructions['quantity']
     start_id = instructions['start_id']
 
-    records = object_factory.create(quantity, start_id)
+    if object_factory.__class__.__name__ == "InstrumentFactory":
+        records = object_factory.create(quantity, start_id, lock=lock)
+    else:
+        records = object_factory.create(quantity, start_id)
+
     return records
 
 

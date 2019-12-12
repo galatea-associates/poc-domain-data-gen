@@ -7,7 +7,7 @@ class CounterpartyFactory(Creatable):
     """ A class to create counterparties. Create method will create a
     set amount of positions. """
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of counterparties.
 
         Parameters

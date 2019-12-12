@@ -11,7 +11,7 @@ class TradeFactory(Creatable):
     TRADE_LEGS = ["EMPTY", "1", "2"]
     DIRECTIONS = ["BUY", "SELL"]
 
-    def create(self, record_count, start_id):
+    def create(self, record_count, start_id, lock=None):
         """ Create a set number of trades
 
         Parameters
@@ -20,6 +20,9 @@ class TradeFactory(Creatable):
             Number of trades to create
         start_id : int
             Starting id to create from
+        lock : Lock
+            Locks critical section of InstrumentFactory class.
+            Defaults to None in all other Factory classes.
 
         Returns
         -------
