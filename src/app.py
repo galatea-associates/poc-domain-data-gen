@@ -23,7 +23,7 @@
     second writing of these to file.
 
     The generation coordinator received instruction to generate X number of
-    objects over Y number of subprocesses (Pool Size). Once these jobs are
+    objects over Y number of child_processes (Pool Size). Once these jobs are
     executed and records returned, they are placed into a writing job queue.
     The writing to file coordinator picks up & formats these tasks before
     assigning them to execute on a second pool
@@ -83,10 +83,10 @@ def process_object_factory(file_builder, object_factory):
     object_factory.set_batch_size()
     coordinator = Coordinator(file_builder, object_factory)
 
-    coordinator.start_generator()
+    coordinator.start_creator()
     coordinator.start_writer()
-    coordinator.create_jobs()
-    coordinator.await_termination()
+    coordinator.populate_create_job_queue()
+    coordinator.join_parent_processes()
 
 
 def instantiate_file_builder(factory_definition,

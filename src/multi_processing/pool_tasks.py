@@ -8,15 +8,17 @@ generation/writing tasks.
 from multiprocessing import Pool, Lock
 
 
-def generate(job_list, pool_size):
+def run_create_jobs(
+        dequeued_create_jobs, number_of_create_child_processes
+):
     """ Instantiates a job Pool for user-defined size, and begins execution
     of provided jobs on the pool.
 
     Parameters
     ----------
-    job_list : list
-        Jobs to be executed on the
-    pool_size : int
+    dequeued_create_jobs : list
+        List of create jobs taken from the create job queue
+    number_of_create_child_processes : int
         The number of processes sitting within the pool for execution of jobs
         to be ran on.
 
@@ -28,17 +30,22 @@ def generate(job_list, pool_size):
     """
 
     local_lock = Lock()
-    generate_pool = Pool(
-        processes=pool_size,
+    create_pool = Pool(
+        processes=number_of_create_child_processes,
         initializer=make_global,
         initargs=(local_lock,)
     )
-    generated_records = generate_pool.map(
-        generate_data, job_list
+    # execute all jobs, placing the result of each job in a list
+    # this returns a list of lists, each list containing the records from
+    # one create job
+    created_records_from_all_jobs = create_pool.map(
+        create_records_from_create_job, dequeued_create_jobs
     )
-    generate_pool.close()
-    generate_pool.join()
-    return generated_records
+
+    create_pool.close()
+    create_pool.join()
+
+    return created_records_from_all_jobs
 
 
 def make_global(local_lock):
@@ -46,7 +53,7 @@ def make_global(local_lock):
     lock = local_lock
 
 
-def generate_data(job):
+def create_records_from_create_job(create_job):
     """ Generates a single set of records based on an individual job.
 
     Instruction contains the number of records to generate, or the number of
@@ -58,7 +65,7 @@ def generate_data(job):
 
     Parameters
     ----------
-    job : list
+    create_job : list
         List of 2 elements, firstly, the production instructions for objects:
         quantity to produce and the id to start generation from. The second
         element is the instantiated factory.
@@ -70,51 +77,47 @@ def generate_data(job):
         instruction set.
     """
 
-    instructions = job[0]
-    object_factory = job[1]
+    instructions, object_factory = create_job
 
-    quantity = instructions['quantity']
-    start_id = instructions['start_id']
+    quantity, start_id = instructions['quantity'], instructions['start_id']
 
     if object_factory.__class__.__name__ == "InstrumentFactory":
-        records = object_factory.create(quantity, start_id, lock=lock)
+        created_records = object_factory.create(quantity, start_id, lock=lock)
     else:
-        records = object_factory.create(quantity, start_id)
+        created_records = object_factory.create(quantity, start_id)
 
-    return records
+    return created_records
 
 
-def write(job_list, pool_size):
+def run_write_jobs(write_jobs, number_of_write_child_processes):
     """ Instantiates a job Pool for user-defined size, and begins execution
     of provided jobs on the pool.
 
     Parameters
     ----------
-    job_list : list
+    write_jobs : list
         Jobs to be executed on the
-    pool_size : int
+    number_of_write_child_processes : int
         The number of processes sitting within the pool for execution of jobs
         to be ran on.
     """
 
-    pool = Pool(pool_size)
-    pool.map(write_data, job_list)
+    pool = Pool(number_of_write_child_processes)
+    pool.map(build_file_from_write_job, write_jobs)
     pool.close()
     pool.join()
 
 
-def write_data(job):
+def build_file_from_write_job(write_job):
     """ Writes a single file of data based on the provided records.
-
     Parameters
     ----------
-    job : dict
+    write_job : dict
         Contains the file number, for sequential ordering. Contains the
         instantiated file builder, pre-configured to output the necessary
         file extension. Contains the records to be written to file.
     """
-    file_number = job['file_number']
-    file_builder = job['file_builder']
-    records = job['records']
+    file_number, file_builder, records = write_job['file_number'], \
+        write_job['file_builder'], write_job['records']
 
     file_builder.build(file_number, records)

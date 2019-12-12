@@ -1,13 +1,14 @@
 from multiprocessing import Manager, Process
-from multi_processing.generator import Generator
+from multi_processing.creator import Creator
 from multi_processing.writer import Writer
+import math
 
 # Class to coordinate the multiprocessing implementation. It is
 # required to abstract the multiprocessing logic from any unpickleable
 # objects, such as the database connection.
 
 
-class Coordinator():
+class Coordinator:
     """ Coordination class for the multiprocessing implementation. Required
     to abstract multiprocessing calls from unpickleable objects in the main
     program, such as database connections. Holds, instantiates and passes job
@@ -15,20 +16,20 @@ class Coordinator():
 
     Attributes
     ----------
-    generation_job_queue : Multiprocessing Queue
+    create_job_queue : Multiprocessing Queue
         Multiprocessing-safe, holds jobs for the generation process to format
         and execute.
-    write_job_queue : Multiprocessing Queue
+    created_record_queue : Multiprocessing Queue
         Multiprocessing-safe, holds jobs for the writing process to format and
         execute.
-    generation_coordinator : Generator
+    create_coordinator : Creator
         Holds both queues to take jobs from the former, and put the results of
         such in the latter.
     write_coordinator : Writer
         Holds writing job queue, taking jobs from which and formatting them
         before writing files of the user-given size.
-    processes : list
-        Adds started processes (Generator and Writer) for the purpose of
+    parent_processes : list
+        Adds started processes (Creator and Writer) for the purpose of
         knowing once they're finished.
 
     Methods
@@ -42,7 +43,7 @@ class Coordinator():
     start_writer(pool_size)
         Begin the writing coordinator as a subprocess, with job pool size
 
-    get_generation_coordinator()
+    get_create_coordinator()
         Return the generation coordinator
 
     get_write_coordinator()
@@ -62,30 +63,30 @@ class Coordinator():
         file_builder : File_Builder
             Instantiated and pre-configured file builder to write files of
             the necessary format.
-        object_factory : Generatable
+        object_factory : Creatable
             Instantiated and pre-configured object factory which produces
             the current object.
         """
 
         queue_manager = Manager()
-        self.__generation_job_queue = queue_manager.Queue()
-        self.__write_job_queue = queue_manager.Queue()
+        self.__create_job_queue = queue_manager.Queue()
+        self.__created_record_queue = queue_manager.Queue()
 
-        self.__generation_coordinator = Generator(
-            self.__generation_job_queue,
-            self.__write_job_queue
+        self.__create_coordinator = Creator(
+            self.__create_job_queue,
+            self.__created_record_queue
         )
 
         self.__write_coordinator = Writer(
-            self.__write_job_queue,
+            self.__created_record_queue,
             file_builder.get_max_objects_per_file(),
             file_builder
         )
 
         self.object_factory = object_factory
-        self.processes = []
+        self.__parent_processes = []
 
-    def create_jobs(self):
+    def populate_create_job_queue(self):
         """Populate the generation queue with jobs.
 
         Continually places jobs into the queue, counting down record_count,
@@ -101,65 +102,57 @@ class Coordinator():
         it to terminate once the currently-running jobs have ceased.
         """
 
-        start_id = 0
-        record_count = self.object_factory.get_record_count()
-        job_size = self.object_factory.get_shared_args()['pool_job_size']
+        number_of_records_to_create = self.object_factory.get_record_count()
+        number_of_records_per_job = self.object_factory.get_shared_args()[
+            'number_of_records_per_job'
+        ]
+        number_of_create_jobs_to_queue = math.ceil(
+            number_of_records_to_create / number_of_records_per_job
+        )
 
-        while record_count > 0:
-            if record_count > job_size:
-                job = {'quantity': job_size,
-                       'start_id': start_id}
-                record_count = record_count - job_size
-                start_id = start_id + job_size
-            else:
-                job = {'quantity': record_count,
-                       'start_id': start_id}
-                record_count = 0
-            self.__generation_job_queue.put(job)
+        number_of_records_without_create_jobs = number_of_records_to_create
 
-        self.__generation_job_queue.put("terminate")
+        for index in range(number_of_create_jobs_to_queue):
+            quantity = min(
+                number_of_records_without_create_jobs,
+                number_of_records_per_job
+            )
+            start_id = index * number_of_records_per_job
+            create_job = {
+                'quantity': quantity,
+                'start_id': start_id
+            }
+            self.__create_job_queue.put(create_job)
+            number_of_records_without_create_jobs -= quantity
 
-    def start_generator(self):
-        """ Start the generation coordinator as a subprocess """
+        self.__create_job_queue.put("terminate")
 
-        generator_p = Process(target=self.get_generation_coordinator().start,
-                              args=(self.object_factory,))
-        generator_p.start()
-        self.processes.append(generator_p)
+    def start_creator(self):
+        """ Start the creator coordinator as a process """
+
+        creator_parent_process = Process(
+            target=self.__create_coordinator.start,
+            args=(self.object_factory,)
+        )
+        creator_parent_process.start()
+        self.__parent_processes.append(creator_parent_process)
 
     def start_writer(self):
-        """ Starts the writing coordinator as a subprocess """
+        """ Starts the writing coordinator as a process """
 
-        writer_pool_size =\
-            self.object_factory.get_shared_args()['writer_pool_size']
+        number_of_write_child_processes =\
+            self.object_factory.get_shared_args()[
+                'number_of_write_child_processes'
+            ]
 
-        writer_p = Process(target=self.get_write_coordinator().start,
-                           args=(writer_pool_size,))
-        writer_p.start()
-        self.processes.append(writer_p)
+        writer_parent_process = Process(
+            target=self.__write_coordinator.start,
+            args=(number_of_write_child_processes,)
+        )
+        writer_parent_process.start()
+        self.__parent_processes.append(writer_parent_process)
 
-    def get_generation_coordinator(self):
-        """
-        Returns
-        -------
-        Generator
-            Instantiated Generator class, handles generation of domain objects
-        """
-
-        return self.__generation_coordinator
-
-    def get_write_coordinator(self):
-        """
-        Returns
-        -------
-        Writer
-            Instantiated Writer class, handles writing of domain objects to
-            file
-        """
-
-        return self.__write_coordinator
-
-    def await_termination(self):
-        """Waits for spawned subprocesses to terminate."""
-        for process in self.processes:
+    def join_parent_processes(self):
+        """Waits for spawned child_processes to terminate."""
+        for process in self.__parent_processes:
             process.join()
