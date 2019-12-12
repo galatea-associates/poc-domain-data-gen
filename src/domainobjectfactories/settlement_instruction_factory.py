@@ -21,6 +21,9 @@ class SettlementInstructionFactory(Creatable):
             Number of settlement instructions to create
         start_id : int
             Starting id to use when creating message references
+        lock : Lock
+            Locks critical section of InstrumentFactory class.
+            Defaults to None in all other Factory classes.
 
         Returns
         -------

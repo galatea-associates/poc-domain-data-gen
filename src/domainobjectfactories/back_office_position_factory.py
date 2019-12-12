@@ -21,7 +21,11 @@ class BackOfficePositionFactory(Creatable):
             Number of back office positions to create
         start_id : int
             Starting id to create from
+        lock : Lock
+            Locks critical section of InstrumentFactory class.
+            Defaults to None in all other Factory classes.
 
+    factory subclasses
         Returns
         -------
         List

@@ -20,6 +20,9 @@ class TradeFactory(Creatable):
             Number of trades to create
         start_id : int
             Starting id to create from
+        lock : Lock
+            Locks critical section of InstrumentFactory class.
+            Defaults to None in all other Factory classes.
 
         Returns
         -------

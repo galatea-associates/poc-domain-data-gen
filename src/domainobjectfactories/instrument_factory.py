@@ -27,6 +27,9 @@ class InstrumentFactory(Creatable):
             Number of instruments to create
         start_id : int
             Starting id to create from
+        lock : Lock
+            Lock ensures database access will be thread safe if multiple
+            processes are attempting to generate instruments
 
         Returns
         -------
