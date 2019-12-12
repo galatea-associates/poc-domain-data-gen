@@ -40,12 +40,6 @@ def generate(job_list, pool_size):
     generate_pool.join()
     return generated_records
 
-    # pool = Pool(pool_size)
-    # result = pool.map(generate_data, job_list)
-    # pool.close()
-    # pool.join()
-    # return result
-
 
 def make_global(local_lock):
     global lock

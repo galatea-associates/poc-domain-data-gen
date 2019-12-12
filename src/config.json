@@ -2,14 +2,14 @@
   "factory_definitions" : [
     {
       "instrument" : {
-        "max_objects_per_file" : 50,
+        "max_objects_per_file" : 500,
         "file_name" : "instruments",
         "output_file_type": "XML",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
         "fixed_args" : {
-          "record_count" : 50
+          "record_count" : 500
         },
         "dummy_fields": [
           {
@@ -31,14 +31,14 @@
     },
     {
       "account": {
-        "max_objects_per_file" : 50,
+        "max_objects_per_file" : 120,
         "file_name" : "accounts",
-        "output_file_type": "XML",
+        "output_file_type": "CSV",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
         "fixed_args" : {
-          "record_count" : 50
+          "record_count" : 500
         },
         "dummy_fields": [
           {
@@ -60,14 +60,14 @@
     },
     {
       "price" : {
-        "max_objects_per_file" : 50,
+        "max_objects_per_file" : 600,
         "file_name" : "prices",
         "output_file_type": "JSON",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
         "fixed_args": {
-          "record_count" : 50
+          "record_count" : 500
         },
         "dummy_fields": [
           {
@@ -118,7 +118,7 @@
     },
     {
       "front_office_position" : {
-        "max_objects_per_file" : 50,
+        "max_objects_per_file" : 60,
         "file_name" : "front_office_positions",
         "output_file_type": "CSV",
         "output_directory": "out",
@@ -293,8 +293,8 @@
   ],
   "shared_args" : {
     "google_drive_root_folder_id" : "1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv",
-    "generator_pool_size" : 1,
-    "writer_pool_size" : 1,
+    "generator_pool_size" : 2,
+    "writer_pool_size" : 2,
     "pool_job_size" : 10000
   }
 }
