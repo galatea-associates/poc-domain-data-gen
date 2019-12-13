@@ -9,6 +9,8 @@ from tests.resources.drive_files.data_stub import data
 from datetime import datetime, timezone
 import pytest
 
+folder_creation_timestamp = '000000'
+
 
 @pytest.fixture(scope='module', autouse=True)
 def gd_conn():
@@ -23,7 +25,7 @@ def gd_conn():
     Useful documentation: https://docs.pytest.org/en/latest/fixture.html
     """
     # SETUP:
-    gd_conn = GoogleDriveConnector("root")
+    gd_conn = GoogleDriveConnector("root", folder_creation_timestamp)
     yield gd_conn
 
     # TEAR DOWN:
@@ -33,7 +35,8 @@ def gd_conn():
 def get_folder_id(gd_conn):
     """ get the ID for the folder that test files have been uploaded into"""
     today = datetime.now(timezone.utc).date().strftime('%Y-%m-%d')
-    return gd_conn.get_folder_id(today, 'root')
+    date_folder_id = gd_conn.get_folder_id(today, 'root')
+    return gd_conn.get_folder_id(folder_creation_timestamp, date_folder_id)
 
 
 def upload(gd_conn, fb_class, fb_config):
