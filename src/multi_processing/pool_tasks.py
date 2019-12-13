@@ -1,4 +1,4 @@
-""" Pool Manager for both Generation and Writing tasks. Two methods are
+""" Pool Manager for both Creation and Writing tasks. Two methods are
 responsible for each, a catch-all generate/write method which configures
 the Pool for jobs to be executed on. Additionally included are methods the
 pools use for each job in their respective job lists to perform the actual
@@ -38,14 +38,14 @@ def run_create_jobs(
     # execute all jobs, placing the result of each job in a list
     # this returns a list of lists, each list containing the records from
     # one create job
-    created_records_from_all_jobs = create_pool.map(
+    created_records_from_multiple_jobs = create_pool.map(
         create_records_from_create_job, dequeued_create_jobs
     )
 
     create_pool.close()
     create_pool.join()
 
-    return created_records_from_all_jobs
+    return created_records_from_multiple_jobs
 
 
 def make_global(local_lock):
