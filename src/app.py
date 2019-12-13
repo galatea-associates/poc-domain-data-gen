@@ -138,7 +138,9 @@ def instantiate_file_builder(factory_definition,
     return file_builder_class(google_drive_connector, factory_args)
 
 
-def get_google_drive_connector(factory_definition, current_time_string, shared_args):
+def get_google_drive_connector(factory_definition,
+                               current_time_string,
+                               shared_args):
     """ Return an instance of the Google Drive Connector object if the
     object factory specified in factory_definition is configured to have
     records uploaded to google drive. The Google Drive root folder id specified
