@@ -3,32 +3,32 @@ from multi_processing import pool_tasks
 
 
 class Creator:
-    """ A class to coordinate the generation of domain objects as per jobs
-    observed within a multiprocessed queue. Data is then generated in a pool
-    before the result of which is put into the write queue.
+    """ A class to coordinate the creation of domain objects as per jobs
+    observed within a multiprocessed queue. Create jobs are sequentially
+    dequeued in batches and run over a pool of child processes, returning a
+    list containing all created records from the jobs in that batch.
 
     Attributes
     ----------
     create_job_queue : Multiprocess Queue
-        Multiprocess safe queue from which jobs to generate data is taken
+        Multiprocess safe queue from which jobs to create records are taken
     created_record_queue : Multiprocess Queue
-        Multiprocess safe queue on which generated data is placed
+        Multiprocess safe queue into which lists of created records are placed
     terminate_dequeued : Boolean
         Boolean flag which when True indicates the coordinator is to terminate
 
     Methods
     -------
-    start(obj_class, pool_size)
-        Begin the cycle of waiting for, formatting and running jobs. Continue
-        this until termination instruction observed
-    wait_for_jobs()
-        Sleep whilst the generation queue is empty
-    format_jobs(obj_class, pool_size)
-        Retrieve jobs from queue and place them into an iterable structure
-    issue_termination()
-        Set flag to terminate to True
-    run_jobs(job_list, pool_size)
-        Pass formatted jobs to the generation pool for execution
+    parent_process(object_factory)
+        Until the "terminate" flag is dequeued, cycle through a loop that waits
+        until the create job queue is not empty, then dequeues and runs a batch
+        of jobs, and puts a list of created records from that batch onto the
+        created record queue.
+    sleep_while_create_job_queue_empty()
+        Sleep whilst the create job queue is empty
+    get_dequeued_create_jobs(maximum_number_of_create_jobs_to_dequeue)
+        Return a list containing a batch of jobs dequeued from the create job
+        queue such that they can be run over a pool of child processes
     """
 
     def __init__(self, create_job_queue, created_record_queue):
@@ -37,24 +37,25 @@ class Creator:
         Parameters
         ----------
         create_job_queue : Multiprocessed Queue
-            Queue containing jobs to generate an amount of domain objects
+            Queue containing jobs to create a certain quantity of domain
+            objects
         created_record_queue : Multiprocessed Queue
-            Queue containing resultant generated objects for writing to file
+            Queue containing resultant created records for writing to file
         """
 
         self.create_job_queue = create_job_queue
         self.created_record_queue = created_record_queue
         self.terminate_dequeued = False
 
-    def start(self, object_factory):
+    def parent_process(self, object_factory):
         """ Begin the cycle of waiting for, formatting, and running jobs,
         continuing this until an instruction to terminate is observed.
 
         Parameters
         ----------
         object_factory : Creatable
-            Instantiated and pre-configured object factory which produces
-            the current object.
+            Instantiated and pre-configured object factory used to create
+            records from create jobs
         """
 
         number_of_create_child_processes =\
@@ -72,12 +73,14 @@ class Creator:
             self.sleep_while_create_job_queue_empty()
 
             dequeued_create_jobs = self.get_dequeued_create_jobs(
-                object_factory, maximum_number_of_create_jobs_to_dequeue
+                maximum_number_of_create_jobs_to_dequeue
             )
 
             created_records_from_multiple_jobs = \
                 pool_tasks.run_create_jobs(
-                    dequeued_create_jobs, number_of_create_child_processes
+                    dequeued_create_jobs,
+                    number_of_create_child_processes,
+                    object_factory
                 )
 
             self.created_record_queue.put(created_records_from_multiple_jobs)
@@ -91,7 +94,7 @@ class Creator:
             time.sleep(1)
 
     def get_dequeued_create_jobs(
-            self, object_factory, maximum_number_of_create_jobs_to_dequeue
+            self, maximum_number_of_create_jobs_to_dequeue
     ):
         """ Takes jobs from the Multiprocess Safe Queue and places them into
         a list for later execution. If twice the pool size of jobs are
@@ -125,6 +128,6 @@ class Creator:
             if create_job == "terminate":
                 self.terminate_dequeued = True
             else:
-                dequeued_create_jobs.append([create_job, object_factory])
+                dequeued_create_jobs.append(create_job)
 
         return dequeued_create_jobs

@@ -3,30 +3,67 @@
     Based on a user provided configuration, generate a set of random data
     pertaining to said configuration. Currently supported domain objects are:
 
-        * Back Office Position
-        * Cash Balance
-        * Cashflow
-        * Counterparty
-        * Depot Positions
-        * Front Office Position
         * Instrument
-        * Order Execution
+        * Account
+        * Trade
         * Price
-        * Stock Loan Position
-        * Swap Contract
-        * Swap Position
+        * Front Office Position
+        * Back Office Position
+        * Depot Position
+        * Cash Balance
+        * Cash Flow
+        * Settlement Instruction
 
-    Each domain object to be generated (record count > 0) is generated in
-    turn to account for inter-object dependencies. Generation is
-    multiprocessed with a primary coordinator spawning two child process
-    coordinators. One of these children handles object generation, and the
-    second writing of these to file.
+    Domain objects are created sequentially, with one domain object having all
+    output files written before starting on the next domain object. This is
+    sequenced to ensure that inter-object dependencies are created correctly.
 
-    The generation coordinator received instruction to generate X number of
-    objects over Y number of child_processes (Pool Size). Once these jobs are
-    executed and records returned, they are placed into a writing job queue.
-    The writing to file coordinator picks up & formats these tasks before
-    assigning them to execute on a second pool
+    Dependencies are established using a local SQLite database file. When
+    creating a domain object, any fields that may be referenced by dependant
+    objects are persisted to the database. Upon creating a dependant object,
+    the database is queried to retrieve an appropriate value.
+
+    When creating domain object records and writing them to files,
+    multiprocessing is used to increase time efficiency. A Coordinator object
+    is responsible for creating and managing these processes, and it will
+    spawn two parent processes: 'create_parent_process' and
+    'write_parent_process'. These each spawn a number of child processes as
+    specified in the 'shared_args' section of the user config.
+
+    The Coordinator will populate a FIFO 'create_job_queue' with create jobs
+    (dictionaries specifying a quantity of domain object records to be created
+    and later written to output file). The maximum quantity of records in a
+    create job is specified in the 'shared_args' section of the user config.
+
+    The create parent process will wait until the create job queue is not
+    empty, at which point it will dequeue create jobs and add them to a list.
+    It will not dequeue more than double the number of child create processes
+    worth of create jobs at a time to ensure that the child processes work on
+    reasonable sized batches of create jobs.
+
+    The dequeued create jobs in the list are executed over a pool of child
+    create processes, which, upon termination of all child processes, returns
+    a list created records. This list contains the collated output from that
+    batch of create jobs.
+
+    As batches of create jobs are run, the returned lists of records are added
+    to a FIFO 'generated_record_queue'. This queue is shared between the the
+    create and write parent processes.
+
+    The write parent process waits until the 'generated_record_queue' is not
+    empty, at which point it retrieves lists of records from the queue and
+    collates all records from those lists into a
+    'dequeued_created_records_not_yet_written_to_file' list.
+
+    It then creates a list of write jobs, each specifying a quantity of records
+    from the 'dequeued_created_records_not_yet_written_to_file' list to write
+    to file, and the name of the output file. A single output file can have
+    multiple write jobs, but a write job can only refer to one output file.
+
+    The write jobs in the list are run over a pool of child write processes,
+    which build the output files then terminate. Upon termination of all
+    processes, the write job list is emptied and the next iteration begins by
+    dequeuing any further records from the 'generated_record_queue'.
 
 """
 
@@ -55,49 +92,53 @@ def main():
     dev_factory_args = configurations.get_dev_factory_args()
 
     for factory_definition in factory_definitions:
-        file_builder = instantiate_file_builder(factory_definition,
-                                                dev_file_builder_args,
-                                                shared_args)
-        object_factory = instantiate_object_factory(dev_factory_args,
-                                                    factory_definition,
-                                                    shared_args)
+        file_builder = instantiate_file_builder(
+            factory_definition, dev_file_builder_args, shared_args
+        )
+
+        object_factory = instantiate_object_factory(
+            dev_factory_args, factory_definition, shared_args
+        )
+
         process_object_factory(file_builder, object_factory)
 
 
 def process_object_factory(file_builder, object_factory):
-    """ Instantiates generation and file-writing processes. Populates the
-    generation job queue & starts both generation and writing coordinators.
-    Awaits for both coordinators to terminate before continuing to the next
-    domain object, or finishing execution.
+    """
+    This method is called once per domain object, and instantiates a
+    Coordinator object for that domain object. The Coordinator spawns create
+    and write processes that use the instantiated object factory and file
+    builder respectively to create records and write them to output files.
 
     Parameters
     ----------
     file_builder : File_Builder
-        An instantiated filebuilder as per this objects required output
-        file type
+        An instantiated file builder as per this objects required output
+        file type specified in the user config
     object_factory : ObjectFactory
-        Instantiated object factory for the object to generate. Contains
-        generation parameters as well as the multiprocessing shared arguments.
+        Instantiated object factory for the object to create. Contains
+        creation parameters and multiprocessing shared arguments.
     """
 
     object_factory.set_batch_size()
+
     coordinator = Coordinator(file_builder, object_factory)
 
-    coordinator.start_creator()
-    coordinator.start_writer()
+    coordinator.start_create_parent_process()
+    coordinator.start_write_parent_process()
     coordinator.populate_create_job_queue()
     coordinator.join_parent_processes()
 
 
-def instantiate_file_builder(factory_definition,
-                             dev_file_builder_args,
-                             shared_args):
+def instantiate_file_builder(
+        factory_definition, dev_file_builder_args, shared_args
+):
     """ Returns file builder object from provided configs
 
     Parameters
     ----------
     factory_definition : dict
-        A domain object configuration as provided by user
+        A domain object configuration as specified in the user config
     dev_file_builder_args: dict
         Developer arguments defining where in the codebase file builder
         classes are defined
@@ -107,24 +148,29 @@ def instantiate_file_builder(factory_definition,
 
     Returns
     -------
-    File_Builder
-        Instantiated file builder as defined by the file builder
-        configurations, as per the user specified output type of
-        the given object configuration
+    FileBuilder
+        Instantiated file builder for a single domain object as specified in
+        the domain object configuration of the user config
     """
 
-    factory_name = next(iter(factory_definition))
-    factory_args = factory_definition[factory_name]
+    factory_args = list(factory_definition.values())[0]
 
     file_builder_name = factory_args['output_file_type']
-    file_builder_config = get_dev_file_builder_config(dev_file_builder_args,
-                                                      file_builder_name)
-    file_builder_class = get_class('filebuilders',
-                                   file_builder_config['module_name'],
-                                   file_builder_config['class_name'])
 
-    google_drive_connector = get_google_drive_connector(factory_definition,
-                                                        shared_args)
+    file_builder_config = get_dev_file_builder_config(
+        dev_file_builder_args, file_builder_name
+    )
+
+    file_builder_class = get_class(
+        'filebuilders',
+        file_builder_config['module_name'],
+        file_builder_config['class_name']
+    )
+
+    google_drive_connector = get_google_drive_connector(
+        factory_definition, shared_args
+    )
+
     return file_builder_class(google_drive_connector, factory_args)
 
 
@@ -159,11 +205,10 @@ def get_google_drive_connector(factory_definition, shared_args):
         return GoogleDriveConnector(root_folder_id)
 
 
-
-def instantiate_object_factory(dev_factory_args,
-                               factory_arguments,
-                               shared_args):
-    """ Returns factory object from provided configs
+def instantiate_object_factory(
+        dev_factory_args, factory_arguments, shared_args
+):
+    """ Returns object factory from provided configs
 
     Parameters
     ----------
@@ -178,20 +223,28 @@ def instantiate_object_factory(dev_factory_args,
 
     Returns
     -------
-    Generatable
-        Instantiated subclass of generatable as defined by the dev factory
-        arguments, as per the user specified object type this factory is to
-        generate.
+    Creatable
+        Instantiated subclass of Creatable for the domain object being
+        processed, from the class definition with location in the codebase
+        specified in the developer config.
+
     """
 
-    object_factory_name = next(iter(factory_arguments))
-    object_factory_config = get_dev_object_factory_config(dev_factory_args,
-                                                          object_factory_name)
-    object_factory_class = get_class('domainobjectfactories',
-                                     object_factory_config['module_name'],
-                                     object_factory_config['class_name'])
-    return object_factory_class(factory_arguments[object_factory_name],
-                                shared_args)
+    object_factory_name, factory_args = list(factory_arguments.items())[0]
+
+    object_factory_config = get_dev_object_factory_config(
+        dev_factory_args, object_factory_name
+    )
+
+    object_factory_class = get_class(
+        'domainobjectfactories',
+        object_factory_config['module_name'],
+        object_factory_config['class_name']
+    )
+
+    return object_factory_class(
+        factory_arguments[object_factory_name], shared_args
+    )
 
 
 def get_record_count(obj_config, obj_location):
@@ -232,7 +285,7 @@ def get_record_count(obj_config, obj_location):
 
 
 def get_dev_file_builder_config(file_builders, file_extension):
-    """ Get the configuration of a specified filebuilder. Iterate over the
+    """ Get the configuration of a specified file builder. Iterate over the
     set of file builder keys and if one matches the provided file extension
     then return the full configuration of that file builder.
 
@@ -312,6 +365,7 @@ def parse_config_files():
         retrieval methods defined within.
     """
     args = get_args()
+
     with open(args.user_config) as user_config:
         parsed_user_config = ujson.load(user_config)
         factory_definitions = parsed_user_config['factory_definitions']
@@ -322,12 +376,14 @@ def parse_config_files():
         dev_file_builder_args = parsed_dev_config['dev_file_builder_args']
         dev_factory_args = parsed_dev_config['dev_factory_args']
 
-    return Configuration({
-        "factory_definitions": factory_definitions,
-        "shared_args": shared_args,
-        "dev_file_builder_args": dev_file_builder_args,
-        "dev_factory_args": dev_factory_args
-    })
+    return Configuration(
+        {
+            "factory_definitions": factory_definitions,
+            "shared_args": shared_args,
+            "dev_file_builder_args": dev_file_builder_args,
+            "dev_factory_args": dev_factory_args
+        }
+    )
 
 
 def get_args():

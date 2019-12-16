@@ -1,17 +1,16 @@
-""" Pool Manager for both Creation and Writing tasks. Two methods are
-responsible for each, a catch-all generate/write method which configures
-the Pool for jobs to be executed on. Additionally included are methods the
-pools use for each job in their respective job lists to perform the actual
-generation/writing tasks.
+""" Pool Manager functionality for both create and write parent processes.
+Two methods are responsible for each, run_create_jobs and run_write_jobs, which
+run a batch of jobs over a configured pool of child processes. Helper methods
+are also provided to assist in running the jobs.
 """
 
 from multiprocessing import Pool, Lock
 
 
 def run_create_jobs(
-        dequeued_create_jobs, number_of_create_child_processes
+        dequeued_create_jobs, number_of_create_child_processes, object_factory
 ):
-    """ Instantiates a job Pool for user-defined size, and begins execution
+    """ Instantiates a Pool for user-defined size, and begins execution
     of provided jobs on the pool.
 
     Parameters
@@ -21,26 +20,45 @@ def run_create_jobs(
     number_of_create_child_processes : int
         The number of processes sitting within the pool for execution of jobs
         to be ran on.
+    object_factory : Creatable
+        Instantiated subclass of Creatable to be used to create records using
+        its create method
 
     Returns
     -------
     List
-        List of lists, each contained list is a set of generated records due
-        to be written to file.
+        List of created records collated from the results of each create job.
     """
 
+    # multiprocessing lock used to define critical section in the
+    # InstrumentFactory class
     local_lock = Lock()
     create_pool = Pool(
         processes=number_of_create_child_processes,
         initializer=make_global,
         initargs=(local_lock,)
     )
-    # execute all jobs, placing the result of each job in a list
-    # this returns a list of lists, each list containing the records from
-    # one create job
-    created_records_from_multiple_jobs = create_pool.map(
-        create_records_from_create_job, dequeued_create_jobs
-    )
+
+    # use a list comprehension to collect the result of each child processes
+    # the apply_async method is used in such that multiple arguments can
+    # be passed to the 'create_records_from_create_job' function, which is not
+    # possible using the Pool.map method
+    nested_list_of_created_records = [
+        async_result_object.get() for async_result_object in [
+            create_pool.apply_async(
+                create_records_from_create_job, args=(
+                    create_job, object_factory
+                )
+            ) for create_job in dequeued_create_jobs
+        ]
+    ]
+
+    # use a list comprehension to flatten the list of lists created above
+    created_records_from_multiple_jobs = [
+        created_record
+        for list_of_created_records in nested_list_of_created_records
+        for created_record in list_of_created_records
+    ]
 
     create_pool.close()
     create_pool.join()
@@ -49,38 +67,44 @@ def run_create_jobs(
 
 
 def make_global(local_lock):
+    """ helper function used in run_create_jobs that assigns the local_lock
+    parameter to a global lock variable. This is required since a
+    multiprocessing Lock object cannot otherwise be passed to a Pool method
+    since it is not pickleable (required due to implementation of Pool in the
+    multiprocessing module).
+
+    For more information see this SO thread (with line break for PEP8):
+    https://stackoverflow.com/
+    questions/25557686/python-sharing-a-lock-between-processes
+    """
     global lock
     lock = local_lock
 
 
-def create_records_from_create_job(create_job):
-    """ Generates a single set of records based on an individual job.
-
-    Instruction contains the number of records to generate, or the number of
-    records to retrieve from the database (in the case of dependent objects),
-    as well as the starting ID for this set in the case of sequential IDs.
-
-    Where objects are generated in nondeterministic amounts, sequential IDs
-    are not possible.
+def create_records_from_create_job(create_job, object_factory):
+    """ Returns a list of records created as specified by a single create job.
 
     Parameters
     ----------
-    create_job : list
-        List of 2 elements, firstly, the production instructions for objects:
-        quantity to produce and the id to start generation from. The second
-        element is the instantiated factory.
+    create_job : dict
+        dictionary specifying a quantity of records to create and the ID to
+        start from (for domain objects with sequential unique IDs)
+    object_factory : Creatable
+        Instantiated and pre-configured object factory used to create
+        records from create jobs
 
     Returns
     -------
     list
-        List containing all the records produced by this factory for this
-        instruction set.
+        List containing all the records created for this job
     """
 
-    instructions, object_factory = create_job
+    quantity, start_id = create_job['quantity'], create_job['start_id']
 
-    quantity, start_id = instructions['quantity'], instructions['start_id']
-
+    # this is run within the create parent process, which declared a global
+    # variable 'lock' upon initialisation. If the create job is for an
+    # 'instrument' domain object, the lock is passed to the InstrumentFactory
+    # to define a critical section.
     if object_factory.__class__.__name__ == "InstrumentFactory":
         created_records = object_factory.create(quantity, start_id, lock=lock)
     else:
@@ -89,35 +113,45 @@ def create_records_from_create_job(create_job):
     return created_records
 
 
-def run_write_jobs(write_jobs, number_of_write_child_processes):
-    """ Instantiates a job Pool for user-defined size, and begins execution
+def run_write_jobs(write_jobs, number_of_write_child_processes, file_builder):
+    """ Instantiates a Pool for user-defined size, and begins execution
     of provided jobs on the pool.
 
     Parameters
     ----------
     write_jobs : list
-        Jobs to be executed on the
+        List of write jobs to be run over the pool of child processes
     number_of_write_child_processes : int
         The number of processes sitting within the pool for execution of jobs
         to be ran on.
+    file_builder : FileBuilder
+        Instantiated subclass of FileBuilder used to write created records to
+        file
     """
 
-    pool = Pool(number_of_write_child_processes)
-    pool.map(build_file_from_write_job, write_jobs)
-    pool.close()
-    pool.join()
+    write_pool = Pool(number_of_write_child_processes)
+
+    # the apply_async method is used in a for loop such that multiple arguments
+    # can be passed to the 'build_file_from_write_job' function, which is not
+    # possible using the Pool.map method
+    for write_job in write_jobs:
+        write_pool.apply_async(
+            build_file_from_write_job, args=(write_job, file_builder)
+        )
+
+    write_pool.close()
+    write_pool.join()
 
 
-def build_file_from_write_job(write_job):
-    """ Writes a single file of data based on the provided records.
-    Parameters
+def build_file_from_write_job(write_job, file_builder):
+    """ Function to be called by each process in the pool in parallel, each
+    taking a different write job as input.
     ----------
     write_job : dict
-        Contains the file number, for sequential ordering. Contains the
-        instantiated file builder, pre-configured to output the necessary
-        file extension. Contains the records to be written to file.
+        Dictionary specifying the records to be written to file, and the file
+        number used to uniquely name the output file
+    file_builder : FileBuilder
+        Instantiated subclass of FileBuilder used to write the output file
     """
-    file_number, file_builder, records = write_job['file_number'], \
-        write_job['file_builder'], write_job['records']
-
+    file_number, records = write_job['file_number'], write_job['records']
     file_builder.build(file_number, records)

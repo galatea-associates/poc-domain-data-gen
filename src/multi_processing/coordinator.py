@@ -12,51 +12,53 @@ class Coordinator:
     """ Coordination class for the multiprocessing implementation. Required
     to abstract multiprocessing calls from unpickleable objects in the main
     program, such as database connections. Holds, instantiates and passes job
-    queues to generation and writing processes, additionally starts these.
+    queues to create and write processes, additionally starts these.
 
     Attributes
     ----------
     create_job_queue : Multiprocessing Queue
-        Multiprocessing-safe, holds jobs for the generation process to format
-        and execute.
+        Multiprocessing-safe, holds jobs for the create parent process to
+        dequeue and run
     created_record_queue : Multiprocessing Queue
-        Multiprocessing-safe, holds jobs for the writing process to format and
-        execute.
+        Multiprocessing-safe, holds lists of records created by the create
+        parent process for the write parent process to dequeue and write to
+        file
     create_coordinator : Creator
-        Holds both queues to take jobs from the former, and put the results of
-        such in the latter.
+        Manages the create parent processes and pool of child processes. Holds
+        both 'create_job_queue' and 'created_record_queue' to dequeue jobs
+        from the former, and put the created records from those jobs in the
+        latter.
     write_coordinator : Writer
-        Holds writing job queue, taking jobs from which and formatting them
-        before writing files of the user-given size.
+        Manages the write  parent processes and pool of child processes.
+        Holds the 'created_record_queue', dequeuing batches of jobs from it as
+        they arrive and running them over its pool of subprocesses.
+    object_factory : Creatable
+        Instantiated subclass of Creatable to be used for creating the records
+        when running create jobs
     parent_processes : list
-        Adds started processes (Creator and Writer) for the purpose of
-        knowing once they're finished.
-
+        Contains pointers to the create and write parent processes such that
+        they can accessed be terminated upon completion.
+...........................................
     Methods
     -------
-    create_jobs(domain_obj, quantity, job_size)
-        Populate the generation job queue with jobs
+    populate_create_job_queue()
+        Populate the create job queue with jobs based on the number of records
+        to generate and the maximum number of records per job as specified in
+        the user config
 
-    start_generator(obj_class, pool_size)
-        Begin the generation coordinator as a subprocess, with job pool size
+    start_create_parent_process()
+        Start the create parent process and append to 'parent_processes'
 
-    start_writer(pool_size)
-        Begin the writing coordinator as a subprocess, with job pool size
+    start_write_parent_process(pool_size)
+        Start the write parent process and append to 'parent_processes'
 
-    get_create_coordinator()
-        Return the generation coordinator
-
-    get_write_coordinator()
-        Return the write coordinator
-
-    await_termination()
-        Wait for generation & write coordinators to terminate
+    join_parent_processes()
+        Wait for create & write coordinators to terminate
     """
 
     def __init__(self, file_builder, object_factory):
-        """Create Job Queues for both generation and file writing processes.
-        Instantiate the coordinating process for both, by default not running
-        until their "start" methods are called.
+        """Set initial values of instance attributes. Process coordinators will
+        not run until their 'parent_process' methods are called.
 
         Parameters
         ----------
@@ -83,76 +85,86 @@ class Coordinator:
             file_builder
         )
 
-        self.object_factory = object_factory
+        self.__object_factory = object_factory
         self.__parent_processes = []
 
     def populate_create_job_queue(self):
-        """Populate the generation queue with jobs.
+        """Populate the create job queue with create jobs.
 
-        Continually places jobs into the queue, counting down record_count,
-        the number of records of this object to produce, until it's value is 0
-
-        A job is a 2-element dictionary. Quantity and Start_ID are arguments
-        for the factories generate call. Quantity  informs as to the number of
-        objects to produce. Start_ID keeps track of the batch of IDs the job
-        will be producing in the case of sequentially ID'd domain objects.
+        A create job is a 2-element dictionary. Quantity and Start_ID are
+        arguments for the factories create call. Quantity informs as to the
+        number of objects to produce. Start_ID keeps track of the batch of IDs
+        the job will be producing in the case of sequentially ID'd domain
+        objects.
 
         A termination flag is added to the queue last. This informs the
-        generation process to stop awaiting instruction once read, causing
+        create parent process to stop awaiting instruction once read, causing
         it to terminate once the currently-running jobs have ceased.
         """
 
-        number_of_records_to_create = self.object_factory.get_record_count()
-        number_of_records_per_job = self.object_factory.get_shared_args()[
+        number_of_records_to_create = self.__object_factory.get_record_count()
+        number_of_records_per_job = self.__object_factory.get_shared_args()[
             'number_of_records_per_job'
         ]
+
+        # round up using math.ceil to ensure a job is created for residual
+        # records that do not take up a whole file's worth of records
+
         number_of_create_jobs_to_queue = math.ceil(
             number_of_records_to_create / number_of_records_per_job
         )
 
         number_of_records_without_create_jobs = number_of_records_to_create
+        start_id = 0
 
-        for index in range(number_of_create_jobs_to_queue):
+        for _ in range(number_of_create_jobs_to_queue):
             quantity = min(
                 number_of_records_without_create_jobs,
                 number_of_records_per_job
             )
-            start_id = index * number_of_records_per_job
+
             create_job = {
                 'quantity': quantity,
                 'start_id': start_id
             }
+
             self.__create_job_queue.put(create_job)
+
+            start_id += number_of_records_per_job
             number_of_records_without_create_jobs -= quantity
 
         self.__create_job_queue.put("terminate")
 
-    def start_creator(self):
-        """ Start the creator coordinator as a process """
+    def start_create_parent_process(self):
+        """ Start the create parent process """
 
-        creator_parent_process = Process(
-            target=self.__create_coordinator.start,
-            args=(self.object_factory,)
+        create_parent_process = Process(
+            target=self.__create_coordinator.parent_process,
+            args=(self.__object_factory,)
         )
-        creator_parent_process.start()
-        self.__parent_processes.append(creator_parent_process)
 
-    def start_writer(self):
-        """ Starts the writing coordinator as a process """
+        create_parent_process.start()
+
+        self.__parent_processes.append(create_parent_process)
+
+    def start_write_parent_process(self):
+        """ Starts the write parent process """
 
         number_of_write_child_processes =\
-            self.object_factory.get_shared_args()[
+            self.__object_factory.get_shared_args()[
                 'number_of_write_child_processes'
             ]
 
-        writer_parent_process = Process(
-            target=self.__write_coordinator.start,
+        write_parent_process = Process(
+            target=self.__write_coordinator.parent_process,
             args=(number_of_write_child_processes,)
         )
-        writer_parent_process.start()
-        self.__parent_processes.append(writer_parent_process)
+
+        write_parent_process.start()
+
+        self.__parent_processes.append(write_parent_process)
 
     def join_parent_processes(self):
-        """Waits for spawned child_processes to terminate."""
+        """Waits for spawned child processes to terminate."""
         for process in self.__parent_processes:
             process.join()
