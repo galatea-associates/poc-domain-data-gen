@@ -53,7 +53,9 @@ def get(object_factory):
     factory_config = object_factory.get_factory_config()
     factory_name = next(iter(factory_config))
 
-    default_job_size = object_factory.get_shared_args()['number_of_records_per_job']
+    default_job_size = object_factory.get_shared_args()[
+        'number_of_records_per_job'
+    ]
     # custom_args = object_factory.
 
     nondeterministic_objects = ['swap_contract', 'swap_position', 'cashflow']
