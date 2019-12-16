@@ -55,7 +55,7 @@ def main():
     dev_file_builder_args = configurations.get_dev_file_builder_args()
     dev_factory_args = configurations.get_dev_factory_args()
 
-    current_time_string = datetime.now(timezone.utc).strftime("%H%M%S")
+    current_time_string = datetime.now(timezone.utc).strftime("%H:%M:%S")
 
     for factory_definition in factory_definitions:
         file_builder = instantiate_file_builder(factory_definition,
