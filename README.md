@@ -41,11 +41,11 @@ Where no configuration argument is given, the program defaults to the path ‘sr
 ### In-IDE Execution
 Define a configuration file located as per the default location or configure project run-time arguments to point to a configuration file located elsewhere.
 
-####Pycharm Run Config
-**Work out how to insert images**
+#### Pycharm Run Config
+![alt text](PyCharmRunConfig.png)
 
-####Pycharm Test Run Config
-**Work out how to insert images**
+#### Pycharm Test Run Config
+![alt text](PyCharmTestRunConfig.png)
 
 ## Configuration Files
 Execution relies on two JSON config files.  Default versions are provided, although you can replace them with new files with your own specific config if required (although you’ll then need to add/update references to the config files, such as when entering the command to start the application).
@@ -94,7 +94,9 @@ One of the requirements was for users to be able to provide parameters to descri
 
 E.g. the following entry in the config will mean that when instruments are generated each instrument will contain all the fields described in the data model along with 3 dummy fields containing alphanumeric strings 10 characters long and 5 dummy fields each containing a 12-digit number
 
-**Work out how to insert images**
+![alt text](DummyFieldConfig.png)
+
+![alt text](DummyFieldOutput.png)
 
 ## Google Drive Location
 
