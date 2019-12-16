@@ -48,7 +48,7 @@ Define a configuration file located as per the default location or configure pro
 ![alt text](PyCharmTestRunConfig.png)
 
 ## Configuration Files
-Execution relies on two JSON config files.  Default versions are provided, although you can replace them with new files with your own specific config if required (although you’ll then need to add/update references to the config files, such as when entering the command to start the application).
+Execution relies on two JSON config files.  Default versions are provided, although you can replace them with new files with your own specific config if required.
 
 ### dev_config.json
 This file contains configuration that would usually only be set by a developer and we wouldn’t expect an end-user to need to update this file.  It contains two sections:
