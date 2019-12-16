@@ -57,7 +57,7 @@ This file contains configuration that would usually only be set by a developer a
     * Keys maps to two values
         * module_name is the name of the module containing the factory class which creates this object
         * class_name is the name of the factory class which creates this object
-        * Note the naming convention for the module and class names, these reflect the PEP 8 coding style. The "file_builder_name" value must reflect the "name" attribute of one of the file builder.
+        * Note the naming convention for the module and class names, these reflect the PEP 8 coding style. The "file_builder_name" value must reflect the "name" attribute of one of the file builders.
 * dev_file_builder_args
     * Includes a key for every file format the output can take (e.g. CSV, XML, etc)
     * Key maps to three values
@@ -71,7 +71,7 @@ config.json contains the configuration stating which objects should be created, 
 Each object created needs its own key.  Each key should map to the following items:
 * max_objects_per_file: The maximum number of records that will be included in a single file
 * file_name: Output file name
-    * Where multiple files are generated for the same domain object, output files are named sequentially as per; object_000.json, object_001.json and so on.
+    * Where multiple files are generated for the same domain object, output files are named sequentially as per: object_000.json, object_001.json and so on.
 * output_file_type: This must refer to one of the keys under dev_file_builder_args in the dev_config.json file
 * output_directory: Output directory for generated files
 * upload_to_google_drive: Whether the files containing this object will be uploaded to Google Drive
@@ -85,12 +85,12 @@ Each object created needs its own key.  Each key should map to the following ite
 * field_type_args: (field is only required when xml files are being generated)
     * xml_root_element: The name to give to outmost node of the xml file produced
     * xml_item_name: The name to give to the individual nodes of the xml file produced
-*shared_args:
+* shared_args:
     * google_drive_root_folder_id: the ID (taken from the URL) of the folder in Google Drive that the output files will be uploaded to
     * generator_pool_size: **Help me explain with Wilf**
 
-#### dummy_field
-One of the requirements in the One-Pager was for users to be able to provide parameters to describe “the shape and volume of data you want to generate”.  In order to do this we decided to allow users to include dummy fields in the objects generated.  These dummy fields allow users to increase the number of fields generated for each record and specify the type of those fields.
+#### dummy_fields
+One of the requirements was for users to be able to provide parameters to describe “the shape and volume of data you want to generate”.  In order to do this we decided to allow users to include dummy fields in the objects generated.  These dummy fields allow users to increase the number of fields generated for each record and specify the type of those fields.
 
 E.g. the following entry in the config will mean that when instruments are generated each instrument will contain all the fields described in the data model along with 3 dummy fields containing alphanumeric strings 10 characters long and 5 dummy fields each containing a 12-digit number
 
@@ -98,9 +98,10 @@ E.g. the following entry in the config will mean that when instruments are gener
 
 ## Google Drive Location
 
-The default Google Drive folder id in the config is “1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv“ which points to a folder accessible to anyone within Galatea called “FUSE-Test-Data-Gen-Uploads” accessible [here](https://drive.google.com/drive/folders/1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv?usp=sharing)
+The default Google Drive folder id in the config is “1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv“ which points to a folder accessible to anyone within Galatea.  The folder is called “FUSE-Test-Data-Gen-Uploads” and is accessible [here](https://drive.google.com/drive/folders/1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv?usp=sharing).
 
 When files are uploaded to Google drive, they will be uploaded into a folder with the current UTC time (HHMMSS) as the name with a parent folder with today's date (YYYY-MM-DD) as the name. If the folder doesn't exist for today, it will be created.
+
 When uploading to Google Drive for the first time, you will be required to login using your Galatea Google account, a browser window should automatically load to allow you do this. Once you have done this, an authentication token file "token.pickle" will be downloaded onto your machine. When running the service remotely, it is important to ensure that a valid token.pickle file exists in the same directory as the application.
 
 
@@ -133,5 +134,5 @@ Cross-object consistency means care must be taken when generating some objects t
 | Settlement Instruction | Account, Instrument |
 | Trade  | Account, Instrument |
 
-Outputs
+## Outputs
 Generation output is done on a per-object basis. As per the configuration, each object has an amount to generate, a maximum file size to adhere to, and a format. Where the number to generate exceeds the maximum file size, multiple files are generated. The file naming convention is sequential, for instance: instrument_000.json, instrument_001.json, and so on.
