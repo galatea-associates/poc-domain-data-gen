@@ -58,10 +58,14 @@ def main():
     current_time_string = datetime.now(timezone.utc).strftime("%H:%M:%S")
 
     for factory_definition in factory_definitions:
+        google_drive_connector = get_google_drive_connector(
+            factory_definition,
+            current_time_string,
+            shared_args)
+
         file_builder = instantiate_file_builder(factory_definition,
                                                 dev_file_builder_args,
-                                                current_time_string,
-                                                shared_args)
+                                                google_drive_connector)
         object_factory = instantiate_object_factory(dev_factory_args,
                                                     factory_definition,
                                                     shared_args)
@@ -95,8 +99,7 @@ def process_object_factory(file_builder, object_factory):
 
 def instantiate_file_builder(factory_definition,
                              dev_file_builder_args,
-                             shared_args,
-                             current_time_string):
+                             google_drive_connector):
     """ Returns file builder object from provided configs
 
     Parameters
@@ -106,13 +109,8 @@ def instantiate_file_builder(factory_definition,
     dev_file_builder_args: dict
         Developer arguments defining where in the codebase file builder
         classes are defined
-    shared_args: dict
-        User arguments defining parameters for multiprocessing and google drive
-        upload, which are fixed for all object factories and file builders
-    current_time_string : string
-        Current time in HHMMSS format.  If the files created are uploaded to
-        GDrive this will be used as the name of the folder they are uploaded
-        into
+    google_drive_connector: GoogleDriveConnector
+        Connection to enable files created to be uploaded to Google Drive
 
     Returns
     -------
@@ -132,9 +130,6 @@ def instantiate_file_builder(factory_definition,
                                    file_builder_config['module_name'],
                                    file_builder_config['class_name'])
 
-    google_drive_connector = get_google_drive_connector(factory_definition,
-                                                        shared_args,
-                                                        current_time_string)
     return file_builder_class(google_drive_connector, factory_args)
 
 
@@ -173,7 +168,6 @@ def get_google_drive_connector(factory_definition,
     if google_drive_flag == 'TRUE':
         root_folder_id = shared_args['google_drive_root_folder_id']
         return GoogleDriveConnector(root_folder_id, current_time_string)
-
 
 
 def instantiate_object_factory(dev_factory_args,
@@ -313,7 +307,7 @@ def get_class(package_name, module_name, class_name):
     class
         Uninstantiated requested class
     """
-    return getattr(importlib.import_module(package_name+'.'+module_name),
+    return getattr(importlib.import_module(package_name + '.' + module_name),
                    class_name)
 
 
