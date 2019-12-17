@@ -188,8 +188,8 @@ def validate_pool_sizes_non_zero(shared_args):
 
     errors = []
 
-    gen_pool_size = shared_args['generator_pool_size']
-    write_pool_size = shared_args['writer_pool_size']
+    gen_pool_size = shared_args['number_of_create_child_processes']
+    write_pool_size = shared_args['number_of_write_child_processes']
     if gen_pool_size <= 0:
         errors.append("- Generation pool size must be a positive value.")
     if write_pool_size <= 0:
@@ -219,7 +219,7 @@ def validate_job_size(shared_args, factory_definitions):
     """
 
     error = []
-    job_size = shared_args['pool_job_size']
+    job_size = shared_args['number_of_records_per_job']
     try:
         maximum_job_size = min(
             [

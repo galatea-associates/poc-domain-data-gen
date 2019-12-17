@@ -10,10 +10,11 @@ class GoogleDriveConnector():
     # If modifying these scopes, delete the file token.pickle.
     SCOPES = ['https://www.googleapis.com/auth/drive']
 
-    def __init__(self, root_folder_id):
+    def __init__(self, root_folder_id, current_time_string):
         creds = self.build_creds()
         self.service = build('drive', 'v3', credentials=creds)
         self.root_folder_id = root_folder_id
+        self.current_time_string = current_time_string
 
     def build_creds(self):
         creds = None

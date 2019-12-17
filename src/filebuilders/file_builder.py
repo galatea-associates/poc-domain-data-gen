@@ -112,24 +112,25 @@ class FileBuilder(abc.ABC):
             Name of file on local machine
         """
         root_folder_id = self.__google_drive_connector.root_folder_id
+        timestamp_folder = self.__google_drive_connector.current_time_string
         todays_date = datetime.now(timezone.utc).date().strftime('%Y-%m-%d')
 
         # Check if a folder for today's date exists, create if it doesn't
-        folder_id = self.__google_drive_connector\
+        date_folder_id = self.__google_drive_connector\
             .get_folder_id(todays_date, root_folder_id)
-        if folder_id is None:
-            folder_id = self.__google_drive_connector\
+        if date_folder_id is None:
+            date_folder_id = self.__google_drive_connector\
                 .create_folder(todays_date, root_folder_id)
 
-        # Check if the file already exists, create it if not
-        file_id = self.__google_drive_connector\
-            .get_file_id(file_name, folder_id)
-        if file_id is None:
-            self.__google_drive_connector\
-                .create_file(local_folder_name, file_name, folder_id)
-        else:
-            self.__google_drive_connector\
-                .update_file(local_folder_name, file_name, file_id)
+        # Check if a folder for the timestamp exists, create if it doesn't
+        timestamp_folder_id = self.__google_drive_connector \
+            .get_folder_id(timestamp_folder, date_folder_id)
+        if timestamp_folder_id is None:
+            timestamp_folder_id = self.__google_drive_connector \
+                .create_folder(timestamp_folder, date_folder_id)
+
+        self.__google_drive_connector\
+            .create_file(local_folder_name, file_name, timestamp_folder_id)
 
     def open_file(self):
         """ Open a file of initialised directory and name """
