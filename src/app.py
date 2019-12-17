@@ -94,8 +94,6 @@ def process_object_factory(file_builder, object_factory):
         Contains creation parameters and multiprocessing shared arguments.
     """
 
-    object_factory.set_batch_size()
-
     coordinator = Coordinator(file_builder, object_factory)
 
     coordinator.start_create_parent_process()
