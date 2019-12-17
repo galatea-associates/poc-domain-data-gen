@@ -29,7 +29,7 @@ asserted against. Where tests are set up to fail, assert that the result is
 False. Where tests are due to succeed, assert against True. """
 
 
-def test_record_count_success():
+def test_valid_config_success():
     """ Ensure a valid configuration succeeds"""
 
     configurations = configuration.Configuration({

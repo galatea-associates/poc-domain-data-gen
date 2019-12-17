@@ -47,7 +47,7 @@ def validate(configurations):
         validate_output_file_extensions(dev_file_builder_args,
                                         factory_definitions),
         validate_pool_sizes_non_zero(shared_args),
-        validate_job_size(shared_args, factory_definitions),
+        validate_number_of_records_per_job(shared_args, factory_definitions)
     ]
 
     # Remove instances of None or empty lists from error list
@@ -197,7 +197,7 @@ def validate_pool_sizes_non_zero(shared_args):
     return errors
 
 
-def validate_job_size(shared_args, factory_definitions):
+def validate_number_of_records_per_job(shared_args, factory_definitions):
     """ Ensure the specified job size is greater than zero but less than the
     smallest maximum number of records per file
 
@@ -219,9 +219,9 @@ def validate_job_size(shared_args, factory_definitions):
     """
 
     error = []
-    job_size = shared_args['number_of_records_per_job']
+    number_of_records_per_job = shared_args['number_of_records_per_job']
     try:
-        maximum_job_size = min(
+        minmax_objects_per_file = min(
             [
                 config['max_objects_per_file']
                 for config in factory_definitions.values()
@@ -229,11 +229,12 @@ def validate_job_size(shared_args, factory_definitions):
             ]
         )
 
-        if not 0 < job_size <= maximum_job_size:
+        if not 0 < number_of_records_per_job <= minmax_objects_per_file:
             error = [
-                "- Pool job size must be greater than 0 but not greater " +
-                "than the smallest 'max_objects_per_file' value in the " +
-                f"config ({maximum_job_size})"
+                "- 'number_of_records_per_job'' must be greater than 0 but " +
+                "not greater than the smallest 'max_objects_per_file' value " +
+                "in the config (smallest 'max_objects_per_file': " +
+                f"{minmax_objects_per_file})"
             ]
     except ValueError:
         # list comprehension above returned an empty list
@@ -241,10 +242,10 @@ def validate_job_size(shared_args, factory_definitions):
         # which causes min() to throw a ValueError exception
         # the underlying problem will be picked up by the
         # validate_record_counts function, so we need only check that
-        # job size is non-negative
-        if not 0 < job_size:
+        # number_of_records_per_job is non-negative
+        if not 0 < number_of_records_per_job:
             error = [
-                "- Pool job size must be greater than 0"
+                "- 'number_of_records_per_job' must be greater than 0"
             ]
     finally:
         return error
