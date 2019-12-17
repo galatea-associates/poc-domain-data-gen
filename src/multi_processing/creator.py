@@ -4,7 +4,7 @@ from multi_processing import pool_tasks
 
 class Creator:
     """ A class to coordinate the creation of domain objects as specified by
-    'create jobs' from the multiprocessing-safe Queue 'create_job_queue'.
+    'create jobs' from the multiprocessing-safe queue 'create_job_queue'.
     'Create jobs' are sequentially dequeued in batches and run over a pool of
     child processes, returning a list containing all created records from the
     jobs in that batch.
