@@ -20,12 +20,6 @@ def delete_local_database():
         os.remove('dependencies.db')
 
 
-def get_configuration():
-    file_path = 'src/config.json'
-    with open(file_path, 'r+') as file:
-        return ujson.load(file)
-
-
 def create_db():
     return Sqlite_Database()
 
