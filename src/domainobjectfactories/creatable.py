@@ -3,7 +3,6 @@ import string
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone, timedelta
 
-import multi_processing.batch_size_calc as batch_size_calc
 from database.sqlite_database import Sqlite_Database
 
 
@@ -720,13 +719,3 @@ class Creatable(ABC):
             The number of records this factory will produce.
         """
         return int(self.__config['fixed_args']['record_count'])
-
-    def set_batch_size(self):
-        """ Sets the batch size value for the factory.
-
-        Parameters
-        ----------
-        batch_size : int
-            The size of the batch to create objects in
-        """
-        self.batch_size = batch_size_calc.get(self)
