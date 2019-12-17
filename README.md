@@ -87,7 +87,9 @@ Each object created needs its own key.  Each key should map to the following ite
     * xml_item_name: The name to give to the individual nodes of the xml file produced
 * shared_args:
     * google_drive_root_folder_id: the ID (taken from the URL) of the folder in Google Drive that the output files will be uploaded to
-    * generator_pool_size: **Help me explain with Wilf**
+    * number_of_create_child_processes: For each domain object, a parent create process manages the creation of domain object records and uses a pool of child processes to run batches of 'create jobs' in parallel. A 'create job' specifies a number of records to create as part of the total number specified in the 'record_count' attribute for the domain object in question. A record in this case is a python dictionary, and created records are added to an intermediate queue to be received by the parent write process and written to file.
+    * number_of_write_child_processes: For each domain object, a parent write process writes records to output files in batches, by defining 'write jobs' and passing these to a pool of write child processes to produce the output files by running the 'write jobs' in parallel. A 'write job' is a python dictionary containing the batch of records to be written to file, and the ID of the file to write them to.
+    * number_of_records_per_job: Both 'create jobs' and 'write jobs' refer to an action to be taken regarding a quantity of domain object records. This quantity is capped at this value across all jobs. This value is subject to the constraint that it must be greater than 1, and less than or equal to the smallest max_objects_per_file value across all domain objects in the config
 
 #### dummy_fields
 One of the requirements was for users to be able to provide parameters to describe “the shape and volume of data you want to generate”.  In order to do this we decided to allow users to include dummy fields in the objects generated.  These dummy fields allow users to increase the number of fields generated for each record and specify the type of those fields.
