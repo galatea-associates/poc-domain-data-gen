@@ -92,7 +92,7 @@ class Coordinator:
         """Populate the create job queue with create jobs.
 
         A create job is a 2-element dictionary. Quantity and Start_ID are
-        arguments for the factories create call. Quantity informs as to the
+        arguments for an object factory's create call. Quantity informs as to the
         number of objects to produce. Start_ID keeps track of the batch of IDs
         the job will be producing in the case of sequentially ID'd domain
         objects.

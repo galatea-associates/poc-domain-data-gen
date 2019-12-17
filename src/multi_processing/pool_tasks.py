@@ -1,7 +1,16 @@
 """ Pool Manager functionality for both create and write parent processes.
-Two methods are responsible for each, run_create_jobs and run_write_jobs, which
-run a batch of jobs over a configured pool of child processes. Helper methods
-are also provided to assist in running the jobs.
+
+The create parent process executes the 'parent_process' method of the Creator
+class, which prepares a batch of 'create jobs' then calls the 'run_create_jobs'
+method of this module to run them over a pool of child processes.
+
+The write parent process similarly executes the 'parent_process' method of the
+Writer class, which waits until the parent process of the Creator class has run
+'create jobs' to produce records, then dequeues these created records and
+assigns them to 'write jobs' which are stored in a list.
+
+'Write jobs' are run by being passed to file builder objects to be written to
+file, and are run in batches over a pool of write child processes.
 """
 
 from multiprocessing import Pool, Lock
@@ -10,8 +19,9 @@ from multiprocessing import Pool, Lock
 def run_create_jobs(
         dequeued_create_jobs, number_of_create_child_processes, object_factory
 ):
-    """ Instantiates a Pool for user-defined size, and begins execution
-    of provided jobs on the pool.
+    """ Instantiates a Pool with a number of processes as given in the user
+    config by the 'number_of_create_child_processes' line, and begins execution
+    of the provided batch of 'create jobs' on the pool.
 
     Parameters
     ----------
@@ -27,7 +37,7 @@ def run_create_jobs(
     Returns
     -------
     List
-        List of created records collated from the results of each create job.
+        List of created records collated from the results of each 'create job'.
     """
 
     # multiprocessing lock used to define critical section in the
@@ -82,7 +92,7 @@ def make_global(local_lock):
 
 
 def create_records_from_create_job(create_job, object_factory):
-    """ Returns a list of records created as specified by a single create job.
+    """ Returns a list of records created as specified by a single 'create job'
 
     Parameters
     ----------
@@ -101,10 +111,8 @@ def create_records_from_create_job(create_job, object_factory):
 
     quantity, start_id = create_job['quantity'], create_job['start_id']
 
-    # this is run within the create parent process, which declared a global
-    # variable 'lock' upon initialisation. If the create job is for an
-    # 'instrument' domain object, the lock is passed to the InstrumentFactory
-    # to define a critical section.
+    # The InstrumentFactory is the only factory which has a critical section
+    # and therefore requires a lock
     if object_factory.__class__.__name__ == "InstrumentFactory":
         created_records = object_factory.create(quantity, start_id, lock=lock)
     else:
@@ -114,8 +122,9 @@ def create_records_from_create_job(create_job, object_factory):
 
 
 def run_write_jobs(write_jobs, number_of_write_child_processes, file_builder):
-    """ Instantiates a Pool for user-defined size, and begins execution
-    of provided jobs on the pool.
+    """ Instantiates a Pool with a number of processes as given in the user
+    config by the 'number_of_write_child_processes' line, and begins execution
+    of the provided batch of 'write jobs' on the pool.
 
     Parameters
     ----------

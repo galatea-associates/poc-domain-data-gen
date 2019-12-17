@@ -3,10 +3,31 @@ from multi_processing import pool_tasks
 
 
 class Creator:
-    """ A class to coordinate the creation of domain objects as per jobs
-    observed within a multiprocessed queue. Create jobs are sequentially
-    dequeued in batches and run over a pool of child processes, returning a
-    list containing all created records from the jobs in that batch.
+    """ A class to coordinate the creation of domain objects as specified by
+    'create jobs' from the multiprocessing-safe Queue 'create_job_queue'.
+    'Create jobs' are sequentially dequeued in batches and run over a pool of
+    child processes, returning a list containing all created records from the
+    jobs in that batch.
+
+    A 'create job' is a dictionary specifying a quantity of domain object
+    records to be created and later written to output file. The maximum
+    quantity of records in a 'create job' is specified in the 'shared_args'
+    section of the user config by the 'number_of_records_per_job' key.
+
+    The create parent process will wait until the 'create_job_queue' is not
+    empty, at which point it will dequeue 'create jobs' and add them to a list.
+    It will not dequeue more than double the number of child create processes
+    worth of create jobs at a time to ensure that the child processes work on
+    reasonable sized batches of create jobs.
+
+    The dequeued 'create jobs' in the list are executed over a pool of child
+    create processes which, upon termination of all child processes, returns
+    a list of created records. This list contains the collated output from that
+    batch of 'create jobs'.
+
+    As batches of 'create jobs' are run, the returned lists of records are
+    added to a FIFO 'generated_record_queue'. This queue is shared between the
+    create and write parent processes.
 
     Attributes
     ----------
@@ -40,7 +61,8 @@ class Creator:
             Queue containing jobs to create a certain quantity of domain
             objects
         created_record_queue : Multiprocessed Queue
-            Queue containing resultant created records for writing to file
+            Queue containing lists of records creating from running
+            'create jobs'
         """
 
         self.create_job_queue = create_job_queue
@@ -96,11 +118,16 @@ class Creator:
     def get_dequeued_create_jobs(
             self, maximum_number_of_create_jobs_to_dequeue
     ):
-        """ Takes jobs from the Multiprocess Safe Queue and places them into
-        a list for later execution. If twice the pool size of jobs are
-        formatted, then this list is returned. If the termination flag is
-        observed, then this list is returned. If the queue is empty, then
-        the list so far is returned.
+        """ Dequeues 'create jobs' from the Multiprocess Safe Queue
+        'create_job_queue' and places them into a list for later execution.
+
+        If twice the number of create child processes are dequeued, then the
+        list is returned - this is to ensure the pool of child processes will
+        not run over an inefficiently large batch of 'create jobs'.
+
+        If the termination flag is observed, then this list is returned.
+
+        If the queue becomes empty, then the list so far is returned.
 
         Parameters
         ----------

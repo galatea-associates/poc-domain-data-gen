@@ -3,9 +3,25 @@ from multi_processing import pool_tasks
 
 
 class Writer:
-    """ A class to coordinate the writing of pre-generated records by
+    """ A class to coordinate the writing of created records by
     compiling pre-generated records from a Multiprocessed Queue into larger
     sets such that files can be written in user-requested sizes.
+
+    The write parent process waits until the 'generated_record_queue' is not
+    empty, at which point it retrieves lists of records from the queue and
+    collates all records from those lists into a
+    'dequeued_created_records_not_yet_written_to_file' list.
+
+    It then creates a list of 'write jobs', each of which is a dictionary
+    containing a portion of the records from the
+    'dequeued_created_records_not_yet_written_to_file' list to write to file,
+    and the ID of the output file. A single output file can have multiple
+    'write jobs', but a 'write job' can only refer to one output file.
+
+    The 'write jobs' in the list are run over a pool of child write processes,
+    which build the output files then terminate. Upon termination of all
+    processes, the 'write job' list is emptied and the next iteration begins by
+    dequeuing any further records from the 'generated_record_queue'.
 
     Attributes
     ----------

@@ -30,40 +30,8 @@
     'write_parent_process'. These each spawn a number of child processes as
     specified in the 'shared_args' section of the user config.
 
-    The Coordinator will populate a FIFO 'create_job_queue' with create jobs
-    (dictionaries specifying a quantity of domain object records to be created
-    and later written to output file). The maximum quantity of records in a
-    create job is specified in the 'shared_args' section of the user config.
-
-    The create parent process will wait until the create job queue is not
-    empty, at which point it will dequeue create jobs and add them to a list.
-    It will not dequeue more than double the number of child create processes
-    worth of create jobs at a time to ensure that the child processes work on
-    reasonable sized batches of create jobs.
-
-    The dequeued create jobs in the list are executed over a pool of child
-    create processes, which, upon termination of all child processes, returns
-    a list created records. This list contains the collated output from that
-    batch of create jobs.
-
-    As batches of create jobs are run, the returned lists of records are added
-    to a FIFO 'generated_record_queue'. This queue is shared between the the
-    create and write parent processes.
-
-    The write parent process waits until the 'generated_record_queue' is not
-    empty, at which point it retrieves lists of records from the queue and
-    collates all records from those lists into a
-    'dequeued_created_records_not_yet_written_to_file' list.
-
-    It then creates a list of write jobs, each specifying a quantity of records
-    from the 'dequeued_created_records_not_yet_written_to_file' list to write
-    to file, and the name of the output file. A single output file can have
-    multiple write jobs, but a write job can only refer to one output file.
-
-    The write jobs in the list are run over a pool of child write processes,
-    which build the output files then terminate. Upon termination of all
-    processes, the write job list is emptied and the next iteration begins by
-    dequeuing any further records from the 'generated_record_queue'.
+    See the class docstrings for Writer and Creator for more detail on the
+    multiprocessing implementation.
 
 """
 
@@ -113,11 +81,11 @@ def process_object_factory(file_builder, object_factory):
     Parameters
     ----------
     file_builder : File_Builder
-        An instantiated file builder as per this objects required output
+        An instantiated file builder as per this object's required output
         file type specified in the user config
     object_factory : ObjectFactory
-        Instantiated object factory for the object to create. Contains
-        creation parameters and multiprocessing shared arguments.
+        Instantiated subclass of Creatable for the domain object being created.
+        Contains creation parameters and multiprocessing shared arguments.
     """
 
     object_factory.set_batch_size()
@@ -149,8 +117,7 @@ def instantiate_file_builder(
     Returns
     -------
     FileBuilder
-        Instantiated file builder for a single domain object as specified in
-        the domain object configuration of the user config
+        Instantiated file builder for a single domain object
     """
 
     factory_args = list(factory_definition.values())[0]
