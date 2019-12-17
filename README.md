@@ -17,7 +17,7 @@ Then install:
 
 A domain object is an entity that represents a real-world business object, such as a position or a trade.
 
-Each domain object is created by a specific factory class in the `domainobjectfactories` package.  Each factory class extends `Generatable`.  If you wish to add a new domain object you need to create a new python module containing a single class which extends `Generatable`.
+Each domain object is created by a specific factory class in the `domainobjectfactories` package.  Each factory class extends `Creatable`.  If you wish to add a new domain object you need to create a new python module containing a single class which extends `Creatable`.
 
 A document listing all the current domain objects and their component fields can be found in the Appendices of the [requirements document](https://drive.google.com/open?id=1xfuqEZfgYiRK-AcDR_yacHhICEKhxMxqTKFRk0-Ubg0).
 
