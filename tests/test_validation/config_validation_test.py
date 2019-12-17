@@ -130,12 +130,12 @@ def test_writer_pool_size_failure():
     assert success is False
 
 
-def test_job_size_failure():
-    """ Ensure a negative integer for job size fails """
-
+def get_success_for_invalid_job_size(invalid_job_size):
+    """ helper method that returns the validation result for a pool_job_size
+    value given as a parameter - used to test values either side of the valid
+    range"""
     invalid_shared_args = copy.deepcopy(default_shared_args)
-    invalid_shared_args['pool_job_size'] = -1
-
+    invalid_shared_args['pool_job_size'] = invalid_job_size
     configurations = configuration.Configuration({
         "factory_definitions": default_factory_definitions,
         "shared_args": invalid_shared_args,
@@ -144,7 +144,16 @@ def test_job_size_failure():
     })
 
     success = validator.validate(configurations).check_success()
-    assert success is False
+
+    return success
+
+
+def test_job_size_failure():
+    """ Ensure a job size that is less than 1 or greater than the
+    smallest 'max_objects_per_file' value fails """
+
+    assert get_success_for_invalid_job_size(-1) is False
+    assert get_success_for_invalid_job_size(1000) is False
 
 
 def test_google_drive_flag_failure():

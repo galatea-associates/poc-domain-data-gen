@@ -47,7 +47,7 @@ def validate(configurations):
         validate_output_file_extensions(dev_file_builder_args,
                                         factory_definitions),
         validate_pool_sizes_non_zero(shared_args),
-        validate_job_size_non_zero(shared_args)
+        validate_job_size(shared_args, factory_definitions),
     ]
 
     # Remove instances of None or empty lists from error list
@@ -197,26 +197,57 @@ def validate_pool_sizes_non_zero(shared_args):
     return errors
 
 
-def validate_job_size_non_zero(shared_args):
-    """ Ensure the specified job size is a non-zero numbers.
+def validate_job_size(shared_args, factory_definitions):
+    """ Ensure the specified job size is greater than zero but less than the
+    smallest maximum number of records per file
 
     Parameters
     ----------
     shared_args : dict
         Dictionary of the "shared_config" section of the config file
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
 
     Returns
     -------
     list
         List of a single object, an error message, if job size strictly
-        less than zero, contains nothing otherwise.
+        less than zero or greater than the smallest maximum number of records
+        per file across all domain objects, contains nothing otherwise.
     """
 
     error = []
     job_size = shared_args['pool_job_size']
-    if job_size <= 0:
-        error = ["- Pool job size must be a positive value"]
-    return error
+    try:
+        maximum_job_size = min(
+            [
+                config['max_objects_per_file']
+                for config in factory_definitions.values()
+                if config['fixed_args']['record_count'] > 0
+            ]
+        )
+
+        if not 0 < job_size <= maximum_job_size:
+            error = [
+                "- Pool job size must be greater than 0 but not greater " +
+                "than the smallest 'max_objects_per_file' value in the " +
+                f"config ({maximum_job_size})"
+            ]
+    except ValueError:
+        # list comprehension above returned an empty list
+        # because all record_count values are 0 or negative
+        # which causes min() to throw a ValueError exception
+        # the underlying problem will be picked up by the
+        # validate_record_counts function, so we need only check that
+        # job size is non-negative
+        if not 0 < job_size:
+            error = [
+                "- Pool job size must be greater than 0"
+            ]
+    finally:
+        return error
 
 
 def validate_google_drive_flag(factory_definitions):
