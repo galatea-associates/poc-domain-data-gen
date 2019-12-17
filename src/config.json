@@ -4,7 +4,7 @@
       "instrument" : {
         "max_objects_per_file" : 100,
         "file_name" : "instruments",
-        "output_file_type": "CSV",
+        "output_file_type": "JSONL",
         "output_directory": "out",
         "upload_to_google_drive": "false",
         "generation_type": "fixed",
@@ -295,6 +295,6 @@
     "google_drive_root_folder_id" : "1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv",
     "number_of_create_child_processes" : 4,
     "number_of_write_child_processes" : 4,
-    "number_of_records_per_job" : 20
+    "number_of_records_per_job" : 25
   }
 }
