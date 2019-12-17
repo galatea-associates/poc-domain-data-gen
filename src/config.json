@@ -293,8 +293,8 @@
   ],
   "shared_args" : {
     "google_drive_root_folder_id" : "1xTc_fiiIoNxrmHFgviJR1FxlUtdgXSSv",
-    "generator_pool_size" : 2,
-    "writer_pool_size" : 2,
-    "pool_job_size" : 10000
+    "number_of_create_child_processes" : 2,
+    "number_of_write_child_processes" : 2,
+    "number_of_records_per_job" : 10000
   }
 }
