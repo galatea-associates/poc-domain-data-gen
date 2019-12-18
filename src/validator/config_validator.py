@@ -5,7 +5,7 @@ of errors.
 Error list to be returned, and used as a basis to feedback to the user that
 the configuration as-is is insufficient for successful operation.
 """
-from validator.validation_result import Validation_Result
+from validator.validation_result import ValidationResult
 
 
 def validate(configurations):
@@ -20,7 +20,7 @@ def validate(configurations):
 
     Returns
     -------
-    validation_result : Validation_Result
+    ValidationResult
         An object containing a boolean flag for success or fail, as well as
         a list of any errors on the case of failure.
     """
@@ -47,7 +47,7 @@ def validate(configurations):
         validate_output_file_extensions(dev_file_builder_args,
                                         factory_definitions),
         validate_pool_sizes_non_zero(shared_args),
-        validate_job_size_non_zero(shared_args)
+        validate_number_of_records_per_job(shared_args, factory_definitions)
     ]
 
     # Remove instances of None or empty lists from error list
@@ -57,9 +57,9 @@ def validate(configurations):
 
     # boolean coercion evaluates 'errors' as True if not empty
     if errors:
-        return Validation_Result(False, errors)
+        return ValidationResult(False, errors)
     else:
-        return Validation_Result(True, None)
+        return ValidationResult(True, None)
 
 
 def validate_record_counts(factory_definitions):
@@ -197,26 +197,66 @@ def validate_pool_sizes_non_zero(shared_args):
     return errors
 
 
-def validate_job_size_non_zero(shared_args):
-    """ Ensure the specified job size is a non-zero numbers.
+def validate_number_of_records_per_job(shared_args, factory_definitions):
+    """ Ensure the specified number_of_records_per_job is type int, and if so
+    is greater than zero but less than the smallest maximum number of records
+    per file
 
     Parameters
     ----------
     shared_args : dict
         Dictionary of the "shared_config" section of the config file
+    factory_definitions : dict
+        Dictionary of string:dict key/value pairs where keys are names of
+        domain objects, and each value is a dictionary containing the
+        configuration settings for that domain object.
 
     Returns
     -------
     list
         List of a single object, an error message, if job size strictly
-        less than zero, contains nothing otherwise.
+        less than zero or greater than the smallest maximum number of records
+        per file across all domain objects, contains nothing otherwise.
     """
 
-    error = []
-    job_size = shared_args['number_of_records_per_job']
-    if job_size <= 0:
-        error = ["- Pool job size must be a positive value"]
-    return error
+    errors = []
+    number_of_records_per_job = shared_args['number_of_records_per_job']
+
+    if not isinstance(number_of_records_per_job, int):
+        errors.append("- 'number_of_records_per_job' must be an integer")
+
+    else:
+        try:
+            minmax_objects_per_file = min(
+                [
+                    config['max_objects_per_file']
+                    for config in factory_definitions.values()
+                    if config['fixed_args']['record_count'] > 0
+                ]
+            )
+
+            if not 0 < number_of_records_per_job <= minmax_objects_per_file:
+                errors.append(
+                    "- 'number_of_records_per_job'' must be greater " +
+                    "than 0 but not greater than the smallest " +
+                    "'max_objects_per_file' value in the config " +
+                    "(smallest 'max_objects_per_file': " +
+                    f"{minmax_objects_per_file})"
+                )
+
+        except ValueError:
+            # list comprehension above returned an empty list
+            # because all record_count values are 0 or negative
+            # which causes min() to throw a ValueError exception
+            # the underlying problem will be picked up by the
+            # validate_record_counts function, so we need only check that
+            # number_of_records_per_job is non-negative
+            if not 0 < number_of_records_per_job:
+                errors.append(
+                    "- 'number_of_records_per_job' must be greater than 0"
+                )
+
+    return errors
 
 
 def validate_google_drive_flag(factory_definitions):

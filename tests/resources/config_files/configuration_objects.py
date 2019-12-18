@@ -41,7 +41,7 @@ default_dev_factory_args = [
 default_shared_args = {
     'number_of_create_child_processes': 1,
     'number_of_write_child_processes': 1,
-    'number_of_records_per_job': 10000
+    'number_of_records_per_job': 25
 }
 
 default_dev_file_builder_args = [
