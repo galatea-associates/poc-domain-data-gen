@@ -1,0 +1,67 @@
+{
+  "domain_objects" : [
+    {
+      "instrument" : {
+        "max_objects_per_file" : 250,
+        "file_name" : "instruments",
+        "output_file_type": "CSV",
+        "output_directory": "out",
+        "record_count" : 1000
+      }
+    },
+    {
+      "account": {
+        "max_objects_per_file" : 250,
+        "file_name" : "accounts",
+        "output_file_type": "CSV",
+        "output_directory": "out",
+        "record_count" : 1000
+      }
+    },
+    {
+      "price": {
+        "max_objects_per_file" : 250,
+        "file_name" : "prices",
+        "output_file_type": "CSV",
+        "output_directory": "out",
+        "record_count" : 1000
+      }
+    },
+    {
+      "back_office_position": {
+        "max_objects_per_file" : 250,
+        "file_name" : "back_office_positions",
+        "output_file_type": "CSV",
+        "output_directory": "out",
+        "record_count" : 1000
+      }
+    },
+    {
+      "front_office_position": {
+        "max_objects_per_file": 250,
+        "file_name": "front_office_positions",
+        "output_file_type": "CSV",
+        "output_directory": "out",
+        "record_count": 1000
+      }
+    },
+    {
+      "depot_position": {
+        "max_objects_per_file": 250,
+        "file_name": "depot_positions",
+        "output_file_type": "CSV",
+        "output_directory": "out",
+        "record_count": 1000
+      }
+    },
+    {
+      "cash_balance": {
+        "max_objects_per_file": 250,
+        "file_name": "cash_balances",
+        "output_file_type": "CSV",
+        "output_directory": "out",
+        "record_count": 1000
+      }
+    }
+  ]
+}

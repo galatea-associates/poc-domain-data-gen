@@ -1,0 +1,62 @@
+{
+  "generator_args": {
+    "instrument": {
+      "module_name": "instrument_generator",
+      "class_name": "InstrumentGenerator"
+    },
+    "account": {
+      "module_name": "account_generator",
+      "class_name": "AccountGenerator"
+    },
+    "back_office_position": {
+      "module_name": "back_office_position_generator",
+      "class_name": "BackOfficePositionGenerator"
+    },
+    "cash_balance": {
+      "module_name": "cash_balance_generator",
+      "class_name": "CashBalanceGenerator"
+    },
+    "depot_position": {
+      "module_name": "depot_position_generator",
+      "class_name": "DepotPositionGenerator"
+    },
+    "front_office_position": {
+      "module_name": "front_office_position_generator",
+      "class_name": "FrontOfficePositionGenerator"
+    },
+    "trade": {
+      "module_name": "trade_generator",
+      "class_name": "TradeGenerator"
+    },
+    "price": {
+      "module_name": "price_generator",
+      "class_name": "PriceGenerator"
+    },
+    "settlement_instruction": {
+      "module_name": "settlement_instruction_generator",
+      "class_name": "SettlementInstructionGenerator"
+    },
+    "cash_flow": {
+      "module_name": "cash_flow_generator",
+      "class_name": "CashFlowGenerator"
+    },
+  },
+  "file_builder_args": {
+    "CSV": {
+      "module_name": "csv_builder",
+      "class_name": "CSVBuilder"
+    },
+    "JSON": {
+      "module_name": "json_builder",
+      "class_name": "JSONBuilder"
+    },
+    "XML": {
+      "module_name": "xml_builder",
+      "class_name": "XMLBuilder"
+    },
+    "JSONL": {
+      "module_name": "jsonl_builder",
+      "class_name": "JSONLBuilder"
+    }
+  }
+}
